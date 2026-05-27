@@ -1,0 +1,406 @@
+/* ============================================================
+   responsive.css
+   ملف واحد بيتحكم في كل الشاشات للـ Dashboard
+   
+   الـ Breakpoints:
+   - Desktop   : > 1024px  → الحالة العادية، مفيش تغيير
+   - Tablet    : 768–1024px → sidebar بيتضيق أوتوماتيك
+   - Mobile    : < 768px   → sidebar بيتحول لـ bottom nav أو drawer
+   ============================================================ */
+
+/* ── CSS Variables ── */
+:root {
+  --sidebar-width: 240px;
+  --sidebar-collapsed: 64px;
+  --sidebar-bg: #0f172a;
+  --main-padding-desktop: 32px;
+  --main-padding-tablet: 20px;
+  --main-padding-mobile: 12px;
+  --mobile-nav-height: 60px;
+}
+
+/* ============================================================
+   TABLET  768px – 1024px
+   الـ sidebar بيتضيق لـ collapsed تلقائياً
+   ============================================================ */
+@media (max-width: 1024px) {
+
+  /* ── Owner Layout ── */
+  .owner-sidebar {
+    width: var(--sidebar-collapsed) !important;
+    overflow: visible !important;
+  }
+
+  .owner-sidebar .owner-nav-label,
+  .owner-sidebar .owner-branch-info,
+  .owner-sidebar .owner-branch-count,
+  .owner-sidebar .owner-logout-btn span:last-child {
+    display: none !important;
+  }
+
+  .owner-sidebar .owner-branch-btn {
+    justify-content: center !important;
+    padding: 8px !important;
+  }
+
+  .owner-sidebar .owner-nav-link {
+    justify-content: center !important;
+    padding: 10px !important;
+    gap: 0 !important;
+  }
+
+  .owner-sidebar .owner-logout-btn {
+    justify-content: center !important;
+    padding: 10px !important;
+    gap: 0 !important;
+  }
+
+  .owner-sidebar .sidebar-toggle-btn {
+    display: none !important;
+  }
+
+  .owner-place-img {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+  }
+
+  .owner-main {
+    padding: var(--main-padding-tablet) !important;
+  }
+
+  /* ── Admin Layout (inline styles — هنضيف class بديل) ── */
+  .admin-layout-sidebar {
+    width: var(--sidebar-collapsed) !important;
+  }
+
+  .admin-layout-main {
+    padding: var(--main-padding-tablet) !important;
+  }
+}
+
+/* ============================================================
+   MOBILE  < 768px
+   الـ sidebar بيختفي ويتحول لـ bottom navigation bar
+   ============================================================ */
+@media (max-width: 767px) {
+
+  /* ══════════════════════════════════════════════
+     OWNER LAYOUT — Mobile
+     ══════════════════════════════════════════════ */
+
+  /* الـ layout بيبقى column بدل row */
+  .owner-layout {
+    flex-direction: column !important;
+    padding-bottom: var(--mobile-nav-height) !important;
+  }
+
+  /* الـ sidebar بيختفي من الشمال */
+  .owner-sidebar {
+    display: none !important;
+  }
+
+  /* الـ main content بياخد كل الشاشة */
+  .owner-main {
+    padding: var(--main-padding-mobile) !important;
+    min-height: calc(100vh - var(--mobile-nav-height)) !important;
+    overflow-x: hidden !important;
+  }
+
+  /* ── Bottom Nav Bar (بيظهر بس على موبايل) ── */
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: var(--mobile-nav-height) !important;
+    background: var(--sidebar-bg) !important;
+    border-top: 1px solid rgba(255,255,255,0.08) !important;
+    z-index: 900 !important;
+    align-items: stretch !important;
+    justify-content: space-around !important;
+    padding: 0 4px !important;
+  }
+
+  .mobile-bottom-nav a,
+  .mobile-bottom-nav button {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    flex: 1 !important;
+    color: #94a3b8 !important;
+    text-decoration: none !important;
+    font-size: 9px !important;
+    font-family: 'Inter', sans-serif !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 6px 2px !important;
+    position: relative !important;
+    border-radius: 0 !important;
+    transition: color 0.15s !important;
+    min-width: 0 !important;
+  }
+
+  .mobile-bottom-nav a.active,
+  .mobile-bottom-nav a:hover,
+  .mobile-bottom-nav button:hover {
+    color: #ffffff !important;
+  }
+
+  .mobile-bottom-nav a.active::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 20% !important;
+    right: 20% !important;
+    height: 2px !important;
+    background: #2563eb !important;
+    border-radius: 0 0 2px 2px !important;
+  }
+
+  .mobile-bottom-nav .nav-icon {
+    font-size: 18px !important;
+    line-height: 1 !important;
+  }
+
+  .mobile-bottom-nav .nav-label {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+    font-size: 9px !important;
+  }
+
+  .mobile-bottom-nav .nav-badge {
+    position: absolute !important;
+    top: 4px !important;
+    right: calc(50% - 18px) !important;
+    background: #ef4444 !important;
+    color: #fff !important;
+    font-size: 8px !important;
+    font-weight: 700 !important;
+    padding: 1px 4px !important;
+    border-radius: 999px !important;
+    min-width: 14px !important;
+    text-align: center !important;
+    line-height: 1.4 !important;
+  }
+
+  /* ══════════════════════════════════════════════
+     ADMIN LAYOUT — Mobile
+     ══════════════════════════════════════════════ */
+
+  /* الـ admin layout wrapper */
+  .admin-layout-wrapper {
+    flex-direction: column !important;
+    padding-bottom: var(--mobile-nav-height) !important;
+  }
+
+  /* الـ admin sidebar بيختفي */
+  .admin-layout-sidebar {
+    display: none !important;
+  }
+
+  /* الـ admin main content */
+  .admin-layout-main {
+    padding: var(--main-padding-mobile) !important;
+    min-height: calc(100vh - var(--mobile-nav-height)) !important;
+    overflow-x: hidden !important;
+  }
+
+  /* ── الـ bottom nav مخفي by default ويظهر بس على موبايل ── */
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
+}
+
+
+  /* Orders modal — بييجي من تحت على موبايل */
+  .or-modal-overlay {
+    align-items: flex-end !important;
+  }
+
+  .or-modal {
+    border-radius: 16px 16px 0 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 90vh !important;
+  }
+
+/* ============================================================
+   DESKTOP  > 1024px
+   الـ bottom nav مخفي دايماً
+   ============================================================ */
+@media (min-width: 768px) {
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   UTILITY CLASSES — للصفحات الداخلية
+   استخدمها في أي صفحة بدون ما تكتب CSS جديد
+   ============================================================ */
+
+/* Page Header */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.page-header h1,
+.page-header h2 {
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+}
+
+@media (max-width: 767px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .page-header button,
+  .page-header a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Stats Cards Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+}
+
+/* Responsive Table Wrapper */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+}
+
+@media (max-width: 767px) {
+  .table-wrapper table {
+    min-width: 600px;
+  }
+
+  /* الـ table font أصغر شوية على موبايل */
+  .table-wrapper th,
+  .table-wrapper td {
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+  }
+}
+
+/* Responsive Filters Bar */
+.filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 767px) {
+  .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters-bar input,
+  .filters-bar select,
+  .filters-bar button {
+    width: 100% !important;
+  }
+}
+
+/* Cards Grid (للـ items / properties) */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 767px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Modal Responsive */
+@media (max-width: 767px) {
+  .modal-overlay {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+
+  .modal-box,
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px 16px 0 0 !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Branch Dropdown على موبايل */
+@media (max-width: 767px) {
+  .owner-branch-dropdown {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    border-radius: 0 0 10px 10px !important;
+  }
+}
+
+/* ============================================================
+   SMALL PHONES  < 380px  (iPhone SE, Galaxy A)
+   ============================================================ */
+@media (max-width: 380px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .owner-main,
+  .admin-layout-main {
+    padding: 8px !important;
+  }
+
+  .mobile-bottom-nav .nav-label {
+    display: none !important;
+  }
+
+  .mobile-bottom-nav {
+    height: 52px !important;
+  }
+}

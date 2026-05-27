@@ -1,0 +1,521 @@
+/* ── Page ── */
+.or-page {
+  max-width: 1100px;
+}
+
+.or-loading,
+.or-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* ── Header ── */
+.or-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.or-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.or-subtitle {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+/* ── Table ── */
+.or-table-wrap {
+  background: #ffffff;
+  border: 1px solid #e4e2dd;
+  border-radius: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.or-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.or-table thead tr {
+  background: #f7f6f3;
+  border-bottom: 1px solid #e4e2dd;
+}
+
+.or-table th {
+  padding: 0.875rem 1rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.or-table td {
+  padding: 0.875rem 1rem;
+  color: #0f172a;
+  border-bottom: 1px solid #f1f0ec;
+}
+
+.or-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.or-table tbody tr:hover {
+  background: #fafaf9;
+}
+
+.or-id {
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.or-type {
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+.or-price {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.or-date {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+/* ── Status Select ── */
+.or-status {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+}
+
+.or-status.status-pending {
+  background: #fef9c3;
+  color: #854d0e;
+  border-color: #fde047;
+}
+
+.or-status.status-accepted {
+  background: #dcfce7;
+  color: #16a34a;
+  border-color: #86efac;
+}
+
+.or-status.status-rejected {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+/* ── Clickable Row ── */
+.or-row-clickable {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.or-row-clickable:hover {
+  background: #f0f9ff;
+}
+
+/* ── Modal ── */
+.or-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.or-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.or-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e4e2dd;
+}
+
+.or-modal-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.or-modal-close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.or-modal-close:hover {
+  color: #0f172a;
+}
+
+.or-modal-body {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.or-modal-section h3 {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem 0;
+}
+
+.or-modal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f0ec;
+  font-size: 0.85rem;
+}
+
+.or-modal-row:last-child {
+  border-bottom: none;
+}
+
+.or-modal-row span:first-child {
+  color: #64748b;
+}
+
+.or-modal-row span:last-child {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.or-modal-price {
+  font-weight: 700 !important;
+  color: #0f172a !important;
+}
+
+/* ── Stats ── */
+.or-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.or-stat-card {
+  background: #ffffff;
+  border: 1px solid #e4e2dd;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.or-stat-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.or-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.or-stat-pending {
+  color: #854d0e;
+}
+
+/* ── Filters ── */
+.or-filters {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.or-filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.or-filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid #e4e2dd;
+  background: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.or-filter-tab:hover {
+  background: #f7f6f3;
+}
+
+.or-filter-tab.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.or-filter-count {
+  background: rgba(255,255,255,0.2);
+  border-radius: 999px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.7rem;
+}
+
+.or-filter-tab:not(.active) .or-filter-count {
+  background: #f1f0ec;
+  color: #64748b;
+}
+
+/* ── New Order Alert ── */
+.or-new-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  animation: or-slide-in 0.3s ease;
+}
+
+.or-new-alert button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+.or-new-alert button:hover {
+  opacity: 1;
+}
+
+@keyframes or-slide-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.or-export-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.or-export-btn {
+  padding: 0.5rem 1rem;
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.or-export-btn:hover { background: #059669; }
+
+.or-export-csv {
+  background: #6366f1;
+}
+
+.or-export-csv:hover { background: #4f46e5; }
+/* ── Mobile Responsive ── */
+@media (max-width: 767px) {
+
+  .or-table {
+    min-width: 650px;
+  }
+
+  .or-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .or-stat-card {
+    padding: 0.75rem 0.875rem;
+  }
+
+  .or-stat-value {
+    font-size: 1.15rem;
+  }
+
+  .or-stat-label {
+    font-size: 0.65rem;
+  }
+
+  .or-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .or-export-btns {
+    width: 100%;
+  }
+
+  .or-export-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .or-filter-tabs {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .or-filter-tab {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .or-modal {
+    border-radius: 16px 16px 0 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 90vh;
+  }
+}
+
+/* ── Delete Button ── */
+.or-delete-btn {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.or-delete-btn:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+.or-delete-btn--modal {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.82rem;
+}
+
+/* ── Confirm Dialog ── */
+.or-confirm-dialog {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  text-align: center;
+}
+
+.or-confirm-dialog h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.or-confirm-dialog p {
+  color: #475569;
+  font-size: 0.875rem;
+  margin-bottom: 0.4rem;
+}
+
+.or-confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.or-confirm-cancel,
+.or-confirm-delete {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+
+.or-confirm-cancel {
+  background: #f1f0ec;
+  color: #475569;
+}
+
+.or-confirm-cancel:hover:not(:disabled) {
+  background: #e4e2dd;
+}
+
+.or-confirm-delete {
+  background: #dc2626;
+  color: #fff;
+}
+
+.or-confirm-delete:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.or-confirm-cancel:disabled,
+.or-confirm-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+

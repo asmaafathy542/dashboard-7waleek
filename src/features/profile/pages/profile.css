@@ -1,0 +1,184 @@
+/* ── Page ── */
+.pr-page {
+  max-width: 600px;
+}
+
+.pr-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* ── Header ── */
+.pr-header {
+  margin-bottom: 1.5rem;
+}
+
+.pr-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.pr-subtitle {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+/* ── Card ── */
+.pr-card {
+  background: #ffffff;
+  border: 1px solid #e4e2dd;
+  border-radius: 12px;
+  padding: 1.75rem;
+}
+
+/* ── Avatar Section ── */
+.pr-avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pr-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pr-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+}
+
+.pr-role {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Divider ── */
+.pr-divider {
+  height: 1px;
+  background: #e4e2dd;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Info Grid ── */
+.pr-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.pr-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pr-info-label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.pr-info-value {
+  font-size: 0.875rem;
+  color: #0f172a;
+  font-weight: 500;
+}
+
+/* ── Badge ── */
+.pr-badge {
+  display: inline-block;
+  padding: 0.2rem 0.75rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.pr-badge.active {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.pr-badge.inactive {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.pr-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.pr-edit-btn {
+  padding: 0.5rem 1.25rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.pr-edit-btn:hover { background: #1d4ed8; }
+
+.pr-pass-btn {
+  padding: 0.5rem 1.25rem;
+  background: #f1f0ec;
+  color: #0f172a;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.pr-pass-btn:hover { background: #e4e2dd; }
+
+.pr-success {
+  color: #10b981;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.pr-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pr-input-wrapper .pr-input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.pr-eye-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+  line-height: 1;
+}

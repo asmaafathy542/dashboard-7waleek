@@ -1,0 +1,348 @@
+/* ── Page ── */
+.pl-page {
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.pl-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* ── Header ── */
+.pl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.pl-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.pl-badge {
+  display: inline-block;
+  padding: 0.2rem 0.75rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.pl-badge.active {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.pl-badge.inactive {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.pl-meta {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 0.5rem;
+}
+
+/* ── Grid ── */
+.pl-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+/* ── Card ── */
+.pl-card {
+  background: #ffffff;
+  border: 1px solid #e4e2dd;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.pl-card-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e4e2dd;
+}
+
+/* ── Info Rows ── */
+.pl-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 1rem;
+}
+
+.pl-info-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pl-info-value {
+  font-size: 0.875rem;
+  color: #0f172a;
+  line-height: 1.5;
+}
+
+/* ── Social Links ── */
+.pl-social-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.875rem;
+  border: 1px solid #e4e2dd;
+  border-radius: 8px;
+  color: #0f172a;
+  text-decoration: none;
+  font-size: 0.875rem;
+  margin-bottom: 0.6rem;
+  transition: all 0.15s;
+}
+
+.pl-social-link:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+/* ── Images ── */
+.pl-images-section {
+  width: 100%;
+}
+
+.pl-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.pl-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e4e2dd;
+}
+
+/* ── Image Wrap ── */
+.pl-image-wrap {
+  position: relative;
+}
+
+.pl-delete-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffffff;
+  border: none;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.pl-image-wrap:hover .pl-delete-btn {
+  opacity: 1;
+}
+
+.pl-delete-btn:disabled {
+  background: rgba(0, 0, 0, 0.3);
+  cursor: not-allowed;
+}
+
+/* ── Card Title Row ── */
+.pl-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e4e2dd;
+}
+
+.pl-card-title-row .pl-card-title {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.pl-add-btn {
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid #e4e2dd;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.pl-add-btn:hover {
+  opacity: 0.85;
+}
+
+.pl-no-images {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+/* ── Upload Modal ── */
+.pl-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.pl-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.pl-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e4e2dd;
+}
+
+.pl-modal-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.pl-modal-close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.pl-modal-close:hover {
+  color: #0f172a;
+}
+
+.pl-modal-body {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pl-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pl-form-row label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.pl-input {
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #e4e2dd;
+  font-size: 0.85rem;
+  color: #0f172a;
+  outline: none;
+  font-family: inherit;
+}
+
+.pl-input:focus {
+  border-color: #0f172a;
+}
+
+.pl-error {
+  font-size: 0.8rem;
+  color: #dc2626;
+}
+
+.pl-submit-btn {
+  padding: 0.65rem;
+  border-radius: 8px;
+  border: none;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.pl-submit-btn:hover {
+  opacity: 0.85;
+}
+
+.pl-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pl-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pl-edit-btn {
+  padding: 0.5rem 1rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.pl-edit-btn:hover {
+  background: #1d4ed8;
+}
+
+.pl-modal-large {
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.pl-textarea {
+  min-height: 80px;
+  resize: vertical;
+}

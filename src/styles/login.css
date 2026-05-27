@@ -1,0 +1,321 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #f7f6f3;
+  --white: #ffffff;
+  --border: #e4e2dd;
+  --border-focus: #93c5fd;
+  --ink: #0f172a;
+  --ink-mid: #475569;
+  --ink-soft: #94a3b8;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --error: #dc2626;
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
+  --font: 'Inter', sans-serif;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --transition: 0.15s ease;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Container ── */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--bg);
+  position: relative;
+}
+
+.login-container::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent) 0%, #60a5fa 100%);
+}
+
+/* ── Card ── */
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
+  animation: fadeUp 0.35s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Brand ── */
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.login-logo {
+  width: 52px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.login-logo img {
+  width: 150%;
+  height: 200%;
+  object-fit: contain;
+}
+
+.login-brand-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+  margin: 0 0.15rem;
+}
+
+.login-brand-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.login-brand-tag {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  font-weight: 400;
+  margin-top: 0.1rem;
+}
+
+/* ── Header ── */
+.login-header {
+  margin-bottom: 1.75rem;
+}
+
+.login-card h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.3rem;
+}
+
+.login-subtitle {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* ── Error ── */
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.875rem;
+  font-size: 0.8rem;
+  color: var(--error);
+  margin-bottom: 1rem;
+}
+
+.login-error svg {
+  flex-shrink: 0;
+}
+
+/* ── Field Group ── */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.field-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.field-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--ink-mid);
+  letter-spacing: 0.03em;
+}
+
+.field-label-link {
+  font-size: 0.72rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.field-label-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Inputs ── */
+.login-card input[type="email"],
+.login-card input[type="password"] {
+  width: 100%;
+  padding: 0.65rem 0.875rem;
+  background: #fafaf9;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.login-card input[type="email"]::placeholder,
+.login-card input[type="password"]::placeholder {
+  color: var(--ink-soft);
+}
+
+.login-card input[type="email"]:hover,
+.login-card input[type="password"]:hover {
+  border-color: #cbd5e1;
+}
+
+.login-card input[type="email"]:focus,
+.login-card input[type="password"]:focus {
+  border-color: var(--border-focus);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+/* ── Remember me ── */
+.login-remember {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-remember input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.login-remember label {
+  font-size: 0.775rem;
+  color: var(--ink-mid);
+  cursor: pointer;
+}
+
+/* ── Button ── */
+.login-card button[type="submit"] {
+  width: 100%;
+  padding: 0.72rem 1.25rem;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.login-card button[type="submit"]:hover:not(:disabled) {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.login-card button[type="submit"]:active:not(:disabled) {
+  transform: scale(0.99);
+  box-shadow: none;
+}
+
+.login-card button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Footer links ── */
+.login-footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.login-footer-links a {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.login-footer-links a:hover {
+  color: var(--ink-mid);
+}
+
+/* ── Secured tag ── */
+.login-secured {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.login-secured svg {
+  width: 11px;
+  height: 11px;
+  color: var(--ink-soft);
+}
+
+.login-secured span {
+  font-size: 0.68rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.03em;
+}
+
+.field-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
