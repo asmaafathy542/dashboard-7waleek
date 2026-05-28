@@ -181,16 +181,92 @@ function CreatePlaceModal({ onClose, onCreated }) {
                                     {geoLoading ? "⏳ Getting location..." : "📍 Use My Location"}
                                 </button>
                             </div>
-                            <input type="text" placeholder="Google Maps link" value={form.location_link} onChange={handleChange("location_link")} style={inputStyle} />
+                            <input type="text" placeholder="Google Maps link" value={form.location_link}
+                                onChange={(e) => {
+                                  const url = e.target.value;
+                                  setForm((prev) => {
+                                    const updated = { ...prev, location_link: url };
+                                    const patterns = [
+                                      /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+                                      /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+                                      /[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
+                                      /\/(-?\d+\.\d+),(-?\d+\.\d+)/,
+                                    ];
+                                    for (const pattern of patterns) {
+                                      const match = url.match(pattern);
+                                      if (match) {
+                                        updated.latitude = match[1];
+                                        updated.longitude = match[2];
+                                        break;
+                                      }
+                                    }
+                                    return updated;
+                                  });
+                                  setError("");
+                                }}
+                                style={inputStyle} />
+                            {form.location_link && !form.latitude && (
+                                <div style={{ marginTop: "5px", fontSize: "11px", color: "#94a3b8" }}>
+                                    💡 تأكد إن اللينك فيه كوردينيتس — مثال: maps.google.com/maps?q=30.04,31.23
+                                </div>
+                            )}
                         </div>
                         <div>
-                            <label style={labelStyle}>Latitude *</label>
-                            <input type="number" placeholder="e.g. 29.0731" value={form.latitude} onChange={handleChange("latitude")} style={inputStyle} />
+                            <label style={labelStyle}>
+                                Latitude * <span style={{ fontWeight: 400, color: "#94a3b8" }}>(22 → 32 لمصر)</span>
+                            </label>
+                            <input type="number" step="any" placeholder="e.g. 30.0444" value={form.latitude} onChange={handleChange("latitude")} style={inputStyle} />
                         </div>
                         <div>
-                            <label style={labelStyle}>Longitude *</label>
-                            <input type="number" placeholder="e.g. 31.0993" value={form.longitude} onChange={handleChange("longitude")} style={inputStyle} />
+                            <label style={labelStyle}>
+                                Longitude * <span style={{ fontWeight: 400, color: "#94a3b8" }}>(24 → 37 لمصر)</span>
+                            </label>
+                            <input type="number" step="any" placeholder="e.g. 31.2357" value={form.longitude} onChange={handleChange("longitude")} style={inputStyle} />
                         </div>
+
+                        {/* ── Map Preview ── */}
+                        {(() => {
+                            const lat = parseFloat(form.latitude);
+                            const lng = parseFloat(form.longitude);
+                            if (!form.latitude || !form.longitude || isNaN(lat) || isNaN(lng)) return null;
+                            const validEgypt = lat >= 22 && lat <= 32 && lng >= 24 && lng <= 37;
+                            const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                            const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+                            return (
+                                <div style={{ gridColumn: "1 / -1" }}>
+                                    {!validEgypt ? (
+                                        <div style={{ marginBottom: "8px", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: "8px", padding: "9px 13px", fontSize: "12px", color: "#92400e", display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                                            <span>⚠️</span>
+                                            <span><strong>تحذير:</strong> الكوردينيتس دي خارج نطاق مصر — تأكد إنك مش عكستهم! Latitude لازم يكون بين 22 و 32، Longitude بين 24 و 37.</span>
+                                        </div>
+                                    ) : (
+                                        <div style={{ marginBottom: "8px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "9px 13px", fontSize: "12px", color: "#166534", display: "flex", alignItems: "center", gap: "6px" }}>
+                                            ✅ الكوردينيتس في النطاق الصح — اتأكد من الموقع على الخريطة تحت
+                                        </div>
+                                    )}
+                                    <label style={labelStyle}>🗺️ Map Preview — اتأكد إن النقطة على المكان الصح</label>
+                                    <div style={{ borderRadius: "10px", overflow: "hidden", border: "1px solid #e4e2dd" }}>
+                                        <iframe
+                                            title="map-preview"
+                                            src={embedUrl}
+                                            width="100%"
+                                            height="220"
+                                            style={{ display: "block", border: "none" }}
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                        />
+                                    </div>
+                                    <a
+                                        href={mapsUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginTop: "7px", fontSize: "12px", color: "#2563eb", fontWeight: 600, textDecoration: "none" }}
+                                    >
+                                        🔗 افتح في Google Maps للتأكيد
+                                    </a>
+                                </div>
+                            );
+                        })()}
                         <div style={{ gridColumn: "1 / -1" }}>
                             <label style={labelStyle}>Owner Email *</label>
                             <input type="email" placeholder="owner@example.com" value={form.owner_email} onChange={handleChange("owner_email")} style={inputStyle} />

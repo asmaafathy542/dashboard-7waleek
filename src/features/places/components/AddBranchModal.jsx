@@ -11,6 +11,7 @@ const EMPTY_FORM = {
   website:         "",
   latitude:        "",
   longitude:       "",
+  location_link:   "",
   category_id:     "",
   instagram_url:   "",
   facebook_url:    "",
@@ -142,9 +143,50 @@ export default function AddBranchModal({ onClose, onSuccess }) {
               placeholder={t("abm_address_placeholder")}
             />
           </div>
+
+          {/* Location Link — auto-extract lat/lng */}
+          <div className="abm-field">
+            <label>
+              Location Link
+              <span style={{ fontWeight: 400, color: "#94a3b8", fontSize: "11px", marginRight: "6px" }}>
+                (هيستخرج الكوردينيتس تلقائياً)
+              </span>
+            </label>
+            <input
+              name="location_link"
+              type="url"
+              value={form.location_link || ""}
+              placeholder="https://maps.google.com/..."
+              onChange={(e) => {
+                const url = e.target.value;
+                setForm((prev) => {
+                  const updated = { ...prev, location_link: url };
+                  const patterns = [
+                    /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+                    /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+                    /[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
+                    /\/(-?\d+\.\d+),(-?\d+\.\d+)/,
+                  ];
+                  for (const pattern of patterns) {
+                    const match = url.match(pattern);
+                    if (match) {
+                      updated.latitude = match[1];
+                      updated.longitude = match[2];
+                      break;
+                    }
+                  }
+                  return updated;
+                });
+              }}
+            />
+          </div>
+
           <div className="abm-row">
             <div className="abm-field">
-              <label>{t("abm_latitude")}</label>
+              <label>
+                {t("abm_latitude")}
+                <span style={{ fontWeight: 400, color: "#94a3b8", fontSize: "11px", marginRight: "4px" }}>(22→32)</span>
+              </label>
               <input
                 name="latitude"
                 type="number"
@@ -155,7 +197,10 @@ export default function AddBranchModal({ onClose, onSuccess }) {
               />
             </div>
             <div className="abm-field">
-              <label>{t("abm_longitude")}</label>
+              <label>
+                {t("abm_longitude")}
+                <span style={{ fontWeight: 400, color: "#94a3b8", fontSize: "11px", marginRight: "4px" }}>(24→37)</span>
+              </label>
               <input
                 name="longitude"
                 type="number"
@@ -166,6 +211,70 @@ export default function AddBranchModal({ onClose, onSuccess }) {
               />
             </div>
           </div>
+
+          {/* Use My Location button */}
+          <button
+            type="button"
+            onClick={() => {
+              if (!navigator.geolocation) { setError("Geolocation not supported"); return; }
+              navigator.geolocation.getCurrentPosition(
+                (pos) => setForm((prev) => ({ ...prev, latitude: String(pos.coords.latitude), longitude: String(pos.coords.longitude) })),
+                () => setError("Could not get location. Please allow access.")
+              );
+            }}
+            style={{
+              display: "flex", alignItems: "center", gap: "6px",
+              padding: "8px 14px", borderRadius: "8px",
+              border: "1px solid #2563eb", background: "#eff6ff",
+              color: "#2563eb", fontSize: "13px", fontWeight: 600,
+              cursor: "pointer", fontFamily: "inherit",
+              marginBottom: "12px",
+            }}
+          >
+            &#128205; {t("abm_use_my_location") || "Use My Location"}
+          </button>
+
+          {/* Map Preview */}
+          {(() => {
+            const lat = parseFloat(form.latitude);
+            const lng = parseFloat(form.longitude);
+            if (!form.latitude || !form.longitude || isNaN(lat) || isNaN(lng)) return null;
+            const validEgypt = lat >= 22 && lat <= 32 && lng >= 24 && lng <= 37;
+            const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+            const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+            return (
+              <div style={{ marginBottom: "12px" }}>
+                {!validEgypt ? (
+                  <div style={{ marginBottom: "8px", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: "8px", padding: "9px 13px", fontSize: "12px", color: "#92400e", display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                    <span>&#9888;&#65039;</span>
+                    <span><strong>تحذير:</strong> الكوردينيتس خارج نطاق مصر — تأكد انك مش عكستهم!</span>
+                  </div>
+                ) : (
+                  <div style={{ marginBottom: "8px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "9px 13px", fontSize: "12px", color: "#166534", display: "flex", alignItems: "center", gap: "6px" }}>
+                    &#10003; الكوردينيتس في النطاق الصح
+                  </div>
+                )}
+                <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
+                  &#128506;&#65039; Map Preview
+                </div>
+                <div style={{ borderRadius: "10px", overflow: "hidden", border: "1px solid #e4e2dd" }}>
+                  <iframe
+                    title="branch-map-preview"
+                    src={embedUrl}
+                    width="100%"
+                    height="200"
+                    style={{ display: "block", border: "none" }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+                <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginTop: "7px", fontSize: "12px", color: "#2563eb", fontWeight: 600, textDecoration: "none" }}>
+                  &#128279; افتح في Google Maps للتأكيد
+                </a>
+              </div>
+            );
+          })()}
 
           {/* ── Contact ── */}
           <div className="abm-section-title">{t("abm_contact")}</div>

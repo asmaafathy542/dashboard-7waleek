@@ -1155,23 +1155,92 @@ export default function Places() {
                 </button>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                   <div className="pl-form-row">
-                    <label>Latitude</label>
+                    <label>Latitude <span style={{ fontWeight: 400, color: "#94a3b8", fontSize: "11px" }}>(22 → 32 لمصر)</span></label>
                     <input className="pl-input" type="number" step="any" placeholder="e.g. 30.0444"
                       value={editForm.latitude}
                       onChange={(e) => setEditForm({ ...editForm, latitude: e.target.value })} />
                   </div>
                   <div className="pl-form-row">
-                    <label>Longitude</label>
+                    <label>Longitude <span style={{ fontWeight: 400, color: "#94a3b8", fontSize: "11px" }}>(24 → 37 لمصر)</span></label>
                     <input className="pl-input" type="number" step="any" placeholder="e.g. 31.2357"
                       value={editForm.longitude}
                       onChange={(e) => setEditForm({ ...editForm, longitude: e.target.value })} />
                   </div>
                 </div>
+
+                {/* Map Preview */}
+                {(() => {
+                  const lat = parseFloat(editForm.latitude);
+                  const lng = parseFloat(editForm.longitude);
+                  if (!editForm.latitude || !editForm.longitude || isNaN(lat) || isNaN(lng)) return null;
+                  const validEgypt = lat >= 22 && lat <= 32 && lng >= 24 && lng <= 37;
+                  const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                  const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+                  return (
+                    <div>
+                      {!validEgypt ? (
+                        <div style={{ marginBottom: "8px", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: "8px", padding: "9px 13px", fontSize: "12px", color: "#92400e", display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                          <span>&#9888;&#65039;</span>
+                          <span><strong>تحذير:</strong> الكوردينيتس دي خارج نطاق مصر — تأكد انك مش عكستهم!</span>
+                        </div>
+                      ) : (
+                        <div style={{ marginBottom: "8px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "9px 13px", fontSize: "12px", color: "#166534", display: "flex", alignItems: "center", gap: "6px" }}>
+                          &#10003;&#65039; الكوردينيتس في النطاق الصح — اتاكد من الموقع على الخريطة تحت
+                        </div>
+                      )}
+                      <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>&#128506;&#65039; Map Preview</div>
+                      <div style={{ borderRadius: "10px", overflow: "hidden", border: "1px solid #e4e2dd" }}>
+                        <iframe
+                          title="edit-map-preview"
+                          src={embedUrl}
+                          width="100%"
+                          height="200"
+                          style={{ display: "block", border: "none" }}
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                        />
+                      </div>
+                      <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginTop: "7px", fontSize: "12px", color: "#2563eb", fontWeight: 600, textDecoration: "none" }}>
+                        &#128279; افتح في Google Maps للتاكيد
+                      </a>
+                    </div>
+                  );
+                })()}
+
                 <div className="pl-form-row">
                   <label>{t("bs_location_link")}</label>
                   <input className="pl-input" type="url" placeholder="https://maps.google.com/..."
                     value={editForm.location_link}
-                    onChange={(e) => setEditForm({ ...editForm, location_link: e.target.value })} />
+                    onChange={(e) => {
+                      const url = e.target.value;
+                      setEditForm((prev) => {
+                        const updated = { ...prev, location_link: url };
+                        // استخرج lat/lng من لينك Google Maps تلقائياً
+                        const patterns = [
+                          /@(-?\d+\.\d+),(-?\d+\.\d+)/,           // @lat,lng
+                          /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,      // ?q=lat,lng
+                          /[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/,     // ?ll=lat,lng
+                          /\/(-?\d+\.\d+),(-?\d+\.\d+)/,          // /lat,lng
+                          /place\/(-?\d+\.\d+)\+(-?\d+\.\d+)/,   // place/lat+lng
+                        ];
+                        for (const pattern of patterns) {
+                          const match = url.match(pattern);
+                          if (match) {
+                            updated.latitude = match[1];
+                            updated.longitude = match[2];
+                            break;
+                          }
+                        }
+                        return updated;
+                      });
+                    }}
+                  />
+                  {editForm.location_link && !editForm.latitude && (
+                    <div style={{ marginTop: "6px", fontSize: "11px", color: "#94a3b8" }}>
+                      💡 تأكد إن اللينك فيه كوردينيتس — مثال: maps.google.com/maps?q=30.04,31.23
+                    </div>
+                  )}
                 </div>
               </div>
 
