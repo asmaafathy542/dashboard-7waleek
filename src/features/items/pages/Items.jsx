@@ -1,8 +1,8 @@
-//items.jsx
 import { useState, useRef, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "../../../context/LanguageContext";
 import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
 import {
@@ -21,7 +21,7 @@ import {
 import "./Items.css";
 
 // ─── Bulk Import Modal ───────────────────────────────────────────────────────
-function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, selectedSubCat }) {
+function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, selectedSubCat, t }) {
     const fileRef = useRef();
     const [rows, setRows] = useState([]);
     const [progress, setProgress] = useState({ done: 0, total: 0, errors: [] });
@@ -56,8 +56,8 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                 const r = {};
                 Object.keys(row).forEach((k) => { r[k.toLowerCase().trim()] = row[k]; });
                 const obj = { _rowIdx: idx, _error: "", ...r };
-                if (!obj.name) obj._error = "name مفيش";
-                else if (!obj.price || isNaN(Number(obj.price))) obj._error = "price غلط";
+                if (!obj.name) obj._error = t("it_err_no_name");
+                else if (!obj.price || isNaN(Number(obj.price))) obj._error = t("it_err_bad_price");
                 if (selectedSubCat != null) {
                     obj.sub_category_id = String(selectedSubCat);
                     obj._autoMatched = true;
@@ -106,7 +106,7 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                 });
                 const itemId = saved?.id ?? saved?.data?.id;
                 if (itemId) created.push({ id: itemId, name: r.name });
-            } catch { errors.push(`Row ${i + 1} (${r.name}): فشل`); }
+            } catch { errors.push(`${t("it_bulk_row")} ${i + 1} (${r.name}): ${t("it_bulk_failed")}`); }
             setProgress({ done: i + 1, total, errors: [...errors] });
         }
         setCreatedItems(created);
@@ -124,7 +124,7 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
         const errors = [];
         for (let i = 0; i < toUpload.length; i++) {
             try { await uploadItemImage(toUpload[i].id, imageMap[toUpload[i].id]); }
-            catch { errors.push(`${toUpload[i].name}: فشل رفع الصورة`); }
+            catch { errors.push(`${toUpload[i].name}: ${t("it_bulk_img_failed")}`); }
             setImgProgress({ done: i + 1, total: toUpload.length, errors: [...errors] });
         }
         setImgProgress((p) => ({ ...p, errors }));
@@ -150,12 +150,12 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
         <div className="it-overlay" onClick={onClose}>
             <div className="it-modal it-bulk-modal" onClick={(e) => e.stopPropagation()}>
                 {step === "upload" && (<>
-                    <h2 className="it-modal-title">📦 Bulk Import Items</h2>
-                    <p className="it-bulk-hint">ارفع Excel (.xlsx) أو CSV file فيه الـ items.<br />
-                        <span style={{ color: "#f59e0b", fontWeight: 600 }}>📸 الصور مش موجودة في الـ bulk — بعد الرفع افتح كل item وضيف صورته بـ Edit.</span>
+                    <h2 className="it-modal-title">📦 {t("it_bulk_title")}</h2>
+                    <p className="it-bulk-hint">{t("it_bulk_hint")}<br />
+                        <span style={{ color: "#f59e0b", fontWeight: 600 }}>📸 {t("it_bulk_img_hint")}</span>
                     </p>
                     <div className="it-bulk-columns">
-                        <p className="it-label" style={{ marginBottom: 6 }}>الـ Columns المطلوبة:</p>
+                        <p className="it-label" style={{ marginBottom: 6 }}>{t("it_bulk_required_cols")}</p>
                         <div className="it-bulk-tags">
                             {["name *", "description", "price *", "sub_category_id", "is_available"].map((c) => (
                                 <span key={c} className={`it-bulk-tag ${c.includes("*") ? "it-bulk-tag-req" : ""}`}>{c}</span>
@@ -164,41 +164,40 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                     </div>
                     {selectedSubCatName ? (
                         <div style={{ background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: "10px", padding: "10px 14px", fontSize: "13px", color: "#1e40af", marginBottom: "12px", lineHeight: 1.7 }}>
-                            📂 <strong>الـ Items هتتضاف تلقائياً في:</strong> {selectedSubCatName}
-                            <br /><span style={{ opacity: 0.8 }}>تقدري تغيري ده في الـ preview لو حبيتي.</span>
+                            📂 <strong>{t("it_bulk_auto_cat")}</strong> {selectedSubCatName}
+                            <br /><span style={{ opacity: 0.8 }}>{t("it_bulk_can_change")}</span>
                         </div>
                     ) : (
                         <div style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: "10px", padding: "10px 14px", fontSize: "13px", color: "#166534", marginBottom: "12px", lineHeight: 1.7 }}>
-                            ✨ <strong>Auto-Match:</strong> لو ما حددتش sub_category_id، الـ app هيحاول يختار الـ category التلقائي بناءً على اسم الـ item.
-                            <br />مثال: "كفتة مشوية" → هيختار تلقائي "مشويات" لو موجودة.
+                            ✨ <strong>{t("it_bulk_automatch_title")}</strong> {t("it_bulk_automatch_desc")}
                         </div>
                     )}
                     <div className="it-bulk-dropzone" onClick={() => fileRef.current.click()}>
                         <div className="it-bulk-drop-icon">📁</div>
-                        <p>اضغط لترفع الـ Excel أو CSV</p>
-                        <span>.xlsx أو .csv</span>
+                        <p>{t("it_bulk_drop_text")}</p>
+                        <span>.xlsx {t("it_bulk_or")} .csv</span>
                         <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" style={{ display: "none" }} onChange={handleFile} />
                     </div>
                     <div className="it-modal-actions">
-                        <button className="it-cancel-btn" onClick={onClose}>إلغاء</button>
-                        <button className="it-bulk-sample-btn" onClick={downloadSample}>⬇ Sample Excel</button>
+                        <button className="it-cancel-btn" onClick={onClose}>{t("it_cancel")}</button>
+                        <button className="it-bulk-sample-btn" onClick={downloadSample}>⬇ {t("it_bulk_sample")}</button>
                     </div>
                 </>)}
 
                 {step === "preview" && (<>
-                    <h2 className="it-modal-title">🔍 Preview — {rows.length} rows</h2>
-                    {invalidRows.length > 0 && <div className="it-bulk-warn">⚠️ {invalidRows.length} row فيها مشكلة.</div>}
+                    <h2 className="it-modal-title">🔍 {t("it_bulk_preview")} — {rows.length} {t("it_bulk_rows")}</h2>
+                    {invalidRows.length > 0 && <div className="it-bulk-warn">⚠️ {invalidRows.length} {t("it_bulk_rows_problem")}</div>}
                     {(() => {
                         const autoMatched = rows.filter((r) => !r._error && r.sub_category_id && r._autoMatched).length;
                         return autoMatched > 0 ? (
                             <div style={{ color: "#166534", background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 8, padding: "6px 12px", fontSize: 13, marginBottom: 8 }}>
-                                ✨ {autoMatched} item هيتضاف في "{selectedSubCatName || 'subcategory تلقائية'}"
+                                ✨ {autoMatched} {t("it_bulk_will_add_in")} "{selectedSubCatName || t("it_bulk_auto_subcat")}"
                             </div>
                         ) : null;
                     })()}
                     <div className="it-bulk-table-wrap">
                         <table className="it-bulk-table">
-                            <thead><tr><th>#</th><th>Name *</th><th>Description</th><th>Price *</th><th>SubCat</th><th>Available</th><th></th></tr></thead>
+                            <thead><tr><th>#</th><th>{t("it_col_name")} *</th><th>{t("it_col_desc")}</th><th>{t("it_col_price")} *</th><th>{t("it_col_subcat")}</th><th>{t("it_col_available")}</th><th></th></tr></thead>
                             <tbody>
                                 {rows.map((r, i) => (
                                     <tr key={r._rowIdx} className={r._error ? "it-bulk-row-err" : ""}>
@@ -223,27 +222,27 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                         </table>
                     </div>
                     <div className="it-modal-actions">
-                        <button className="it-cancel-btn" onClick={() => setStep("upload")}>← رجوع</button>
-                        <button className="it-save-btn" onClick={runImport} disabled={!validRows.length}>🚀 Import {validRows.length} Items</button>
+                        <button className="it-cancel-btn" onClick={() => setStep("upload")}>← {t("it_back")}</button>
+                        <button className="it-save-btn" onClick={runImport} disabled={!validRows.length}>🚀 {t("it_bulk_import_btn")} {validRows.length} {t("it_items")}</button>
                     </div>
                 </>)}
 
                 {step === "importing" && (
                     <div className="it-bulk-progress-wrap">
                         <div className="it-bulk-spinner">⏳</div>
-                        <h2 className="it-modal-title">جاري الرفع...</h2>
+                        <h2 className="it-modal-title">{t("it_bulk_uploading")}</h2>
                         <p className="it-bulk-prog-text">{progress.done} / {progress.total}</p>
                         <div className="it-bulk-bar-bg"><div className="it-bulk-bar-fill" style={{ width: `${(progress.done / progress.total) * 100}%` }} /></div>
                     </div>
                 )}
 
                 {step === "images" && (<>
-                    <h2 className="it-modal-title">📸 ضيف صور الـ Items</h2>
-                    <p className="it-bulk-hint">اختار صورة لكل item أو اضغط تخطي.</p>
-                    {progress.errors.length > 0 && <div className="it-bulk-warn">⚠️ {progress.errors.length} item فشلوا.</div>}
+                    <h2 className="it-modal-title">📸 {t("it_bulk_add_images")}</h2>
+                    <p className="it-bulk-hint">{t("it_bulk_pick_img_or_skip")}</p>
+                    {progress.errors.length > 0 && <div className="it-bulk-warn">⚠️ {progress.errors.length} {t("it_bulk_items_failed")}</div>}
                     <div className="it-bulk-table-wrap">
                         <table className="it-bulk-table">
-                            <thead><tr><th>#</th><th>Item</th><th>الصورة</th><th>Preview</th></tr></thead>
+                            <thead><tr><th>#</th><th>{t("it_item")}</th><th>{t("it_image")}</th><th>{t("it_preview")}</th></tr></thead>
                             <tbody>
                                 {createdItems.map((item, i) => (
                                     <tr key={item.id}>
@@ -251,7 +250,7 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                                         <td style={{ fontWeight: 500 }}>{item.name}</td>
                                         <td>
                                             <label className="it-bulk-img-label">
-                                                {imageMap[item.id] ? "✅ " + imageMap[item.id].name : "📁 اختار صورة"}
+                                                {imageMap[item.id] ? "✅ " + imageMap[item.id].name : "📁 " + t("it_pick_image")}
                                                 <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => e.target.files[0] && assignImage(item.id, e.target.files[0])} />
                                             </label>
                                         </td>
@@ -261,17 +260,17 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                             </tbody>
                         </table>
                     </div>
-                    <p className="it-bulk-img-count">{Object.keys(imageMap).length} / {createdItems.length} صورة</p>
+                    <p className="it-bulk-img-count">{Object.keys(imageMap).length} / {createdItems.length} {t("it_image")}</p>
                     <div className="it-modal-actions">
-                        <button className="it-cancel-btn" onClick={() => { onDone(); onClose(); }}>تخطي</button>
-                        <button className="it-save-btn" onClick={uploadAllImages} disabled={!Object.keys(imageMap).length}>📤 Upload {Object.keys(imageMap).length} صورة</button>
+                        <button className="it-cancel-btn" onClick={() => { onDone(); onClose(); }}>{t("it_skip")}</button>
+                        <button className="it-save-btn" onClick={uploadAllImages} disabled={!Object.keys(imageMap).length}>📤 {t("it_upload")} {Object.keys(imageMap).length} {t("it_image")}</button>
                     </div>
                 </>)}
 
                 {step === "uploading_images" && (
                     <div className="it-bulk-progress-wrap">
                         <div className="it-bulk-spinner">🖼️</div>
-                        <h2 className="it-modal-title">جاري رفع الصور...</h2>
+                        <h2 className="it-modal-title">{t("it_bulk_uploading_imgs")}</h2>
                         <p className="it-bulk-prog-text">{imgProgress.done} / {imgProgress.total}</p>
                         <div className="it-bulk-bar-bg"><div className="it-bulk-bar-fill" style={{ width: `${(imgProgress.done / imgProgress.total) * 100}%`, background: "#10b981" }} /></div>
                     </div>
@@ -280,14 +279,14 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                 {step === "done" && (
                     <div className="it-bulk-progress-wrap">
                         <div className="it-bulk-spinner">✅</div>
-                        <h2 className="it-modal-title">خلص!</h2>
+                        <h2 className="it-modal-title">{t("it_bulk_done")}</h2>
                         <p className="it-bulk-prog-text">
-                            تم رفع {progress.done - progress.errors.length} item بنجاح
-                            {imgProgress.total > 0 && ` • ${imgProgress.done - imgProgress.errors.length} صورة`}
-                            {(progress.errors.length > 0 || imgProgress.errors.length > 0) && ` • ${progress.errors.length + imgProgress.errors.length} فشلوا`}
+                            {t("it_bulk_success_msg")} {progress.done - progress.errors.length} {t("it_item")}
+                            {imgProgress.total > 0 && ` • ${imgProgress.done - imgProgress.errors.length} ${t("it_image")}`}
+                            {(progress.errors.length > 0 || imgProgress.errors.length > 0) && ` • ${progress.errors.length + imgProgress.errors.length} ${t("it_bulk_failed_count")}`}
                         </p>
                         <div className="it-modal-actions" style={{ justifyContent: "center" }}>
-                            <button className="it-save-btn" onClick={() => { onDone(); onClose(); }}>تمام 👍</button>
+                            <button className="it-save-btn" onClick={() => { onDone(); onClose(); }}>{t("it_done")} 👍</button>
                         </div>
                     </div>
                 )}
@@ -297,13 +296,13 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
 }
 
 // ─── SubCategory Modal ───────────────────────────────────────────────────────
-function SubCatModal({ onClose, onDone, editSc, selectedPlaceId }) {
+function SubCatModal({ onClose, onDone, editSc, selectedPlaceId, t }) {
     const [form, setForm] = useState({ name: editSc?.name ?? "", description: editSc?.description ?? "" });
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
 
     const handleSave = async () => {
-        if (!form.name.trim()) return setError("Name is required.");
+        if (!form.name.trim()) return setError(t("it_name_required"));
         setSaving(true);
         setError("");
         try {
@@ -313,22 +312,22 @@ function SubCatModal({ onClose, onDone, editSc, selectedPlaceId }) {
             onDone();
             onClose();
         } catch (err) {
-            setError(err?.response?.data?.error?.message || err?.response?.data?.message || "Something went wrong.");
+            setError(err?.response?.data?.error?.message || err?.response?.data?.message || t("it_something_wrong"));
         } finally { setSaving(false); }
     };
 
     return (
         <div className="it-overlay" onClick={onClose}>
             <div className="it-modal" onClick={(e) => e.stopPropagation()}>
-                <h2 className="it-modal-title">{editSc ? "Edit SubCategory" : "Add SubCategory"}</h2>
-                <label className="it-label">Name *</label>
-                <input className="it-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. مشويات" />
-                <label className="it-label">Description</label>
-                <textarea className="it-input it-textarea" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Optional" rows={3} />
+                <h2 className="it-modal-title">{editSc ? t("it_edit_subcat") : t("it_add_subcat")}</h2>
+                <label className="it-label">{t("it_name")} *</label>
+                <input className="it-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t("it_subcat_placeholder")} />
+                <label className="it-label">{t("it_description")}</label>
+                <textarea className="it-input it-textarea" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder={t("it_optional")} rows={3} />
                 {error && <div className="it-error">⚠️ {error}</div>}
                 <div className="it-modal-actions">
-                    <button className="it-cancel-btn" onClick={onClose}>Cancel</button>
-                    <button className="it-save-btn" onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</button>
+                    <button className="it-cancel-btn" onClick={onClose}>{t("it_cancel")}</button>
+                    <button className="it-save-btn" onClick={handleSave} disabled={saving}>{saving ? t("it_saving") : t("it_save")}</button>
                 </div>
             </div>
         </div>
@@ -340,6 +339,7 @@ export default function Items() {
     const context = useOutletContext() ?? {};
     const { selectedPlaceId } = context;
     const queryClient = useQueryClient();
+    const { t } = useLanguage();
 
     const [selectedSubCat, setSelectedSubCat] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -353,7 +353,6 @@ export default function Items() {
     const [deletingAll, setDeletingAll] = useState(false);
     const [pageSize, setPageSize] = useState(12);
 
-    // ── useQuery للـ SubCategories ────────────────────────────────────
     const { data: subCategories = [] } = useQuery({
         queryKey: ["sub-categories", selectedPlaceId],
         queryFn: () => getSubCategories(selectedPlaceId),
@@ -361,7 +360,6 @@ export default function Items() {
         staleTime: 1000 * 60 * 5,
     });
 
-    // ── useQuery للـ Items ────────────────────────────────────────────
     const { data: items = [], isLoading: loading } = useQuery({
         queryKey: ["items", selectedPlaceId, selectedSubCat ?? "all"],
         queryFn: () =>
@@ -415,7 +413,7 @@ export default function Items() {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Delete this item?")) return;
+        if (!window.confirm(t("it_confirm_delete"))) return;
         await deleteItem(id);
         invalidateItems();
     };
@@ -426,7 +424,7 @@ export default function Items() {
     };
 
     const handleDeleteSubCat = async (id) => {
-        if (!window.confirm("Delete this subcategory? Items inside won't be deleted.")) return;
+        if (!window.confirm(t("it_confirm_delete_subcat"))) return;
         await deleteSubCategory(id);
         if (selectedSubCat === id) setSelectedSubCat(null);
         invalidateSubCats();
@@ -435,8 +433,8 @@ export default function Items() {
     const handleDeleteAll = async () => {
         const label = selectedSubCat
             ? subCategories.find((s) => s.id === selectedSubCat)?.name
-            : "All Items";
-        if (!window.confirm(`هتحذف كل الـ items في "${label}"؟ مش هترجع!`)) return;
+            : t("it_all_items");
+        if (!window.confirm(`${t("it_confirm_delete_all")} "${label}"؟`)) return;
         setDeletingAll(true);
         try {
             await deleteItemsBulk(items.map((i) => i.id));
@@ -459,8 +457,8 @@ export default function Items() {
             {/* ── SubCategories Sidebar ── */}
             <div className="it-subcat-sidebar">
                 <div className="it-subcat-header">
-                    <span className="it-subcat-title">Categories</span>
-                    <button className="it-subcat-add" onClick={() => { setEditSubCat(null); setShowSubCatModal(true); }} title="Add SubCategory">+</button>
+                    <span className="it-subcat-title">{t("it_categories")}</span>
+                    <button className="it-subcat-add" onClick={() => { setEditSubCat(null); setShowSubCatModal(true); }} title={t("it_add_subcat")}>+</button>
                 </div>
 
                 <div className="it-subcat-list">
@@ -468,7 +466,7 @@ export default function Items() {
                         className={`it-subcat-item ${selectedSubCat === null ? "it-subcat-active" : ""}`}
                         onClick={() => setSelectedSubCat(null)}
                     >
-                        <span className="it-subcat-name">📋 الكل</span>
+                        <span className="it-subcat-name">📋 {t("it_all")}</span>
                         <span className="it-subcat-count">{items.length}</span>
                     </button>
 
@@ -481,8 +479,8 @@ export default function Items() {
                                 </span>
                             </button>
                             <div className="it-subcat-actions">
-                                <button className="it-subcat-edit" onClick={() => { setEditSubCat(sc); setShowSubCatModal(true); }} title="Edit">✏️</button>
-                                <button className="it-subcat-del" onClick={() => handleDeleteSubCat(sc.id)} title="Delete">🗑️</button>
+                                <button className="it-subcat-edit" onClick={() => { setEditSubCat(sc); setShowSubCatModal(true); }} title={t("it_edit")}>✏️</button>
+                                <button className="it-subcat-del" onClick={() => handleDeleteSubCat(sc.id)} title={t("it_delete")}>🗑️</button>
                             </div>
                         </div>
                     ))}
@@ -494,12 +492,12 @@ export default function Items() {
                 <div className="it-header">
                     <div>
                         <h1 className="it-title">
-                            {selectedSubCat ? subCategories.find(s => s.id === selectedSubCat)?.name : "All Items"}
+                            {selectedSubCat ? subCategories.find(s => s.id === selectedSubCat)?.name : t("it_all_items")}
                         </h1>
-                        <p className="it-subtitle">{items.length} item{items.length !== 1 ? "s" : ""}</p>
+                        <p className="it-subtitle">{items.length} {t("it_item")}</p>
                     </div>
                     <div className="it-header-actions">
-                        <button className="it-bulk-btn" onClick={() => setShowBulk(true)}>📦 Bulk Import</button>
+                        <button className="it-bulk-btn" onClick={() => setShowBulk(true)}>📦 {t("it_bulk_import")}</button>
 
                         {items.length > 0 && (
                             <button
@@ -512,20 +510,20 @@ export default function Items() {
                                     transition: "all 0.2s", whiteSpace: "nowrap",
                                 }}
                             >
-                                {deletingAll ? "⏳ جاري الحذف..." : "🗑️ Delete All"}
+                                {deletingAll ? `⏳ ${t("it_deleting")}` : `🗑️ ${t("it_delete_all")}`}
                             </button>
                         )}
 
-                        <button className="it-add-btn" onClick={openAdd}>+ Add Item</button>
+                        <button className="it-add-btn" onClick={openAdd}>+ {t("it_add_item")}</button>
                     </div>
                 </div>
 
                 {loading ? (
-                    <div className="it-loading">Loading...</div>
+                    <div className="it-loading">{t("loading")}</div>
                 ) : items.length === 0 ? (
                     <div className="it-empty">
                         <div className="it-empty-icon">🍔</div>
-                        <p>No items yet. Add your first item!</p>
+                        <p>{t("it_no_items")}</p>
                     </div>
                 ) : (
                     <div className="it-grid">
@@ -539,13 +537,13 @@ export default function Items() {
                                     </div>
                                     {item.description && <p className="it-desc">{item.description}</p>}
                                     <div className="it-card-footer">
-                                        <span className="it-price">{item.price} EGP</span>
+                                        <span className="it-price">{item.price} {t("it_egp")}</span>
                                         <div className="it-actions">
                                             <button className={`it-toggle ${item.is_available ? "it-toggle-on" : "it-toggle-off"}`} onClick={() => handleToggle(item)}>
                                                 {item.is_available ? "👁️" : "🙈"}
                                             </button>
-                                            <button className="it-edit-btn" onClick={() => openEdit(item)}>Edit</button>
-                                            <button className="it-del-btn" onClick={() => handleDelete(item.id)}><span className="it-del-text">Delete</span></button>
+                                            <button className="it-edit-btn" onClick={() => openEdit(item)}>{t("it_edit")}</button>
+                                            <button className="it-del-btn" onClick={() => handleDelete(item.id)}><span className="it-del-text">{t("it_delete")}</span></button>
                                         </div>
                                     </div>
                                 </div>
@@ -570,27 +568,27 @@ export default function Items() {
             {showModal && (
                 <div className="it-overlay" onClick={() => setShowModal(false)}>
                     <div className="it-modal" onClick={(e) => e.stopPropagation()}>
-                        <h2 className="it-modal-title">{editItem ? "Edit Item" : "Add Item"}</h2>
-                        <label className="it-label">Name</label>
+                        <h2 className="it-modal-title">{editItem ? t("it_edit_item") : t("it_add_item")}</h2>
+                        <label className="it-label">{t("it_name")}</label>
                         <input className="it-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-                        <label className="it-label">Description</label>
+                        <label className="it-label">{t("it_description")}</label>
                         <textarea className="it-input it-textarea" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-                        <label className="it-label">Price (EGP)</label>
+                        <label className="it-label">{t("it_price")} ({t("it_egp")})</label>
                         <input className="it-input" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-                        <label className="it-label">Sub Category</label>
+                        <label className="it-label">{t("it_sub_category")}</label>
                         <select className="it-input" value={form.sub_category_id} onChange={(e) => setForm({ ...form, sub_category_id: e.target.value })}>
-                            <option value="">-- Select --</option>
+                            <option value="">-- {t("it_select")} --</option>
                             {subCategories.map((sc) => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
                         </select>
-                        <label className="it-label">Image</label>
+                        <label className="it-label">{t("it_image")}</label>
                         <input className="it-input" type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} />
                         <label className="it-label it-avail-label">
                             <input type="checkbox" checked={form.is_available} onChange={(e) => setForm({ ...form, is_available: e.target.checked })} />
-                            Available
+                            {t("it_available")}
                         </label>
                         <div className="it-modal-actions">
-                            <button className="it-cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
-                            <button className="it-save-btn" onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</button>
+                            <button className="it-cancel-btn" onClick={() => setShowModal(false)}>{t("it_cancel")}</button>
+                            <button className="it-save-btn" onClick={handleSave} disabled={saving}>{saving ? t("it_saving") : t("it_save")}</button>
                         </div>
                     </div>
                 </div>
@@ -603,6 +601,7 @@ export default function Items() {
                     onDone={invalidateSubCats}
                     editSc={editSubCat}
                     selectedPlaceId={selectedPlaceId}
+                    t={t}
                 />
             )}
 
@@ -614,6 +613,7 @@ export default function Items() {
                     subCategories={subCategories}
                     selectedPlaceId={selectedPlaceId}
                     selectedSubCat={selectedSubCat}
+                    t={t}
                 />
             )}
         </div>

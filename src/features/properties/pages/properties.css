@@ -2,7 +2,6 @@
 .prop-page {
   padding: 0;
   font-family: 'Cairo', 'Segoe UI', sans-serif;
-  direction: ltr;
 }
 
 /* Header */
@@ -52,21 +51,24 @@
 }
 .prop-search-icon {
   position: absolute;
-  right: 12px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 14px;
   pointer-events: none;
 }
+[dir="rtl"] .prop-search-icon {
+  left: auto;
+  right: 12px;
+}
 .prop-search {
   width: 100%;
-  padding: 9px 36px 9px 36px;
+  padding: 9px 36px;
   border: 1px solid #e4e2dd;
   border-radius: 10px;
   font-size: 13px;
   outline: none;
   font-family: inherit;
-  direction: ltr;
   box-sizing: border-box;
   background: #fff;
   color: #0f172a;
@@ -82,6 +84,10 @@
   cursor: pointer;
   color: #94a3b8;
   font-size: 13px;
+}
+[dir="rtl"] .prop-search-clear {
+  right: auto;
+  left: 10px;
 }
 
 /* Loading */
@@ -168,6 +174,10 @@
   font-weight: 700;
   padding: 3px 10px;
   border-radius: 999px;
+}
+[dir="rtl"] .prop-availability-badge {
+  left: auto;
+  right: 10px;
 }
 .prop-availability-badge.available {
   background: #dcfce7;
@@ -272,7 +282,6 @@
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 24px 64px rgba(0,0,0,0.18);
-  direction: ltr;
 }
 .prop-modal-header {
   display: flex;
@@ -335,7 +344,6 @@
   color: #0f172a;
   outline: none;
   font-family: inherit;
-  direction: ltr;
   background: #fafaf9;
   transition: border-color 0.15s;
   width: 100%;

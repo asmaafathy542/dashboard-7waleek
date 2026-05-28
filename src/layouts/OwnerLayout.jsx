@@ -1,3 +1,5 @@
+
+
 // OwnerLayout.jsx
 
 import { Outlet, Link, useLocation } from "react-router-dom";
@@ -16,9 +18,10 @@ import AddBranchModal from "../features/places/components/AddBranchModal";
 
 import "./ownerLayout.css";
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
 import ThemeToggle from "../shared/components/ui/ThemeToggle";
 
-function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, isResidential }) {
+function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, isResidential, t }) {
   const [open, setOpen] = useState(false);
 
   if (isResidential || places.length === 0) return null;
@@ -47,7 +50,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
       >
         <span style={{ fontSize: "15px" }}>🏪</span>
         <span style={{ overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>
-          {selectedPlace?.name ?? "اختار فرع"}
+          {selectedPlace?.name ?? t("select_branch")}
         </span>
         <span style={{ fontSize: "10px", color: "#94a3b8", flexShrink: 0 }}>▲</span>
       </button>
@@ -78,7 +81,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
               textTransform: "uppercase", letterSpacing: "0.05em",
               borderBottom: "1px solid #f1f5f9",
             }}>
-              اختار فرع
+              {t("choose_branch")}
             </div>
             <div style={{ padding: "8px 12px" }}>
               {places.map((p) => (
@@ -147,7 +150,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
                   ➕
                 </div>
                 <span style={{ fontSize: "14px", fontWeight: 600, color: "#2563eb" }}>
-                  إضافة فرع جديد
+                  {t("add_branch")}
                 </span>
               </button>
             </div>
@@ -158,7 +161,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
   );
 }
 
-function MobileBottomNav({ navItems, location, onAddBranch, isResidential }) {
+function MobileBottomNav({ navItems, location, onAddBranch, isResidential, t }) {
   return (
     <nav className="mobile-bottom-nav">
       {navItems.map((item) => {
@@ -183,7 +186,7 @@ function MobileBottomNav({ navItems, location, onAddBranch, isResidential }) {
       {!isResidential && (
         <button onClick={onAddBranch}>
           <span className="nav-icon">➕</span>
-          <span className="nav-label">Add</span>
+          <span className="nav-label">{t("add_branch_mobile")}</span>
         </button>
       )}
       <button
@@ -193,7 +196,7 @@ function MobileBottomNav({ navItems, location, onAddBranch, isResidential }) {
         }}
       >
         <span className="nav-icon">🚪</span>
-        <span className="nav-label">Logout</span>
+        <span className="nav-label">{t("logout")}</span>
       </button>
     </nav>
   );
@@ -201,6 +204,7 @@ function MobileBottomNav({ navItems, location, onAddBranch, isResidential }) {
 
 export default function OwnerLayout() {
   const { isDark, colors } = useTheme();
+  const { t, toggleLang, lang } = useLanguage();
   const location = useLocation();
   const [places, setPlaces] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -322,21 +326,21 @@ export default function OwnerLayout() {
 
   const navItems = isResidential
     ? [
-        { label: "Overview", path: "", icon: "📊" },
-        { label: "Properties", path: "properties", icon: "🏡" },
-        { label: "Reviews", path: "reviews", icon: "⭐" },
-        { label: "Notifications", path: "notifications", icon: "🔔" },
-        { label: "Profile", path: "profile", icon: "👤" },
+        { label: t("overview"),       path: "",              icon: "📊" },
+        { label: t("properties"),     path: "properties",    icon: "🏡" },
+        { label: t("reviews"),        path: "reviews",       icon: "⭐" },
+        { label: t("notifications"),  path: "notifications", icon: "🔔" },
+        { label: t("profile"),        path: "profile",       icon: "👤" },
       ]
     : [
-        { label: "Overview", path: "", icon: "📊" },
-        { label: "Places", path: "places", icon: "🏠" },
-        { label: "Sub Categories", path: "subcategories", icon: "📋" },
-        { label: "Items", path: "items", icon: "🍔" },
-        { label: "Orders", path: "orders", icon: "📦", badge: orderAlert },
-        { label: "Reviews", path: "reviews", icon: "⭐" },
-        { label: "Notifications", path: "notifications", icon: "🔔" },
-        { label: "Profile", path: "profile", icon: "👤" },
+        { label: t("overview"),       path: "",              icon: "📊" },
+        { label: t("places"),         path: "places",        icon: "🏠" },
+        { label: t("items"),          path: "items",         icon: "🍔" },
+        { label: t("subcategories"),  path: "subcategories", icon: "📋" },
+        { label: t("orders"),         path: "orders",        icon: "📦", badge: orderAlert },
+        { label: t("reviews"),        path: "reviews",       icon: "⭐" },
+        { label: t("notifications"),  path: "notifications", icon: "🔔" },
+        { label: t("profile"),        path: "profile",       icon: "👤" },
       ];
 
   const placeName = selectedPlace?.name ?? "";
@@ -350,6 +354,7 @@ export default function OwnerLayout() {
           onSelect={handleSelectBranch}
           onAddBranch={() => setShowAddBranch(true)}
           isResidential={isResidential}
+          t={t}
         />
       </div>
 
@@ -405,7 +410,7 @@ export default function OwnerLayout() {
                     {user?.name ?? user?.username ?? "Owner"}
                   </div>
                   <div style={{ fontSize: "10px", color: "#64748b", marginTop: "1px" }}>
-                    🏡 Residential
+                    {t("residential_label")}
                   </div>
                 </div>
               )}
@@ -460,7 +465,7 @@ export default function OwnerLayout() {
                       color: "#fff", fontWeight: 700, fontSize: "13px",
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                     }}>
-                      {selectedPlace?.name ?? "Select Branch"}
+                      {selectedPlace?.name ?? t("select_branch")}
                     </div>
                     <div style={{ fontSize: "10px", color: "#64748b", marginTop: "1px" }}>
                       {branchMenuOpen ? "▲" : "▼"}
@@ -502,7 +507,7 @@ export default function OwnerLayout() {
                   }}
                 >
                   <span style={{ fontSize: "12px" }}>＋</span>
-                  <span>Add New Branch</span>
+                  <span>{ t("add_branch") }</span>
                 </button>
               )}
 
@@ -531,12 +536,38 @@ export default function OwnerLayout() {
         <div className="owner-sidebar-logout">
           <ThemeToggle collapsed={collapsed} />
           <button
+            onClick={toggleLang}
+            title={collapsed ? (lang === "en" ? "عربي" : "English") : ""}
+            style={{
+              display: "flex", alignItems: "center",
+              gap: collapsed ? 0 : "8px",
+              padding: collapsed ? "8px" : "8px 12px",
+              borderRadius: "8px",
+              border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.06)",
+              color: "#94a3b8", fontSize: "13px", fontWeight: 500,
+              cursor: "pointer", width: "100%", justifyContent: "center",
+              transition: "all 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.12)";
+              e.currentTarget.style.color = "#fff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+              e.currentTarget.style.color = "#94a3b8";
+            }}
+          >
+            <span style={{ fontSize: "16px" }}>🌐</span>
+            {!collapsed && <span>{lang === "en" ? "عربي" : "English"}</span>}
+          </button>
+          <button
             onClick={() => { localStorage.clear(); window.location.href = "/login"; }}
             className="owner-logout-btn"
-            title={collapsed ? "Logout" : ""}
+            title={collapsed ? t("logout") : ""}
           >
             <span className="owner-nav-icon">🚪</span>
-            {!collapsed && <span className="owner-nav-label">Logout</span>}
+            {!collapsed && <span className="owner-nav-label">{t("logout")}</span>}
           </button>
         </div>
       </div>
@@ -560,6 +591,7 @@ export default function OwnerLayout() {
         location={location}
         onAddBranch={() => setShowAddBranch(true)}
         isResidential={isResidential}
+        t={t}
       />
 
       {!isResidential && showAddBranch && (

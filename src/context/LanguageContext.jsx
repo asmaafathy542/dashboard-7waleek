@@ -11,7 +11,7 @@ const getCookie = (name) => {
 };
 
 const setCookie = (name, value) => {
-  document.cookie = `${name}=${value};path=/;max-age=31536000`;
+  document.cookie = `${name}=${value};path=/;max-age=31536000;SameSite=Lax`;
 };
 
 export function LanguageProvider({ children }) {

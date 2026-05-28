@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "../../../context/LanguageContext";
 import {
     getSubCategories,
     createSubCategory,
@@ -13,6 +14,7 @@ export default function SubCategories() {
     const context = useOutletContext() ?? {};
     const { selectedPlaceId } = context;
     const queryClient = useQueryClient();
+    const { t } = useLanguage();
 
     const [showModal, setShowModal] = useState(false);
     const [editItem, setEditItem] = useState(null);
@@ -20,7 +22,6 @@ export default function SubCategories() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
 
-    // ── useQuery بدل useRef + fetchSubCats ───────────────────────────
     const { data: subCats = [], isLoading: loading } = useQuery({
         queryKey: ["sub-categories", selectedPlaceId],
         queryFn: () => getSubCategories(selectedPlaceId),
@@ -46,7 +47,7 @@ export default function SubCategories() {
     };
 
     const handleSave = async () => {
-        if (!form.name.trim()) return setError("Name is required.");
+        if (!form.name.trim()) return setError(t("it_name_required"));
         setSaving(true);
         setError("");
         try {
@@ -59,7 +60,7 @@ export default function SubCategories() {
             setError(
                 err?.response?.data?.error?.message ||
                 err?.response?.data?.message ||
-                "Something went wrong."
+                t("it_something_wrong")
             );
         } finally {
             setSaving(false);
@@ -67,27 +68,27 @@ export default function SubCategories() {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Delete this subcategory?")) return;
+        if (!window.confirm(t("sc_confirm_delete"))) return;
         await deleteSubCategory(id);
         invalidateSubCats();
     };
 
-    if (loading) return <div className="sc-loading">Loading...</div>;
+    if (loading) return <div className="sc-loading">{t("loading")}</div>;
 
     return (
         <div className="sc-page">
             <div className="sc-header">
                 <div>
-                    <h1 className="sc-title">Sub Categories</h1>
-                    <p className="sc-subtitle">{subCats.length} subcategor{subCats.length !== 1 ? "ies" : "y"}</p>
+                    <h1 className="sc-title">{t("sc_title")}</h1>
+                    <p className="sc-subtitle">{subCats.length} {t("sc_count")}</p>
                 </div>
-                <button className="sc-add-btn" onClick={openAdd}>+ Add SubCategory</button>
+                <button className="sc-add-btn" onClick={openAdd}>+ {t("sc_add_btn")}</button>
             </div>
 
             {subCats.length === 0 ? (
                 <div className="sc-empty">
                     <div className="sc-empty-icon">📂</div>
-                    <p>No subcategories yet. Add your first one!</p>
+                    <p>{t("sc_empty")}</p>
                 </div>
             ) : (
                 <div className="sc-list">
@@ -98,8 +99,8 @@ export default function SubCategories() {
                                 {sc.description && <span className="sc-desc">{sc.description}</span>}
                             </div>
                             <div className="sc-actions">
-                                <button className="sc-edit-btn" onClick={() => openEdit(sc)}>Edit</button>
-                                <button className="sc-del-btn" onClick={() => handleDelete(sc.id)}>Delete</button>
+                                <button className="sc-edit-btn" onClick={() => openEdit(sc)}>{t("it_edit")}</button>
+                                <button className="sc-del-btn" onClick={() => handleDelete(sc.id)}>{t("it_delete")}</button>
                             </div>
                         </div>
                     ))}
@@ -110,32 +111,32 @@ export default function SubCategories() {
                 <div className="sc-overlay" onClick={() => setShowModal(false)}>
                     <div className="sc-modal" onClick={(e) => e.stopPropagation()}>
                         <h2 className="sc-modal-title">
-                            {editItem ? "Edit SubCategory" : "Add SubCategory"}
+                            {editItem ? t("it_edit_subcat") : t("it_add_subcat")}
                         </h2>
 
-                        <label className="sc-label">Name *</label>
+                        <label className="sc-label">{t("it_name")} *</label>
                         <input
                             className="sc-input"
                             value={form.name}
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
-                            placeholder="e.g. مشويات"
+                            placeholder={t("it_subcat_placeholder")}
                         />
 
-                        <label className="sc-label">Description</label>
+                        <label className="sc-label">{t("it_description")}</label>
                         <textarea
                             className="sc-input sc-textarea"
                             value={form.description}
                             onChange={(e) => setForm({ ...form, description: e.target.value })}
-                            placeholder="Optional description"
+                            placeholder={t("it_optional")}
                             rows={3}
                         />
 
                         {error && <div className="sc-error">⚠️ {error}</div>}
 
                         <div className="sc-modal-actions">
-                            <button className="sc-cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
+                            <button className="sc-cancel-btn" onClick={() => setShowModal(false)}>{t("it_cancel")}</button>
                             <button className="sc-save-btn" onClick={handleSave} disabled={saving}>
-                                {saving ? "Saving..." : "Save"}
+                                {saving ? t("it_saving") : t("it_save")}
                             </button>
                         </div>
                     </div>

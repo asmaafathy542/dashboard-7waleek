@@ -5,6 +5,7 @@ import { getReviews, getAllReviews, deleteReview, getPropertyReviews } from "../
 import { getMyProperties } from "../../properties/services/propertiesServices";
 import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
+import { useLanguage } from "../../../context/LanguageContext";
 import "./reviews.css";
 
 function StarRating({ rating }) {
@@ -18,13 +19,13 @@ function StarRating({ rating }) {
 }
 
 const sentimentBadge = {
-  positive: { label: "Positive", style: { background: "#dcfce7", color: "#15803d" } },
-  negative: { label: "Negative", style: { background: "#fee2e2", color: "#b91c1c" } },
-  neutral:  { label: "Neutral",  style: { background: "#f1f5f9", color: "#64748b" } },
+  positive: { en: "Positive", ar: "إيجابي", style: { background: "#dcfce7", color: "#15803d" } },
+  negative: { en: "Negative", ar: "سلبي",   style: { background: "#fee2e2", color: "#b91c1c" } },
+  neutral:  { en: "Neutral",  ar: "محايد",  style: { background: "#f1f5f9", color: "#64748b" } },
 };
 
 // ── RESIDENTIAL Reviews ───────────────────────────────────────────────────────
-function ResidentialReviews() {
+function ResidentialReviews({ ar }) {
   const queryClient = useQueryClient();
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [deleting, setDeleting]           = useState(false);
@@ -79,7 +80,7 @@ function ResidentialReviews() {
       );
       setConfirmDelete(null);
     } catch (err) {
-      alert(err?.response?.data?.error?.message || "Failed to delete, please try again.");
+      alert(err?.response?.data?.error?.message || (ar ? "فشل الحذف، حاول مرة أخرى." : "Failed to delete, please try again."));
     } finally {
       setDeleting(false);
     }
@@ -91,37 +92,41 @@ function ResidentialReviews() {
     neutral:  reviews.filter((r) => r.sentiment === "neutral").length,
   };
 
-  if (loading) return <div className="rv-loading">Loading...</div>;
+  if (loading) return <div className="rv-loading">{ar ? "جاري التحميل..." : "Loading..."}</div>;
 
   return (
     <div className="rv-page">
       <div className="rv-header">
         <div>
-          <h1 className="rv-title">Reviews</h1>
-          <p className="rv-subtitle">{total} review{total !== 1 ? "s" : ""} total</p>
+          <h1 className="rv-title">{ar ? "التقييمات" : "Reviews"}</h1>
+          <p className="rv-subtitle">
+            {ar ? `${total} تقييم` : `${total} review${total !== 1 ? "s" : ""} total`}
+          </p>
         </div>
       </div>
 
       <div className="rv-sentiment-row">
         <div className="rv-sentiment-card rv-sentiment-positive">
           <div className="rv-sentiment-num">{computedSentiment.positive}</div>
-          <div className="rv-sentiment-label">😊 Positive</div>
+          <div className="rv-sentiment-label">😊 {ar ? "إيجابي" : "Positive"}</div>
         </div>
         <div className="rv-sentiment-card rv-sentiment-negative">
           <div className="rv-sentiment-num">{computedSentiment.negative}</div>
-          <div className="rv-sentiment-label">😞 Negative</div>
+          <div className="rv-sentiment-label">😞 {ar ? "سلبي" : "Negative"}</div>
         </div>
         <div className="rv-sentiment-card rv-sentiment-neutral">
           <div className="rv-sentiment-num">{computedSentiment.neutral}</div>
-          <div className="rv-sentiment-label">😐 Neutral</div>
+          <div className="rv-sentiment-label">😐 {ar ? "محايد" : "Neutral"}</div>
         </div>
       </div>
 
       {reviews.length === 0 ? (
         <div className="rv-empty">
           <div className="rv-empty-icon">⭐</div>
-          <p style={{ fontWeight: 600, marginBottom: "8px" }}>No reviews yet.</p>
-          <p style={{ fontSize: "13px", color: "#94a3b8" }}>Once someone leaves a review on your listings, it will appear here.</p>
+          <p style={{ fontWeight: 600, marginBottom: "8px" }}>{ar ? "لا توجد تقييمات بعد." : "No reviews yet."}</p>
+          <p style={{ fontSize: "13px", color: "#94a3b8" }}>
+            {ar ? "بمجرد أن يترك أحد تقييماً على قوائمك، سيظهر هنا." : "Once someone leaves a review on your listings, it will appear here."}
+          </p>
         </div>
       ) : (
         <div className="rv-list">
@@ -132,7 +137,7 @@ function ResidentialReviews() {
                   {review.user_name?.charAt(0).toUpperCase() || "?"}
                 </div>
                 <div>
-                  <div className="rv-user">{review.user_name || "Anonymous"}</div>
+                  <div className="rv-user">{review.user_name || (ar ? "مجهول" : "Anonymous")}</div>
                   <div className="rv-date">
                     {new Date(review.created_at ?? review.date).toLocaleDateString()}
                   </div>
@@ -152,10 +157,10 @@ function ResidentialReviews() {
                     borderRadius: "20px", marginLeft: "auto",
                     ...sentimentBadge[review.sentiment].style,
                   }}>
-                    {sentimentBadge[review.sentiment].label}
+                    {ar ? sentimentBadge[review.sentiment].ar : sentimentBadge[review.sentiment].en}
                   </span>
                 )}
-                <button className="or-delete-btn" onClick={() => setConfirmDelete(review)} title="Delete review">
+                <button className="or-delete-btn" onClick={() => setConfirmDelete(review)} title={ar ? "حذف التقييم" : "Delete review"}>
                   🗑
                 </button>
               </div>
@@ -179,13 +184,15 @@ function ResidentialReviews() {
       {confirmDelete && (
         <div className="or-modal-overlay" onClick={() => !deleting && setConfirmDelete(null)}>
           <div className="or-confirm-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>Delete this review?</h3>
-            <p>By: {confirmDelete.user_name || "Anonymous"}</p>
-            <p>This action cannot be undone.</p>
+            <h3>{ar ? "حذف هذا التقييم؟" : "Delete this review?"}</h3>
+            <p>{ar ? "من:" : "By:"} {confirmDelete.user_name || (ar ? "مجهول" : "Anonymous")}</p>
+            <p>{ar ? "هذا الإجراء لا يمكن التراجع عنه." : "This action cannot be undone."}</p>
             <div className="or-confirm-actions">
-              <button className="or-confirm-cancel" onClick={() => setConfirmDelete(null)} disabled={deleting}>Cancel</button>
+              <button className="or-confirm-cancel" onClick={() => setConfirmDelete(null)} disabled={deleting}>
+                {ar ? "إلغاء" : "Cancel"}
+              </button>
               <button className="or-confirm-delete" onClick={handleDelete} disabled={deleting}>
-                {deleting ? "Deleting..." : "Delete"}
+                {deleting ? (ar ? "جاري الحذف..." : "Deleting...") : (ar ? "حذف" : "Delete")}
               </button>
             </div>
           </div>
@@ -200,6 +207,8 @@ export default function Reviews() {
   const context = useOutletContext() ?? {};
   const { selectedPlaceId, allBranches: places } = context;
   const queryClient = useQueryClient();
+  const { lang } = useLanguage();
+  const ar = lang === "ar";
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const isResidential = user?.owner_type === "RESIDENTIAL";
@@ -238,16 +247,16 @@ export default function Reviews() {
       }));
       setConfirmDelete(null);
     } catch (err) {
-      alert(err?.response?.data?.error?.message || "Failed to delete, please try again.");
+      alert(err?.response?.data?.error?.message || (ar ? "فشل الحذف، حاول مرة أخرى." : "Failed to delete, please try again."));
     } finally {
       setDeleting(false);
     }
   };
 
-  if (isResidential) return <ResidentialReviews />;
+  if (isResidential) return <ResidentialReviews ar={ar} />;
 
-  if (!selectedPlaceId) return <div className="rv-loading">Loading branch...</div>;
-  if (loading)          return <div className="rv-loading">Loading...</div>;
+  if (!selectedPlaceId) return <div className="rv-loading">{ar ? "جاري تحميل الفرع..." : "Loading branch..."}</div>;
+  if (loading)          return <div className="rv-loading">{ar ? "جاري التحميل..." : "Loading..."}</div>;
 
   const computedSentiment = {
     positive: reviews.filter((r) => r.sentiment === "positive").length,
@@ -259,8 +268,10 @@ export default function Reviews() {
     <div className="rv-page">
       <div className="rv-header">
         <div>
-          <h1 className="rv-title">Reviews</h1>
-          <p className="rv-subtitle">{total} review{total !== 1 ? "s" : ""} total</p>
+          <h1 className="rv-title">{ar ? "التقييمات" : "Reviews"}</h1>
+          <p className="rv-subtitle">
+            {ar ? `${total} تقييم` : `${total} review${total !== 1 ? "s" : ""} total`}
+          </p>
         </div>
       </div>
 
@@ -275,29 +286,32 @@ export default function Reviews() {
             borderColor: "#1e293b",
           }}
         >
-          {allBranches ? "📍 All Branches" : "🏠 This Branch"}
+          {allBranches
+            ? (ar ? "📍 كل الفروع"   : "📍 All Branches")
+            : (ar ? "🏠 هذا الفرع"   : "🏠 This Branch")
+          }
         </button>
       </div>
 
       <div className="rv-sentiment-row">
         <div className="rv-sentiment-card rv-sentiment-positive">
           <div className="rv-sentiment-num">{computedSentiment.positive}</div>
-          <div className="rv-sentiment-label">😊 Positive</div>
+          <div className="rv-sentiment-label">😊 {ar ? "إيجابي" : "Positive"}</div>
         </div>
         <div className="rv-sentiment-card rv-sentiment-negative">
           <div className="rv-sentiment-num">{computedSentiment.negative}</div>
-          <div className="rv-sentiment-label">😞 Negative</div>
+          <div className="rv-sentiment-label">😞 {ar ? "سلبي" : "Negative"}</div>
         </div>
         <div className="rv-sentiment-card rv-sentiment-neutral">
           <div className="rv-sentiment-num">{computedSentiment.neutral}</div>
-          <div className="rv-sentiment-label">😐 Neutral</div>
+          <div className="rv-sentiment-label">😐 {ar ? "محايد" : "Neutral"}</div>
         </div>
       </div>
 
       {reviews.length === 0 ? (
         <div className="rv-empty">
           <div className="rv-empty-icon">⭐</div>
-          <p>No reviews yet.</p>
+          <p>{ar ? "لا توجد تقييمات بعد." : "No reviews yet."}</p>
         </div>
       ) : (
         <div className="rv-list">
@@ -308,13 +322,13 @@ export default function Reviews() {
                   {review.user_name?.charAt(0).toUpperCase() || "?"}
                 </div>
                 <div>
-                  <div className="rv-user">{review.user_name || "Anonymous"}</div>
+                  <div className="rv-user">{review.user_name || (ar ? "مجهول" : "Anonymous")}</div>
                   <div className="rv-date">
                     {new Date(review.created_at ?? review.date).toLocaleDateString()}
                   </div>
                   {allBranches && review.place_id && (
                     <div style={{ fontSize: "11px", color: "#64748b", marginTop: "2px" }}>
-                      📍 {placeMap[review.place_id] ?? `Branch #${review.place_id}`}
+                      📍 {placeMap[review.place_id] ?? `${ar ? "فرع" : "Branch"} #${review.place_id}`}
                     </div>
                   )}
                 </div>
@@ -328,10 +342,10 @@ export default function Reviews() {
                     borderRadius: "20px", marginLeft: "auto",
                     ...sentimentBadge[review.sentiment].style,
                   }}>
-                    {sentimentBadge[review.sentiment].label}
+                    {ar ? sentimentBadge[review.sentiment].ar : sentimentBadge[review.sentiment].en}
                   </span>
                 )}
-                <button className="or-delete-btn" onClick={() => setConfirmDelete(review)} title="Delete review">
+                <button className="or-delete-btn" onClick={() => setConfirmDelete(review)} title={ar ? "حذف التقييم" : "Delete review"}>
                   🗑
                 </button>
               </div>
@@ -355,13 +369,15 @@ export default function Reviews() {
       {confirmDelete && (
         <div className="or-modal-overlay" onClick={() => !deleting && setConfirmDelete(null)}>
           <div className="or-confirm-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>Delete this review?</h3>
-            <p>By: {confirmDelete.user_name || "Anonymous"}</p>
-            <p>This action cannot be undone.</p>
+            <h3>{ar ? "حذف هذا التقييم؟" : "Delete this review?"}</h3>
+            <p>{ar ? "من:" : "By:"} {confirmDelete.user_name || (ar ? "مجهول" : "Anonymous")}</p>
+            <p>{ar ? "هذا الإجراء لا يمكن التراجع عنه." : "This action cannot be undone."}</p>
             <div className="or-confirm-actions">
-              <button className="or-confirm-cancel" onClick={() => setConfirmDelete(null)} disabled={deleting}>Cancel</button>
+              <button className="or-confirm-cancel" onClick={() => setConfirmDelete(null)} disabled={deleting}>
+                {ar ? "إلغاء" : "Cancel"}
+              </button>
               <button className="or-confirm-delete" onClick={handleDelete} disabled={deleting}>
-                {deleting ? "Deleting..." : "Delete"}
+                {deleting ? (ar ? "جاري الحذف..." : "Deleting...") : (ar ? "حذف" : "Delete")}
               </button>
             </div>
           </div>

@@ -1,8 +1,9 @@
 // OwnerDashboard.jsx
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "../../../context/LanguageContext";
 import { getMyProperties } from "../../properties/services/propertiesServices";
 import {
     getOwnerDashboard,
@@ -29,14 +30,6 @@ import {
 } from "recharts";
 
 import "./ownerDashboard.css";
-
-const statCards = [
-    { key: "visits",     label: "Visits",     icon: "👁️" },
-    { key: "orders",     label: "Orders",     icon: "📦" },
-    { key: "saves",      label: "Saves",      icon: "🔖" },
-    { key: "calls",      label: "Calls",      icon: "📞" },
-    { key: "directions", label: "Directions", icon: "🗺️" },
-];
 
 const statusClass = {
     PENDING:   "od-status-pending",
@@ -105,35 +98,36 @@ function resolveDateRange(dateRange, customFrom, customTo) {
 }
 
 function ResidentialOverview() {
+    const { t } = useLanguage();
 
-const { data: properties = [], isLoading: loading } = useQuery({
-    queryKey: ["properties"],
-    queryFn: getMyProperties,
-    staleTime: 1000 * 60 * 5,
-});
+    const { data: properties = [], isLoading: loading } = useQuery({
+        queryKey: ["properties"],
+        queryFn: getMyProperties,
+        staleTime: 1000 * 60 * 5,
+    });
 
     const totalProps     = properties.length;
     const availableProps = properties.filter((p) => p.is_available).length;
     const totalReviews   = properties.reduce((s, p) => s + (p.review_count   ?? 0), 0);
     const totalFavorites = properties.reduce((s, p) => s + (p.favorite_count ?? 0), 0);
 
-    if (loading) return <div className="od-loading">Loading...</div>;
+    if (loading) return <div className="od-loading">{t("loading")}</div>;
 
     return (
         <div className="od-page">
             <div className="od-header">
                 <div>
-                    <h1 className="od-title">Welcome 👋</h1>
-                    <p className="od-subtitle">Here's a summary of your properties.</p>
+                    <h1 className="od-title">{t("welcome")}</h1>
+                    <p className="od-subtitle">{t("properties_summary")}</p>
                 </div>
             </div>
 
             <div className="od-cards">
                 {[
-                    { icon: "🏠", label: "Total Properties", value: totalProps     },
-                    { icon: "✅", label: "Available",        value: availableProps },
-                    { icon: "⭐", label: "Reviews",          value: totalReviews   },
-                    { icon: "❤️", label: "Favorites",        value: totalFavorites },
+                    { icon: "🏠", label: t("stat_total_properties"), value: totalProps     },
+                    { icon: "✅", label: t("stat_available"),         value: availableProps },
+                    { icon: "⭐", label: t("reviews"),                value: totalReviews   },
+                    { icon: "❤️", label: t("stat_favorites"),         value: totalFavorites },
                 ].map((card) => (
                     <div className="od-card" key={card.label}>
                         <div className="od-card-icon">{card.icon}</div>
@@ -145,13 +139,11 @@ const { data: properties = [], isLoading: loading } = useQuery({
 
             {properties.length === 0 ? (
                 <div className="od-chart-card">
-                    <div className="od-chart-empty">
-                        🏘️ No properties yet. Go to the Properties page and add your first one!
-                    </div>
+                    <div className="od-chart-empty">{t("no_properties")}</div>
                 </div>
             ) : (
                 <div className="od-chart-card">
-                    <h2 className="od-chart-title">🏠 My Properties</h2>
+                    <h2 className="od-chart-title">{t("my_properties")}</h2>
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                         {properties.map((prop) => (
                             <div
@@ -171,7 +163,7 @@ const { data: properties = [], isLoading: loading } = useQuery({
                                         {prop.title}
                                     </div>
                                     <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "2px" }}>
-                                        ⭐ {prop.review_count ?? 0} reviews · ❤️ {prop.favorite_count ?? 0} favorites
+                                        ⭐ {prop.review_count ?? 0} {t("reviews")} · ❤️ {prop.favorite_count ?? 0} {t("stat_favorites")}
                                     </div>
                                 </div>
                                 <div style={{ textAlign: "right" }}>
@@ -188,7 +180,7 @@ const { data: properties = [], isLoading: loading } = useQuery({
                                             color:        prop.is_available ? "#15803d" : "#b91c1c",
                                         }}
                                     >
-                                        {prop.is_available ? "Available" : "Unavailable"}
+                                        {prop.is_available ? t("prop_available") : t("prop_unavailable")}
                                     </span>
                                 </div>
                             </div>
@@ -203,9 +195,18 @@ const { data: properties = [], isLoading: loading } = useQuery({
 export default function OwnerDashboard() {
     const context = useOutletContext() ?? {};
     const { selectedPlaceId, placeName } = context;
+    const { t } = useLanguage();
     const user          = JSON.parse(localStorage.getItem("user") || "{}");
     const isResidential = user?.owner_type === "RESIDENTIAL";
     const queryClient   = useQueryClient();
+
+    const statCards = [
+        { key: "visits",     label: t("stat_visits"),     icon: "👁️" },
+        { key: "orders",     label: t("stat_orders"),     icon: "📦" },
+        { key: "saves",      label: t("stat_saves"),      icon: "🔖" },
+        { key: "calls",      label: t("stat_calls"),      icon: "📞" },
+        { key: "directions", label: t("stat_directions"), icon: "🗺️" },
+    ];
 
     // ── Date Filter state ─────────────────────────────────────────────
     const [dateRange,  setDateRange]  = useState("7d");
@@ -336,7 +337,7 @@ export default function OwnerDashboard() {
             >
                 <div style={{ fontSize: "2rem" }}>⏳</div>
                 <div style={{ color: "#94a3b8", fontSize: "0.95rem" }}>
-                    Loading your dashboard...
+                    {t("loading_dashboard")}
                 </div>
             </div>
         );
@@ -355,8 +356,8 @@ export default function OwnerDashboard() {
             {/* Header */}
             <div className="od-header">
                 <div>
-                    <h1 className="od-title">Welcome, {placeName} 👋</h1>
-                    <p className="od-subtitle">Here's what's happening with your place.</p>
+                    <h1 className="od-title">{t("welcome")} {placeName} 👋</h1>
+                    <p className="od-subtitle">{t("place_subtitle")}</p>
                 </div>
 
                 <button
@@ -364,7 +365,7 @@ export default function OwnerDashboard() {
                     onClick={handleRefresh}
                     disabled={refreshing}
                 >
-                    🔄 {refreshing ? "Refreshing..." : "Refresh"}
+                    🔄 {refreshing ? t("refreshing") : t("refresh")}
                 </button>
             </div>
 
@@ -384,8 +385,8 @@ export default function OwnerDashboard() {
                     <div>
                         <div className="od-alert-title">
                             {anomalies.urgent_anomalies > 0
-                                ? `${anomalies.urgent_anomalies} Urgent Anomalies Detected!`
-                                : `${anomalies.total_anomalies} Anomalies Detected`}
+                                ? `${anomalies.urgent_anomalies} ${t("urgent_anomalies")}`
+                                : `${anomalies.total_anomalies} ${t("anomalies_detected")}`}
                         </div>
                         <div className="od-alert-msg">{anomalies.summary}</div>
                     </div>
@@ -408,7 +409,7 @@ export default function OwnerDashboard() {
                 <div className="od-info-card">
                     <div className="od-info-icon">👥</div>
                     <div>
-                        <div className="od-info-label">ACTIVE VISITORS</div>
+                        <div className="od-info-label">{t("active_visitors")}</div>
                         <div className="od-info-value">
                             {activeVisitors != null ? activeVisitors : 0}
                         </div>
@@ -419,11 +420,11 @@ export default function OwnerDashboard() {
                     <div className="od-info-card">
                         <div className="od-info-icon">🤖</div>
                         <div>
-                            <div className="od-info-label">CHATBOT QUERIES</div>
+                            <div className="od-info-label">{t("chatbot_queries")}</div>
                             <div className="od-info-value">{chatbotStats.queries ?? 0}</div>
                             {chatbotStats.success_rate != null && (
                                 <div style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: "2px" }}>
-                                    {(chatbotStats.success_rate * 100).toFixed(0)}% success
+                                    {(chatbotStats.success_rate * 100).toFixed(0)}% {t("stat_available")}
                                 </div>
                             )}
                         </div>
@@ -434,7 +435,7 @@ export default function OwnerDashboard() {
             {/* Top Ordered Items */}
             {Array.isArray(topItems) && topItems.length > 0 && (
                 <div className="od-chart-card">
-                    <h2 className="od-chart-title">🏆 Top Ordered Items</h2>
+                    <h2 className="od-chart-title">{t("top_ordered_items")}</h2>
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                         {topItems.slice(0, 3).map((item, i) => {
                             const medal = medalConfig[i] ?? medalConfig[2];
@@ -452,7 +453,6 @@ export default function OwnerDashboard() {
                                         transition:     "box-shadow 0.15s",
                                     }}
                                 >
-                                    {/* Rank badge */}
                                     <div
                                         style={{
                                             width:          "32px",
@@ -469,7 +469,6 @@ export default function OwnerDashboard() {
                                         {medal.emoji}
                                     </div>
 
-                                    {/* Name + category */}
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <div
                                             style={{
@@ -490,7 +489,6 @@ export default function OwnerDashboard() {
                                         )}
                                     </div>
 
-                                    {/* Availability badge */}
                                     <span
                                         style={{
                                             fontSize:     "11px",
@@ -502,10 +500,9 @@ export default function OwnerDashboard() {
                                             flexShrink:   0,
                                         }}
                                     >
-                                        {item.is_available ? "Available" : "Unavailable"}
+                                        {item.is_available ? t("prop_available") : t("prop_unavailable")}
                                     </span>
 
-                                    {/* Price */}
                                     <div
                                         style={{
                                             fontWeight: 700,
@@ -538,17 +535,16 @@ export default function OwnerDashboard() {
                     }}
                 >
                     <h2 className="od-chart-title" style={{ margin: 0, border: "none", padding: 0 }}>
-                        Orders Per Day
+                        {t("orders_per_day")}
                     </h2>
 
-                    {/* Date Filter */}
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                         <div className="od-date-tabs">
                             {[
-                                { key: "1d",     label: "Today"   },
-                                { key: "7d",     label: "7 Days"  },
-                                { key: "30d",    label: "30 Days" },
-                                { key: "custom", label: "Custom"  },
+                                { key: "1d",     label: t("date_today") },
+                                { key: "7d",     label: t("date_7d")    },
+                                { key: "30d",    label: t("date_30d")   },
+                                { key: "custom", label: t("date_custom")},
                             ].map((tab) => (
                                 <button
                                     key={tab.key}
@@ -580,10 +576,9 @@ export default function OwnerDashboard() {
                     </div>
                 </div>
 
-                {/* Summary row */}
                 <div style={{ display: "flex", gap: "16px", marginBottom: "1rem", flexWrap: "wrap" }}>
                     <div style={{ fontSize: "13px", color: "#64748b" }}>
-                        📦 <strong style={{ color: "#2563eb" }}>{allOrders.length}</strong> orders
+                        📦 <strong style={{ color: "#2563eb" }}>{allOrders.length}</strong> {t("orders_label")}
                     </div>
                     <div style={{ fontSize: "13px", color: "#64748b" }}>
                         💰{" "}
@@ -593,12 +588,12 @@ export default function OwnerDashboard() {
                                 .toLocaleString()}{" "}
                             EGP
                         </strong>{" "}
-                        revenue
+                        {t("revenue")}
                     </div>
                 </div>
 
                 {ordersPerDay.length === 0 ? (
-                    <div className="od-chart-empty">No orders yet.</div>
+                    <div className="od-chart-empty">{t("no_orders")}</div>
                 ) : (
                     <ResponsiveContainer width="100%" height={240}>
                         <ComposedChart
@@ -633,7 +628,7 @@ export default function OwnerDashboard() {
                                     fontSize:     "12px",
                                 }}
                                 formatter={(v, name) => [
-                                    name === "Revenue" ? `${v} EGP` : v,
+                                    name === t("revenue_label") ? `${v} EGP` : v,
                                     name,
                                 ]}
                             />
@@ -641,14 +636,14 @@ export default function OwnerDashboard() {
                             <Bar
                                 yAxisId="revenue"
                                 dataKey="revenue"
-                                name="Revenue"
+                                name={t("revenue_label")}
                                 fill="#10b981"
                                 radius={[4, 4, 0, 0]}
                             />
                             <Line
                                 yAxisId="orders"
                                 dataKey="orders"
-                                name="Orders"
+                                name={t("orders_label")}
                                 stroke="#2563eb"
                                 strokeWidth={2.5}
                                 dot={{ r: 4, fill: "#2563eb" }}
@@ -662,7 +657,7 @@ export default function OwnerDashboard() {
             {/* Opportunities */}
             {opportunities && (
                 <div className="od-chart-card">
-                    <h2 className="od-chart-title">💡 Growth Opportunities</h2>
+                    <h2 className="od-chart-title">{t("growth_opportunities")}</h2>
 
                     {opportunities.summary && (
                         <p
@@ -692,6 +687,12 @@ export default function OwnerDashboard() {
                                 };
                                 const priority = opp.priority?.toLowerCase() ?? "low";
                                 const cfg      = priorityConfig[priority] ?? priorityConfig.low;
+
+                                const priorityLabel = {
+                                    high:   t("priority_high"),
+                                    medium: t("priority_medium"),
+                                    low:    t("priority_low"),
+                                }[priority] ?? priority;
 
                                 return (
                                     <div
@@ -762,14 +763,14 @@ export default function OwnerDashboard() {
                                                 letterSpacing: "0.04em",
                                             }}
                                         >
-                                            {priority}
+                                            {priorityLabel}
                                         </span>
                                     </div>
                                 );
                             })}
                         </div>
                     ) : (
-                        <div className="od-chart-empty">✅ No opportunities at the moment.</div>
+                        <div className="od-chart-empty">{t("no_opportunities")}</div>
                     )}
                 </div>
             )}

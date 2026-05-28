@@ -8,6 +8,7 @@ import {
   deleteProperty,
   toggleAvailability,
 } from "../services/propertiesServices";
+import { useLanguage } from "../../../context/LanguageContext";
 import "./properties.css";
 
 const EMPTY_FORM = {
@@ -17,20 +18,22 @@ const EMPTY_FORM = {
 
 export default function Properties() {
   const queryClient = useQueryClient();
+  const { lang } = useLanguage();
+  const ar = lang === "ar";
 
-  const [showModal, setShowModal]   = useState(false);
-  const [editItem, setEditItem]     = useState(null);
-  const [form, setForm]             = useState(EMPTY_FORM);
-  const [saving, setSaving]         = useState(false);
-  const [error, setError]           = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem] = useState(null);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
-  const [search, setSearch]         = useState("");
-  const [viewProp, setViewProp]     = useState(null);
+  const [search, setSearch] = useState("");
+  const [viewProp, setViewProp] = useState(null);
   const [viewLoading, setViewLoading] = useState(false);
 
   const { data: properties = [], isLoading: loading } = useQuery({
     queryKey: ["properties"],
-    queryFn:  getMyProperties,
+    queryFn: getMyProperties,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -60,56 +63,56 @@ export default function Properties() {
   const openEdit = (prop) => {
     setEditItem(prop);
     setForm({
-      title:           prop.title           || "",
-      description:     prop.description     || "",
-      price:           prop.price           || "",
-      lat:             prop.latitude        || "",
-      lng:             prop.longitude       || "",
-      contact_number:  prop.contact_number?.join(", ") || "",
+      title: prop.title || "",
+      description: prop.description || "",
+      price: prop.price || "",
+      lat: prop.latitude || "",
+      lng: prop.longitude || "",
+      contact_number: prop.contact_number?.join(", ") || "",
       whatsapp_number: prop.whatsapp_number || "",
-      owner_name:      prop.owner_name      || "",
-      image:           null,
+      owner_name: prop.owner_name || "",
+      image: null,
     });
     setError("");
     setShowModal(true);
   };
 
   const handleSave = async () => {
-    if (!form.title.trim())     { setError("Title is required."); return; }
-    if (!form.price)            { setError("Price is required."); return; }
-    if (!form.lat || !form.lng) { setError("Location (lat/lng) is required."); return; }
+    if (!form.title.trim()) { setError(ar ? "العنوان مطلوب." : "Title is required."); return; }
+    if (!form.price) { setError(ar ? "السعر مطلوب." : "Price is required."); return; }
+    if (!form.lat || !form.lng) { setError(ar ? "الموقع (خط العرض/الطول) مطلوب." : "Location (lat/lng) is required."); return; }
 
     setSaving(true);
     setError("");
     try {
       const payload = {
-        title:           form.title,
-        description:     form.description,
-        price:           Number(form.price),
-        lat:             parseFloat(form.lat),
-        lng:             parseFloat(form.lng),
-        contact_number:  form.contact_number
+        title: form.title,
+        description: form.description,
+        price: Number(form.price),
+        lat: parseFloat(form.lat),
+        lng: parseFloat(form.lng),
+        contact_number: form.contact_number
           ? form.contact_number.split(",").map((s) => s.trim()).filter(Boolean)
           : [],
         whatsapp_number: form.whatsapp_number || null,
-        owner_name:      form.owner_name      || null,
-        image:           form.image || null,
+        owner_name: form.owner_name || null,
+        image: form.image || null,
       };
 
       if (editItem) await updateProperty(editItem.id, payload);
-      else          await createProperty(payload);
+      else await createProperty(payload);
 
       setShowModal(false);
       invalidateProperties();
     } catch (err) {
-      setError(err?.response?.data?.detail?.[0]?.msg || "Something went wrong, please try again.");
+      setError(err?.response?.data?.detail?.[0]?.msg || (ar ? "حصل خطأ، حاول مرة أخرى." : "Something went wrong, please try again."));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this property?")) return;
+    if (!window.confirm(ar ? "متأكد إنك عايز تحذف العقار ده؟" : "Are you sure you want to delete this property?")) return;
     setDeletingId(id);
     try {
       await deleteProperty(id);
@@ -118,7 +121,7 @@ export default function Properties() {
       );
       setViewProp(null);
     } catch {
-      alert("Delete failed, please try again.");
+      alert(ar ? "فشل الحذف، حاول مرة أخرى." : "Delete failed, please try again.");
     } finally {
       setDeletingId(null);
     }
@@ -132,7 +135,7 @@ export default function Properties() {
       );
       setViewProp((prev) => prev ? { ...prev, is_available: updated.is_available } : prev);
     } catch {
-      alert("Failed to update status, please try again.");
+      alert(ar ? "فشل تحديث الحالة، حاول مرة أخرى." : "Failed to update status, please try again.");
     }
   };
 
@@ -142,25 +145,30 @@ export default function Properties() {
   );
 
   return (
-    <div className="prop-page">
+    <div className="prop-page" dir={ar ? "rtl" : "ltr"}>
 
-      {/* Header — title left, button right */}
+      {/* Header */}
       <div className="prop-header">
         <div>
-          <h1 className="prop-title">🏠 Properties</h1>
+          <h1 className="prop-title">🏠 {ar ? "العقارات" : "Properties"}</h1>
           <p className="prop-subtitle">
-            {loading ? "Loading..." : `${properties.length} property`}
+            {loading
+              ? (ar ? "جاري التحميل..." : "Loading...")
+              : ar ? `${properties.length} عقار` : `${properties.length} property`
+            }
           </p>
         </div>
-        <button className="prop-add-btn" onClick={openAdd}>+ Add Property</button>
+        <button className="prop-add-btn" onClick={openAdd}>
+          + {ar ? "إضافة عقار" : "Add Property"}
+        </button>
       </div>
 
-      {/* Search — aligned left */}
+      {/* Search */}
       <div className="prop-search-wrap">
         <span className="prop-search-icon">🔍</span>
         <input
           className="prop-search"
-          placeholder="Search for a property..."
+          placeholder={ar ? "ابحث عن عقار..." : "Search for a property..."}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -173,15 +181,20 @@ export default function Properties() {
       {loading ? (
         <div className="prop-loading">
           <div className="prop-spinner" />
-          <p>Loading properties...</p>
+          <p>{ar ? "جاري تحميل العقارات..." : "Loading properties..."}</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="prop-empty">
           <div className="prop-empty-icon">🏘️</div>
-          <p>{search ? "No results found." : "No properties yet. Start by adding your first one!"}</p>
+          <p>
+            {search
+              ? (ar ? "مفيش نتائج." : "No results found.")
+              : (ar ? "مفيش عقارات بعد. ابدأ بإضافة أول عقار!" : "No properties yet. Start by adding your first one!")
+            }
+          </p>
           {!search && (
             <button className="prop-add-btn" onClick={openAdd} style={{ marginTop: "16px" }}>
-              + Add First Property
+              + {ar ? "إضافة أول عقار" : "Add First Property"}
             </button>
           )}
         </div>
@@ -201,7 +214,7 @@ export default function Properties() {
                   <div className="prop-card-img-placeholder">🏠</div>
                 )}
                 <span className={`prop-availability-badge ${prop.is_available ? "available" : "unavailable"}`}>
-                  {prop.is_available ? "Available" : "Unavailable"}
+                  {prop.is_available ? (ar ? "متاح" : "Available") : (ar ? "غير متاح" : "Unavailable")}
                 </span>
               </div>
 
@@ -213,19 +226,21 @@ export default function Properties() {
                   </div>
                 )}
                 {prop.description && <p className="prop-card-desc">{prop.description}</p>}
-                <div className="prop-card-price">💰 {Number(prop.price).toLocaleString()} EGP</div>
+                <div className="prop-card-price">💰 {Number(prop.price).toLocaleString()} {ar ? "جنيه" : "EGP"}</div>
                 <div className="prop-card-meta">
                   {prop.contact_number?.length > 0 && <span>📞 {prop.contact_number[0]}</span>}
                   {prop.whatsapp_number && <span>💬 {prop.whatsapp_number}</span>}
                 </div>
                 <div className="prop-card-stats">
-                  <span>⭐ {prop.review_count ?? 0} reviews</span>
-                  <span>❤️ {prop.favorite_count ?? 0} saves</span>
+                  <span>⭐ {prop.review_count ?? 0} {ar ? "تقييم" : "reviews"}</span>
+                  <span>❤️ {prop.favorite_count ?? 0} {ar ? "حفظ" : "saves"}</span>
                 </div>
                 <div className="prop-card-actions">
-                  <button className="prop-edit-btn" onClick={(e) => { e.stopPropagation(); openEdit(prop); }}>✏️ Edit</button>
+                  <button className="prop-edit-btn" onClick={(e) => { e.stopPropagation(); openEdit(prop); }}>
+                    ✏️ {ar ? "تعديل" : "Edit"}
+                  </button>
                   <button className="prop-del-btn" onClick={(e) => { e.stopPropagation(); handleDelete(prop.id); }} disabled={deletingId === prop.id}>
-                    {deletingId === prop.id ? "..." : "🗑️ Delete"}
+                    {deletingId === prop.id ? "..." : `🗑️ ${ar ? "حذف" : "Delete"}`}
                   </button>
                 </div>
               </div>
@@ -239,12 +254,15 @@ export default function Properties() {
         <div className="prop-overlay" onClick={() => setViewProp(null)}>
           <div className="prop-modal" onClick={(e) => e.stopPropagation()}>
             <div className="prop-modal-header">
-              <h2>🏠 Property Details</h2>
+              <h2>🏠 {ar ? "تفاصيل العقار" : "Property Details"}</h2>
               <button className="prop-modal-close" onClick={() => setViewProp(null)}>✕</button>
             </div>
             <div className="prop-modal-body">
               {viewLoading ? (
-                <div className="prop-loading"><div className="prop-spinner" /><p>Loading details...</p></div>
+                <div className="prop-loading">
+                  <div className="prop-spinner" />
+                  <p>{ar ? "جاري تحميل التفاصيل..." : "Loading details..."}</p>
+                </div>
               ) : (
                 <>
                   {viewProp.main_image_url ? (
@@ -257,7 +275,7 @@ export default function Properties() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "#0f172a" }}>{viewProp.title}</h3>
                     <span style={{ fontSize: "11px", fontWeight: 700, padding: "3px 12px", borderRadius: "999px", background: viewProp.is_available ? "#dcfce7" : "#fee2e2", color: viewProp.is_available ? "#15803d" : "#b91c1c" }}>
-                      {viewProp.is_available ? "Available" : "Unavailable"}
+                      {viewProp.is_available ? (ar ? "متاح" : "Available") : (ar ? "غير متاح" : "Unavailable")}
                     </span>
                   </div>
 
@@ -272,7 +290,7 @@ export default function Properties() {
                   )}
 
                   <div style={{ background: "#f8fafc", border: "1px solid #e4e2dd", borderRadius: "10px", padding: "12px 16px", fontSize: "18px", fontWeight: 700, color: "#0f172a" }}>
-                    💰 {Number(viewProp.price).toLocaleString()} EGP
+                    💰 {Number(viewProp.price).toLocaleString()} {ar ? "جنيه" : "EGP"}
                   </div>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -282,13 +300,13 @@ export default function Properties() {
                   </div>
 
                   <div style={{ display: "flex", gap: "16px", padding: "12px 0", borderTop: "1px solid #f1f0ec", fontSize: "13px", color: "#94a3b8" }}>
-                    <span>⭐ {viewProp.review_count ?? 0} reviews</span>
-                    <span>❤️ {viewProp.favorite_count ?? 0} saves</span>
+                    <span>⭐ {viewProp.review_count ?? 0} {ar ? "تقييم" : "reviews"}</span>
+                    <span>❤️ {viewProp.favorite_count ?? 0} {ar ? "حفظ" : "saves"}</span>
                   </div>
 
                   {viewProp.created_at && (
                     <div style={{ fontSize: "11px", color: "#94a3b8" }}>
-                      Date added: {new Date(viewProp.created_at).toLocaleDateString("en-US")}
+                      {ar ? "تاريخ الإضافة:" : "Date added:"} {new Date(viewProp.created_at).toLocaleDateString(ar ? "ar-EG" : "en-US")}
                     </div>
                   )}
 
@@ -296,12 +314,19 @@ export default function Properties() {
                     onClick={() => handleToggleAvailability(viewProp)}
                     style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "13px", fontFamily: "inherit", background: viewProp.is_available ? "#fee2e2" : "#dcfce7", color: viewProp.is_available ? "#b91c1c" : "#15803d" }}
                   >
-                    {viewProp.is_available ? "🔴 Mark as Unavailable" : "🟢 Mark as Available"}
+                    {viewProp.is_available
+                      ? (ar ? "🔴 تحديد كغير متاح" : "🔴 Mark as Unavailable")
+                      : (ar ? "🟢 تحديد كمتاح" : "🟢 Mark as Available")
+                    }
                   </button>
 
                   <div style={{ display: "flex", gap: "8px" }}>
-                    <button className="prop-edit-btn" style={{ flex: 1, padding: "10px" }} onClick={() => { setViewProp(null); openEdit(viewProp); }}>✏️ Edit</button>
-                    <button className="prop-del-btn" style={{ flex: 1, padding: "10px" }} onClick={() => { setViewProp(null); handleDelete(viewProp.id); }}>🗑️ Delete</button>
+                    <button className="prop-edit-btn" style={{ flex: 1, padding: "10px" }} onClick={() => { setViewProp(null); openEdit(viewProp); }}>
+                      ✏️ {ar ? "تعديل" : "Edit"}
+                    </button>
+                    <button className="prop-del-btn" style={{ flex: 1, padding: "10px" }} onClick={() => { setViewProp(null); handleDelete(viewProp.id); }}>
+                      🗑️ {ar ? "حذف" : "Delete"}
+                    </button>
                   </div>
                 </>
               )}
@@ -315,47 +340,47 @@ export default function Properties() {
         <div className="prop-overlay" onClick={() => setShowModal(false)}>
           <div className="prop-modal" onClick={(e) => e.stopPropagation()}>
             <div className="prop-modal-header">
-              <h2>{editItem ? "Edit Property" : "Add New Property"}</h2>
+              <h2>{editItem ? (ar ? "تعديل العقار" : "Edit Property") : (ar ? "إضافة عقار جديد" : "Add New Property")}</h2>
               <button className="prop-modal-close" onClick={() => setShowModal(false)}>✕</button>
             </div>
             <div className="prop-modal-body">
               <div className="prop-form-row">
-                <label>Title *</label>
-                <input className="prop-input" placeholder="e.g. 3-bedroom apartment in Maadi" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+                <label>{ar ? "العنوان *" : "Title *"}</label>
+                <input className="prop-input" placeholder={ar ? "مثال: شقة 3 غرف في المعادي" : "e.g. 3-bedroom apartment in Maadi"} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
               </div>
               <div className="prop-form-row">
-                <label>Owner Name</label>
-                <input className="prop-input" placeholder="e.g. Ahmed Mohamed" value={form.owner_name} onChange={(e) => setForm({ ...form, owner_name: e.target.value })} />
+                <label>{ar ? "اسم المالك" : "Owner Name"}</label>
+                <input className="prop-input" placeholder={ar ? "مثال: أحمد محمد" : "e.g. Ahmed Mohamed"} value={form.owner_name} onChange={(e) => setForm({ ...form, owner_name: e.target.value })} />
               </div>
               <div className="prop-form-row">
-                <label>Description</label>
-                <textarea className="prop-input prop-textarea" placeholder="Detailed description of the property..." value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
+                <label>{ar ? "الوصف" : "Description"}</label>
+                <textarea className="prop-input prop-textarea" placeholder={ar ? "وصف تفصيلي للعقار..." : "Detailed description of the property..."} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
               </div>
               <div className="prop-form-row">
-                <label>Price (EGP) *</label>
-                <input className="prop-input" type="number" placeholder="e.g. 5000" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+                <label>{ar ? "السعر (جنيه) *" : "Price (EGP) *"}</label>
+                <input className="prop-input" type="number" placeholder={ar ? "مثال: 5000" : "e.g. 5000"} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
               </div>
               <div className="prop-form-grid">
                 <div className="prop-form-row">
-                  <label>Latitude *</label>
+                  <label>{ar ? "خط العرض *" : "Latitude *"}</label>
                   <input className="prop-input" type="number" placeholder="e.g. 29.9792" value={form.lat} onChange={(e) => setForm({ ...form, lat: e.target.value })} />
                 </div>
                 <div className="prop-form-row">
-                  <label>Longitude *</label>
+                  <label>{ar ? "خط الطول *" : "Longitude *"}</label>
                   <input className="prop-input" type="number" placeholder="e.g. 31.1342" value={form.lng} onChange={(e) => setForm({ ...form, lng: e.target.value })} />
                 </div>
               </div>
               <div className="prop-form-row">
-                <label>Contact Number</label>
-                <input className="prop-input" placeholder="e.g. 01012345678, 01098765432" value={form.contact_number} onChange={(e) => setForm({ ...form, contact_number: e.target.value })} />
-                <span className="prop-hint">Separate multiple numbers with a comma</span>
+                <label>{ar ? "رقم التواصل" : "Contact Number"}</label>
+                <input className="prop-input" placeholder={ar ? "مثال: 01012345678، 01098765432" : "e.g. 01012345678, 01098765432"} value={form.contact_number} onChange={(e) => setForm({ ...form, contact_number: e.target.value })} />
+                <span className="prop-hint">{ar ? "افصل بين الأرقام بفاصلة" : "Separate multiple numbers with a comma"}</span>
               </div>
               <div className="prop-form-row">
-                <label>WhatsApp Number</label>
-                <input className="prop-input" placeholder="e.g. 01012345678" value={form.whatsapp_number} onChange={(e) => setForm({ ...form, whatsapp_number: e.target.value })} />
+                <label>{ar ? "رقم الواتساب" : "WhatsApp Number"}</label>
+                <input className="prop-input" placeholder={ar ? "مثال: 01012345678" : "e.g. 01012345678"} value={form.whatsapp_number} onChange={(e) => setForm({ ...form, whatsapp_number: e.target.value })} />
               </div>
               <div className="prop-form-row">
-                <label>Property Image</label>
+                <label>{ar ? "صورة العقار" : "Property Image"}</label>
                 <input type="file" accept="image/*" className="prop-input" onChange={(e) => setForm({ ...form, image: e.target.files[0] })} />
                 {editItem?.main_image_url && !form.image && (
                   <img src={editItem.main_image_url} alt="current" style={{ marginTop: "8px", width: "100%", borderRadius: "8px", maxHeight: "150px", objectFit: "cover" }} />
@@ -365,7 +390,12 @@ export default function Properties() {
               {error && <p className="prop-error">⚠️ {error}</p>}
 
               <button className="prop-save-btn" onClick={handleSave} disabled={saving}>
-                {saving ? "Saving..." : editItem ? "💾 Save Changes" : "✅ Add Property"}
+                {saving
+                  ? (ar ? "جاري الحفظ..." : "Saving...")
+                  : editItem
+                    ? `💾 ${ar ? "حفظ التغييرات" : "Save Changes"}`
+                    : `➕ ${ar ? "إضافة العقار" : "Add Property"}`
+                }
               </button>
             </div>
           </div>

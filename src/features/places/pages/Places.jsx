@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "../../../context/LanguageContext";
 import {
   getPlaceById,
   deletePlaceImage,
@@ -40,14 +41,24 @@ const EMPTY_DELIVERY = {
 };
 
 const DAYS = [
-  { key: "saturday", label: "السبت" },
-  { key: "sunday", label: "الأحد" },
-  { key: "monday", label: "الاثنين" },
-  { key: "tuesday", label: "الثلاثاء" },
-  { key: "wednesday", label: "الأربعاء" },
-  { key: "thursday", label: "الخميس" },
-  { key: "friday", label: "الجمعة" },
+  { key: "saturday",  label: "Saturday"  },
+  { key: "sunday",    label: "Sunday"    },
+  { key: "monday",    label: "Monday"    },
+  { key: "tuesday",   label: "Tuesday"   },
+  { key: "wednesday", label: "wednesday" },
+  { key: "thursday",  label: "Thursday"  },
+  { key: "friday",    label: "Friday"    },
 ];
+
+const DAY_T_KEYS = {
+  saturday:  "bs_day_saturday",
+  sunday:    "bs_day_sunday",
+  monday:    "bs_day_monday",
+  tuesday:   "bs_day_tuesday",
+  wednesday: "bs_day_wednesday",
+  thursday:  "bs_day_thursday",
+  friday:    "bs_day_friday",
+};
 
 const TIME_OPTIONS = [
   "12:00 AM", "1:00 AM", "2:00 AM", "3:00 AM", "4:00 AM", "5:00 AM",
@@ -85,7 +96,7 @@ function stringToHours(str) {
   });
   return result;
 }
-function ConfirmPopup({ message, subMessage, onConfirm, onCancel, confirmLabel = "Confirm", danger = false }) {
+function ConfirmPopup({ message, subMessage, onConfirm, onCancel, confirmLabel = "Confirm", cancelLabel = "Cancel", danger = false }) {
   return (
     <div onClick={onCancel} style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000, padding: "1rem" }}>
       <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: "14px", width: "100%", maxWidth: "360px", boxShadow: "0 20px 60px rgba(0,0,0,0.18)", padding: "28px 24px", textAlign: "center" }}>
@@ -93,7 +104,7 @@ function ConfirmPopup({ message, subMessage, onConfirm, onCancel, confirmLabel =
         <p style={{ fontSize: "15px", fontWeight: 700, color: "#0f172a", marginBottom: "6px" }}>{message}</p>
         <p style={{ fontSize: "13px", color: "#94a3b8", marginBottom: "22px" }}>{subMessage}</p>
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={onCancel} style={{ flex: 1, padding: "10px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "#fff", fontSize: "13px", fontWeight: 500, cursor: "pointer", color: "#475569" }}>إلغاء</button>
+          <button onClick={onCancel} style={{ flex: 1, padding: "10px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "#fff", fontSize: "13px", fontWeight: 500, cursor: "pointer", color: "#475569" }}>{cancelLabel}</button>
           <button onClick={onConfirm} style={{ flex: 1, padding: "10px", borderRadius: "8px", border: "none", background: danger ? "#ef4444" : "#22c55e", color: "#fff", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>{confirmLabel}</button>
         </div>
       </div>
@@ -104,6 +115,7 @@ function ConfirmPopup({ message, subMessage, onConfirm, onCancel, confirmLabel =
 export default function Places() {
   const { selectedPlaceId } = useOutletContext() ?? {};
   const queryClient = useQueryClient();
+  const { t, isRTL } = useLanguage();
 
   // ── Local UI state ───────────────────────────────────────────────────────
   const [deletingId, setDeletingId] = useState(null);
@@ -140,8 +152,8 @@ export default function Places() {
   const [deliveryError, setDeliveryError] = useState("");
 
   const [isOpen, setIsOpen] = useState(true);
-const [togglingOpen, setTogglingOpen] = useState(false);
-const [confirmOpen, setConfirmOpen] = useState(false);
+  const [togglingOpen, setTogglingOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // ── useQuery ─────────────────────────────────────────────────────────────
   const { data: place, isLoading: placeLoading } = useQuery({
@@ -381,54 +393,54 @@ const [confirmOpen, setConfirmOpen] = useState(false);
     }
   };
 
-const handleToggleBranch = () => {
-  setConfirmBranch(true);
-};
+  const handleToggleBranch = () => {
+    setConfirmBranch(true);
+  };
   const handleToggleBranchConfirmed = async () => {
-  setConfirmBranch(false);
-  setTogglingBranch(true);
+    setConfirmBranch(false);
+    setTogglingBranch(true);
 
-  try {
-    if (isActive) {
-      await deactivateBranch(selectedPlaceId);
+    try {
+      if (isActive) {
+        await deactivateBranch(selectedPlaceId);
 
-      // ✅ خليه مخفي فورًا في الـ UI
-      setIsActive(false);
+        // ✅ خليه مخفي فورًا في الـ UI
+        setIsActive(false);
 
-    } else {
-      await activateBranch(selectedPlaceId);
+      } else {
+        await activateBranch(selectedPlaceId);
 
-      // ✅ خليه ظاهر فورًا في الـ UI
-      setIsActive(true);
+        // ✅ خليه ظاهر فورًا في الـ UI
+        setIsActive(true);
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["place", selectedPlaceId],
+      });
+
+    } catch (err) {
+      console.error("Failed to toggle branch visibility", err);
+    } finally {
+      setTogglingBranch(false);
     }
-
-    queryClient.invalidateQueries({
-      queryKey: ["place", selectedPlaceId],
-    });
-
-  } catch (err) {
-    console.error("Failed to toggle branch visibility", err);
-  } finally {
-    setTogglingBranch(false);
-  }
-};
+  };
 
   const handleToggleOpen = () => {
-  setConfirmOpen(true);
-};
+    setConfirmOpen(true);
+  };
 
-const handleToggleOpenConfirmed = async () => {
-  setConfirmOpen(false);
-  setTogglingOpen(true);
-  try {
-    await updatePlaceStatus(!isOpen);
-    setIsOpen((prev) => !prev);
-  } catch (err) {
-    console.error("Failed to toggle place status", err);
-  } finally {
-    setTogglingOpen(false);
-  }
-};
+  const handleToggleOpenConfirmed = async () => {
+    setConfirmOpen(false);
+    setTogglingOpen(true);
+    try {
+      await updatePlaceStatus(!isOpen);
+      setIsOpen((prev) => !prev);
+    } catch (err) {
+      console.error("Failed to toggle place status", err);
+    } finally {
+      setTogglingOpen(false);
+    }
+  };
 
   const updateDay = (dayKey, field, value) => {
     setWorkingHours((prev) => ({
@@ -456,9 +468,9 @@ const handleToggleOpenConfirmed = async () => {
   const removeZone = (idx) => setDeliverySettings((prev) => ({ ...prev, delivery_zones: prev.delivery_zones.filter((_, i) => i !== idx) }));
 
   // ── Guards ───────────────────────────────────────────────────────────────
-  if (!selectedPlaceId) return <div className="pl-loading">Loading branch...</div>;
-  if (placeLoading) return <div className="pl-loading">Loading...</div>;
-  if (!place) return <div className="pl-loading">No place found.</div>;
+  if (!selectedPlaceId) return <div className="pl-loading">{t("loading")}</div>;
+  if (placeLoading) return <div className="pl-loading">{t("loading")}</div>;
+  if (!place) return <div className="pl-loading">{t("bs_no_place")}</div>;
 
   const placeImages = place.images?.filter((img) => img.image_type === "place") || [];
   const menuImages = place.images?.filter((img) => img.image_type === "menu") || [];
@@ -493,12 +505,12 @@ const handleToggleOpenConfirmed = async () => {
         <div>
           <h1 className="pl-title">{place.name}</h1>
           <span className={`pl-badge ${place.is_active ? "active" : "inactive"}`}>
-            {place.is_active ? "Active" : "Inactive"}
+            {place.is_active ? t("active") : t("inactive")}
           </span>
         </div>
         <div className="pl-header-right">
           <div className="pl-meta">⭐ {place.rating} &nbsp;·&nbsp; {place.review_count} reviews</div>
-          <button className="pl-edit-btn" onClick={openEdit}>✏️ Edit Info</button>
+          <button className="pl-edit-btn" onClick={openEdit}>✏️ {t("bs_edit_info")}</button>
           <button
             onClick={handleToggleBranch}
             disabled={togglingBranch}
@@ -510,7 +522,7 @@ const handleToggleOpenConfirmed = async () => {
               opacity: togglingBranch ? 0.7 : 1, transition: "all 0.2s", whiteSpace: "nowrap",
             }}
           >
-            {togglingBranch ? "جاري التغيير..." : isActive ? "🙈 إخفاء الفرع" : "👁️ إظهار الفرع"}
+            {togglingBranch ? t("bs_changing") : isActive ? t("bs_hide_branch") : t("bs_show_branch")}
           </button>
         </div>
       </div>
@@ -523,7 +535,7 @@ const handleToggleOpenConfirmed = async () => {
           display: "flex", alignItems: "center", gap: "10px",
           fontSize: "14px", color: "#b91c1c", fontWeight: 500,
         }}>
-          🙈 هذا الفرع مخفي حالياً من التطبيق. البيانات محفوظة في الداشبورد.
+          {t("bs_branch_hidden_notice")}
           <button
             onClick={handleToggleBranch}
             disabled={togglingBranch}
@@ -534,7 +546,7 @@ const handleToggleOpenConfirmed = async () => {
               cursor: togglingBranch ? "not-allowed" : "pointer",
             }}
           >
-            {togglingBranch ? "جاري التغيير..." : "👁️ إظهار الفرع"}
+            {togglingBranch ? t("bs_changing") : t("bs_show_branch")}
           </button>
         </div>
       )}
@@ -544,21 +556,21 @@ const handleToggleOpenConfirmed = async () => {
 
         {/* Place Info */}
         <div className="pl-card">
-          <h2 className="pl-card-title">Place Info</h2>
+          <h2 className="pl-card-title">{t("bs_place_info")}</h2>
           <div className="pl-info-row">
-            <span className="pl-info-label">Description</span>
+            <span className="pl-info-label">{t("bs_description")}</span>
             <span className="pl-info-value">{place.description || "—"}</span>
           </div>
           <div className="pl-info-row">
-            <span className="pl-info-label">Address</span>
+            <span className="pl-info-label">{t("bs_address")}</span>
             <span className="pl-info-value">{place.address || "—"}</span>
           </div>
           <div className="pl-info-row">
-            <span className="pl-info-label">Phone</span>
+            <span className="pl-info-label">{t("bs_phone")}</span>
             <span className="pl-info-value">{place.phone?.join(" · ") || "—"}</span>
           </div>
           <div className="pl-info-row">
-            <span className="pl-info-label">Website</span>
+            <span className="pl-info-label">{t("bs_website")}</span>
             <span className="pl-info-value">{place.website || "—"}</span>
           </div>
           <div className="pl-info-row">
@@ -566,7 +578,7 @@ const handleToggleOpenConfirmed = async () => {
             <span className="pl-info-value">{place.whatsapp_number || "—"}</span>
           </div>
           <div className="pl-info-row" style={{ marginTop: "0.5rem", paddingTop: "0.75rem", borderTop: "1px solid #f1f0ec" }}>
-            <span className="pl-info-label">📍 Location</span>
+            <span className="pl-info-label">📍 {t("bs_location")}</span>
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginTop: "4px" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 <span style={{ fontSize: "0.7rem", color: "#94a3b8", fontWeight: 500 }}>LATITUDE</span>
@@ -586,7 +598,7 @@ const handleToggleOpenConfirmed = async () => {
                   textDecoration: "none", fontWeight: 500,
                 }}
               >
-                🗺️ Open in Maps
+              🗺️ {t("bs_open_maps")}
               </a>
             )}
           </div>
@@ -594,7 +606,7 @@ const handleToggleOpenConfirmed = async () => {
 
         {/* Social Media */}
         <div className="pl-card">
-          <h2 className="pl-card-title">Social Media</h2>
+          <h2 className="pl-card-title">{t("bs_social_media")}</h2>
           {place.instagram_url && (
             <a className="pl-social-link" href={place.instagram_url} target="_blank" rel="noreferrer">📸 Instagram</a>
           )}
@@ -605,7 +617,7 @@ const handleToggleOpenConfirmed = async () => {
             <a className="pl-social-link" href={place.tiktok_url} target="_blank" rel="noreferrer">🎵 TikTok</a>
           )}
           {!place.instagram_url && !place.facebook_url && !place.tiktok_url && (
-            <p style={{ color: "#94a3b8", fontSize: "13px" }}>No social media links.</p>
+            <p style={{ color: "#94a3b8", fontSize: "13px" }}>{t("bs_no_social")}</p>
           )}
         </div>
       </div>
@@ -613,8 +625,8 @@ const handleToggleOpenConfirmed = async () => {
       {/* ── Delivery Settings ── */}
       <div className="pl-card">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-          <h2 className="pl-card-title" style={{ margin: 0 }}>🚗 إعدادات الديليفري</h2>
-          {deliveryLoading && <span style={{ fontSize: "12px", color: "#94a3b8" }}>جاري التحميل...</span>}
+          <h2 className="pl-card-title" style={{ margin: 0 }}>{t("bs_delivery_settings")}</h2>
+          {deliveryLoading && <span style={{ fontSize: "12px", color: "#94a3b8" }}>{t("loading")}</span>}
         </div>
 
         {/* Free Delivery toggle */}
@@ -626,8 +638,10 @@ const handleToggleOpenConfirmed = async () => {
           transition: "all 0.2s",
         }}>
           <div>
-            <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>🎁 ديليفري مجاني</div>
-            <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>إلغاء سعر الديليفري لكل الزبائن</div>
+            <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>{t("bs_free_delivery")}</div>
+            <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>
+              {t("bs_free_delivery_sub")}
+            </div>
           </div>
           <Toggle
             on={deliverySettings.is_free_delivery}
@@ -640,7 +654,7 @@ const handleToggleOpenConfirmed = async () => {
         {!deliverySettings.is_free_delivery && (
           <div style={{ marginBottom: "20px" }}>
             <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "8px" }}>
-              سعر الديليفري الأساسي
+              {t("bs_base_delivery_price")}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <input
@@ -660,18 +674,28 @@ const handleToggleOpenConfirmed = async () => {
         {/* Delivery Zones */}
         <div style={{ marginBottom: "20px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
-            <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569" }}>📍 مناطق الديليفري</div>
-            <button className="pl-add-btn" onClick={addZone}>+ إضافة منطقة</button>
+            <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569" }}>
+              {t("bs_delivery_zones")}
+            </div>
+
+            <button className="pl-add-btn" onClick={addZone}>
+              {t("bs_add_zone")}
+            </button>
           </div>
 
           {deliverySettings.delivery_zones.length === 0 ? (
-            <div style={{
-              fontSize: "13px", color: "#94a3b8",
-              padding: "14px", background: "#f8fafc",
-              borderRadius: "10px", textAlign: "center",
-              border: "1px dashed #e4e2dd",
-            }}>
-              مفيش مناطق مضافة — السعر الأساسي بيتطبق على الكل
+            <div
+              style={{
+                fontSize: "13px",
+                color: "#94a3b8",
+                padding: "14px",
+                background: "#f8fafc",
+                borderRadius: "10px",
+                textAlign: "center",
+                border: "1px dashed #e4e2dd",
+              }}
+            >
+              {t("bs_no_zones")}
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -683,7 +707,7 @@ const handleToggleOpenConfirmed = async () => {
                 }}>
                   <input
                     className="pl-input"
-                    placeholder="اسم المنطقة"
+                    placeholder={t("bs_zone_name_placeholder")}
                     style={{ flex: 1 }}
                     value={zone.name}
                     onChange={(e) => updateZone(idx, "name", e.target.value)}
@@ -719,14 +743,14 @@ const handleToggleOpenConfirmed = async () => {
           flexWrap: "wrap", paddingTop: "16px", borderTop: "1px solid #e4e2dd",
         }}>
           {deliveryError && <p className="pl-error" style={{ margin: 0 }}>⚠️ {deliveryError}</p>}
-          {deliverySuccess && <p className="pl-success" style={{ margin: 0 }}>✅ تم الحفظ!</p>}
+          {deliverySuccess && <p className="pl-success" style={{ margin: 0 }}>✅ {t("bs_saved")}</p>}
           <button
             className="pl-submit-btn pl-hours-save-btn"
             onClick={handleSaveDeliverySettings}
             disabled={deliverySaving || deliveryLoading}
             style={{ marginLeft: "auto" }}
           >
-            {deliverySaving ? "جاري الحفظ..." : "💾 حفظ الإعدادات"}
+            {deliverySaving ? t("bs_saving") : t("bs_save_settings")}
           </button>
         </div>
       </div>
@@ -734,8 +758,15 @@ const handleToggleOpenConfirmed = async () => {
       {/* ── Order Settings ── */}
       <div className="pl-card">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-          <h2 className="pl-card-title" style={{ margin: 0 }}>🛒 إعدادات الطلبات</h2>
-          {orderSettingsLoading && <span style={{ fontSize: "12px", color: "#94a3b8" }}>جاري التحميل...</span>}
+          <h2 className="pl-card-title" style={{ margin: 0 }}>
+            🛒 {t("bs_order_settings")}
+          </h2>
+
+          {orderSettingsLoading && (
+            <span style={{ fontSize: "12px", color: "#94a3b8" }}>
+              {t("loading")}
+            </span>
+          )}
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
@@ -749,8 +780,8 @@ const handleToggleOpenConfirmed = async () => {
             transition: "all 0.2s",
           }}>
             <div>
-              <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>📦 قبول الأوردرات</div>
-              <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>إيقاف كامل لكل الأوردرات</div>
+              <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>{t("bs_accepting_orders")}</div>
+              <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>{t("bs_accepting_orders_sub")}</div>
             </div>
             <Toggle
               on={orderSettings.is_accepting_orders}
@@ -770,8 +801,11 @@ const handleToggleOpenConfirmed = async () => {
             pointerEvents: orderSettings.is_accepting_orders ? "auto" : "none",
           }}>
             <div>
-              <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>🚗 Delivery</div>
-              <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>تفعيل/إيقاف خيار الـ Delivery</div>
+              <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>🚗 {t("owner_orders") === "الطلبات" ? "ديليفري" : "Delivery"}</div>
+              <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>
+                {t("bs_delivery_toggle_sub")}
+              </div>
+
             </div>
             <Toggle
               on={orderSettings.accepts_delivery}
@@ -790,8 +824,10 @@ const handleToggleOpenConfirmed = async () => {
             pointerEvents: orderSettings.is_accepting_orders ? "auto" : "none",
           }}>
             <div>
-              <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>🥡 Takeaway</div>
-              <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>تفعيل/إيقاف خيار الـ Takeaway</div>
+              <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>🥡 {t("owner_orders") === "الطلبات" ? "تيك أواي" : "Takeaway"}</div>
+              <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>
+                {t("bs_takeaway_toggle_sub")}
+              </div>
             </div>
             <Toggle
               on={orderSettings.accepts_takeaway}
@@ -802,14 +838,14 @@ const handleToggleOpenConfirmed = async () => {
 
         <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
           {orderSettingsError && <p className="pl-error" style={{ margin: 0 }}>⚠️ {orderSettingsError}</p>}
-          {orderSettingsSuccess && <p className="pl-success" style={{ margin: 0 }}>✅ تم الحفظ!</p>}
+          {orderSettingsSuccess && <p className="pl-success" style={{ margin: 0 }}>✅ {t("bs_saved")}</p>}
           <button
             className="pl-submit-btn pl-hours-save-btn"
             onClick={handleSaveOrderSettings}
             disabled={orderSettingsSaving || orderSettingsLoading}
             style={{ marginLeft: "auto" }}
           >
-            {orderSettingsSaving ? "جاري الحفظ..." : "💾 حفظ الإعدادات"}
+            {orderSettingsSaving ? t("bs_saving") : `💾 ${t("bs_save_settings")}`}
           </button>
         </div>
       </div>
@@ -817,7 +853,7 @@ const handleToggleOpenConfirmed = async () => {
       {/* ── Working Hours ── */}
       <div className="pl-card">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-          <h2 className="pl-card-title" style={{ margin: 0 }}>🕐 Working Hours</h2>
+          <h2 className="pl-card-title" style={{ margin: 0 }}>🕐 {t("bs_working_hours")}</h2>
           <div
             onClick={handleToggleOpen}
             style={{
@@ -841,9 +877,12 @@ const handleToggleOpenConfirmed = async () => {
             </div>
             <div>
               <div style={{ fontSize: "13px", fontWeight: 700, color: isOpen ? "#15803d" : "#b91c1c" }}>
-                {togglingOpen ? "جاري التغيير..." : isOpen ? "المكان مفتوح" : "المكان مقفول"}
+                {togglingOpen ? t("bs_changing") : isOpen ? t("bs_place_open") : t("bs_place_closed")}
               </div>
-              <div style={{ fontSize: "11px", color: "#94a3b8" }}>اضغط لتغيير الحالة</div>
+
+              <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+                {t("bs_tap_to_change")}
+              </div>
             </div>
           </div>
         </div>
@@ -851,7 +890,7 @@ const handleToggleOpenConfirmed = async () => {
         <div className="pl-hours-grid">
           {DAYS.map(({ key, label }) => (
             <div key={key} className="pl-hours-row">
-              <div className="pl-hours-day">{label}</div>
+              <div className="pl-hours-day">{t(DAY_T_KEYS[key])}</div>
 
               {workingHours[key]?.is24 ? (
                 <div style={{
@@ -860,7 +899,7 @@ const handleToggleOpenConfirmed = async () => {
                   background: "#f0fdf4", border: "1px solid #86efac",
                   fontSize: "13px", fontWeight: 600, color: "#15803d",
                 }}>
-                  24 ساعة
+                  {t("bs_open_24h")}
                 </div>
               ) : (
                 <>
@@ -897,7 +936,7 @@ const handleToggleOpenConfirmed = async () => {
                 }}
               >
                 <span style={{ fontSize: "16px" }}>{workingHours[key]?.is24 ? "🟢" : "🕐"}</span>
-                24h
+                {t("bs_open_24h")}
               </div>
             </div>
           ))}
@@ -905,9 +944,9 @@ const handleToggleOpenConfirmed = async () => {
 
         <div className="pl-hours-footer">
           {hoursError && <p className="pl-error">⚠️ {hoursError}</p>}
-          {hoursSuccess && <p className="pl-success">✅ Working hours updated!</p>}
+          {hoursSuccess && <p className="pl-success">✅ {t("bs_hours_updated")}</p>}
           <button className="pl-submit-btn pl-hours-save-btn" onClick={handleSaveWorkingHours} disabled={hoursSaving}>
-            {hoursSaving ? "Saving..." : "Save Working Hours"}
+            {hoursSaving ? t("bs_saving") : t("bs_save_hours")}
           </button>
         </div>
       </div>
@@ -915,13 +954,13 @@ const handleToggleOpenConfirmed = async () => {
       {/* ── Place Images ── */}
       <div className="pl-card pl-images-section">
         <div className="pl-card-title-row">
-          <h2 className="pl-card-title">Place Images</h2>
+          <h2 className="pl-card-title">{t("bs_place_images")}</h2>
           <button className="pl-add-btn" onClick={() => { setForm({ ...EMPTY_FORM, image_type: "place" }); setShowUpload(true); }}>
-            + Add Image
+            + {t("bs_add_image")}
           </button>
         </div>
         {placeImages.length === 0 ? (
-          <p className="pl-no-images">No images yet.</p>
+          <p className="pl-no-images">{t("bs_no_images")}</p>
         ) : (
           <div className="pl-images-grid">
             {placeImages.map((img) => (
@@ -939,13 +978,13 @@ const handleToggleOpenConfirmed = async () => {
       {/* ── Menu Images ── */}
       <div className="pl-card pl-images-section">
         <div className="pl-card-title-row">
-          <h2 className="pl-card-title">Menu Images</h2>
+          <h2 className="pl-card-title">{t("bs_menu_images")}</h2>
           <button className="pl-add-btn" onClick={() => { setForm({ ...EMPTY_FORM, image_type: "menu" }); setShowUpload(true); }}>
-            + Add Image
+            + {t("bs_add_image")}
           </button>
         </div>
         {menuImages.length === 0 ? (
-          <p className="pl-no-images">No images yet.</p>
+          <p className="pl-no-images">{t("bs_no_images")}</p>
         ) : (
           <div className="pl-images-grid">
             {menuImages.map((img) => (
@@ -973,7 +1012,7 @@ const handleToggleOpenConfirmed = async () => {
         <div className="pl-modal-overlay" onClick={handleCloseUpload}>
           <div className="pl-modal" onClick={(e) => e.stopPropagation()}>
             <div className="pl-modal-header">
-              <h2>Add Image</h2>
+              <h2>{t("bs_add_image")}</h2>
               <button className="pl-modal-close" onClick={handleCloseUpload}>✕</button>
             </div>
             <div className="pl-modal-body">
@@ -996,7 +1035,7 @@ const handleToggleOpenConfirmed = async () => {
                 ) : (
                   <div>
                     <div style={{ fontSize: "32px", marginBottom: "8px" }}>🖼️</div>
-                    <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>اضغط لاختيار صورة</div>
+                    <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>{t("bs_click_to_select")}</div>
                     <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "4px" }}>JPG, PNG, WEBP</div>
                   </div>
                 )}
@@ -1012,28 +1051,28 @@ const handleToggleOpenConfirmed = async () => {
                     cursor: "pointer", alignSelf: "flex-start",
                   }}
                 >
-                  🔄 تغيير الصورة
+                  {t("bs_change_image")}
                 </button>
               )}
 
               <div className="pl-form-row">
-                <label>Image Type</label>
+                <label>{t("bs_image_type")}</label>
                 <select value={form.image_type} onChange={(e) => setForm({ ...form, image_type: e.target.value })} className="pl-input">
-                  <option value="place">Place</option>
-                  <option value="menu">Menu</option>
+                  <option value="place">{t("bs_img_type_place")}</option>
+                  <option value="menu">{t("bs_img_type_menu")}</option>
                 </select>
               </div>
 
               <div className="pl-form-row">
-                <label>Caption (optional)</label>
-                <input type="text" placeholder="e.g. Main entrance"
+                <label>{t("bs_caption_optional")}</label>
+                <input type="text" placeholder={t("bs_caption_placeholder")}
                   value={form.caption} onChange={(e) => setForm({ ...form, caption: e.target.value })} className="pl-input" />
               </div>
 
               {error && <p className="pl-error">⚠️ {error}</p>}
 
               <button className="pl-submit-btn" onClick={handleUpload} disabled={uploading || !form.file}>
-                {uploading ? "Uploading..." : "⬆️ Upload Image"}
+                {uploading ? t("bs_uploading") : `⬆️ ${t("bs_upload_image")}`}
               </button>
             </div>
           </div>
@@ -1045,38 +1084,38 @@ const handleToggleOpenConfirmed = async () => {
         <div className="pl-modal-overlay" onClick={() => setShowEdit(false)}>
           <div className="pl-modal pl-modal-large" onClick={(e) => e.stopPropagation()}>
             <div className="pl-modal-header">
-              <h2>Edit Place Info</h2>
+              <h2>{t("bs_edit_place_info")}</h2>
               <button className="pl-modal-close" onClick={() => setShowEdit(false)}>✕</button>
             </div>
             <div className="pl-modal-body">
 
               <div className="pl-form-row">
-                <label>Name</label>
+                <label>{t("name")}</label>
                 <input className="pl-input" value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
               </div>
 
               <div className="pl-form-row">
-                <label>Description</label>
+                <label>{t("bs_description")}</label>
                 <textarea className="pl-input pl-textarea" value={editForm.description}
                   onChange={(e) => setEditForm({ ...editForm, description: e.target.value })} />
               </div>
 
               <div className="pl-form-row">
-                <label>Address</label>
+                <label>{t("bs_address")}</label>
                 <input className="pl-input" value={editForm.address}
                   onChange={(e) => setEditForm({ ...editForm, address: e.target.value })} />
               </div>
 
               <div className="pl-form-row">
-                <label>Phone (comma separated)</label>
+                <label>{t("bs_phone_comma")}</label>
                 <input className="pl-input"
                   value={Array.isArray(editForm.phone) ? editForm.phone.join(", ") : editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} />
               </div>
 
               <div className="pl-form-row">
-                <label>Website</label>
+                <label>{t("bs_website")}</label>
                 <input className="pl-input" value={editForm.website}
                   onChange={(e) => setEditForm({ ...editForm, website: e.target.value })} />
               </div>
@@ -1093,14 +1132,14 @@ const handleToggleOpenConfirmed = async () => {
                 border: "1px solid #e4e2dd", borderRadius: "12px",
                 display: "flex", flexDirection: "column", gap: "12px",
               }}>
-                <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569" }}>📍 Location</div>
+                <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569" }}>📍 {t("bs_location")}</div>
                 <button
                   type="button"
                   onClick={() => {
-                    if (!navigator.geolocation) { alert("المتصفح مش بيدعم الـ GPS."); return; }
+                    if (!navigator.geolocation) { alert(t("bs_geolocation_unsupported")); return; }
                     navigator.geolocation.getCurrentPosition(
                       (pos) => setEditForm((prev) => ({ ...prev, latitude: pos.coords.latitude, longitude: pos.coords.longitude })),
-                      () => alert("فشل تحديد الموقع. تأكد إنك أديت إذن الـ Location.")
+                      () => alert(t("bs_geolocation_failed"))
                     );
                   }}
                   style={{
@@ -1112,7 +1151,7 @@ const handleToggleOpenConfirmed = async () => {
                     fontFamily: "inherit", transition: "all 0.15s",
                   }}
                 >
-                  📍 Use My Location
+                  📍 {t("bs_use_my_location")}
                 </button>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                   <div className="pl-form-row">
@@ -1129,7 +1168,7 @@ const handleToggleOpenConfirmed = async () => {
                   </div>
                 </div>
                 <div className="pl-form-row">
-                  <label>Location Link (Google Maps URL)</label>
+                  <label>{t("bs_location_link")}</label>
                   <input className="pl-input" type="url" placeholder="https://maps.google.com/..."
                     value={editForm.location_link}
                     onChange={(e) => setEditForm({ ...editForm, location_link: e.target.value })} />
@@ -1157,7 +1196,7 @@ const handleToggleOpenConfirmed = async () => {
               {editError && <p className="pl-error">{editError}</p>}
 
               <button className="pl-submit-btn" onClick={handleSaveEdit} disabled={saving}>
-                {saving ? "Saving..." : "Save Changes"}
+                {saving ? t("bs_saving") : t("bs_save_changes")}
               </button>
             </div>
           </div>
@@ -1165,30 +1204,35 @@ const handleToggleOpenConfirmed = async () => {
 
       )}
       {confirmOpen && (
-  <ConfirmPopup
-    message={isOpen ? "إغلاق المكان؟" : "فتح المكان؟"}
-    subMessage={
-      isOpen
-        ? "هيظهر للناس إن المكان مقفول دلوقتي."
-        : "هيظهر للناس إن المكان مفتوح."
-    }
-    confirmLabel={isOpen ? "🔴 إغلاق" : "🟢 فتح"}
-    danger={isOpen}
-    onConfirm={handleToggleOpenConfirmed}
-    onCancel={() => setConfirmOpen(false)}
-  />
-)}
+        <ConfirmPopup
+          message={isOpen ? t("bs_confirm_close_title") : t("bs_confirm_open_title")}
+          subMessage={
+            isOpen
+              ? t("bs_confirm_close_sub")
+              : t("bs_confirm_open_sub")
+          }
+          confirmLabel={isOpen ? `🔴 ${t("bs_close")}` : `🟢 ${t("bs_open")}`}
+          cancelLabel={t("cancel")}
+          danger={isOpen}
+          onConfirm={handleToggleOpenConfirmed}
+          onCancel={() => setConfirmOpen(false)}
+        />
+      )}
 
-{confirmBranch && (
-  <ConfirmPopup
-    message={isActive ? "إخفاء الفرع؟" : "إظهار الفرع؟"}
-    subMessage={isActive ? "الفرع هيختفي من التطبيق" : "الفرع هيظهر تاني"}
-    confirmLabel={isActive ? "إخفاء" : "إظهار"}
-    danger={isActive}
-    onConfirm={handleToggleBranchConfirmed}
-    onCancel={() => setConfirmBranch(false)}
-  />
-)}
+      {confirmBranch && (
+        <ConfirmPopup
+          message={isActive ? t("bs_confirm_hide_title") : t("bs_confirm_show_title")}
+          subMessage={
+            isActive
+              ? t("bs_confirm_hide_sub")
+              : t("bs_confirm_show_sub")
+          }
+          confirmLabel={isActive ? t("bs_hide") : t("bs_show")}
+          danger={isActive}
+          onConfirm={handleToggleBranchConfirmed}
+          onCancel={() => setConfirmBranch(false)}
+        />
+      )}
     </div>
   );
 }
