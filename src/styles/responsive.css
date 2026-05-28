@@ -404,3 +404,10 @@
     height: 52px !important;
   }
 }
+
+@media (max-width: 767px) {
+  body {
+    overflow-y: scroll;
+    padding-bottom: 60px;
+  }
+}

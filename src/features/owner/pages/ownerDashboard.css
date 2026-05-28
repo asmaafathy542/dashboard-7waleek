@@ -583,3 +583,13 @@
 [data-theme="dark"] .od-chart-card > div > div[style] {
   border-color: #2C4268;
 }
+
+@media (max-width: 767px) {
+  .od-cards {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .od-page {
+    padding-bottom: 80px !important;
+  }
+}
