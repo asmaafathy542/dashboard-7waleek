@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePagination } from "../../../hooks/usePagination";
-import Pagination from "../../../hooks/usePagination";
+import Pagination from "../../../shared/components/ui/Pagination";
 import { useLanguage } from "../../../context/LanguageContext";
 
 import {

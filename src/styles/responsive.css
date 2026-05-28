@@ -424,7 +424,7 @@
   /* Main ⚙️ button — top right */
   .admin-settings-fab-btn {
     position: fixed;
-    top: 14px;
+    top: 70px;
     right: 14px;
     z-index: 999;
     width: 38px;
@@ -449,7 +449,7 @@
   /* Mini menu — ظاهر تحت الزرار */
   .admin-settings-fab-menu {
     position: fixed;
-    top: 60px;
+    top: 116px;
     right: 14px;
     z-index: 999;
     background: #0f172a;
