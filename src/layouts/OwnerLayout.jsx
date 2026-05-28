@@ -32,7 +32,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
         onClick={() => setOpen(true)}
         style={{
           position: "fixed",
-          bottom: "80px",
+          bottom: "100px",
          // left: "50%",
           //transform: "translateX(-50%)",
           right: "14px",
@@ -44,7 +44,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
           padding: "8px 16px",
           color: "#fff", fontSize: "13px", fontWeight: 600,
           cursor: "pointer",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+          boxShadow: "0 6px 16px rgba(0,0,0,0.18)",
           maxWidth: "220px",
           whiteSpace: "nowrap", overflow: "hidden",
         }}
@@ -53,7 +53,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
         <span style={{ overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>
           {selectedPlace?.name ?? t("select_branch")}
         </span>
-        <span style={{ fontSize: "10px", color: "#94a3b8", flexShrink: 0 }}>▲</span>
+        <span style={{ fontSize: "10px", color: "#94a3b8", flexShrink: 0 }}>▾</span>
       </button>
 
       {open && (
