@@ -6,7 +6,7 @@ import "./profile.css";
 
 export default function Profile() {
   const queryClient = useQueryClient();
-  const { lang } = useLanguage();
+  const { lang, toggleLang } = useLanguage();
   const ar = lang === "ar";
 
   // Edit states
@@ -139,6 +139,28 @@ export default function Profile() {
           <button className="pr-edit-btn" onClick={openEdit}>✏️ {ar ? "تعديل الملف" : "Edit Profile"}</button>
           <button className="pr-pass-btn" onClick={() => { setShowPassword(true); setPassError(""); setPassSuccess(""); }}>
             🔒 {ar ? "تغيير كلمة المرور" : "Change Password"}
+          </button>
+        </div>
+
+        <div className="pr-divider" />
+
+        {/* Language */}
+        <div className="pr-info-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+          <span className="pr-info-label">🌐 {ar ? "اللغة" : "Language"}</span>
+          <button
+            onClick={toggleLang}
+            style={{
+              padding: "6px 18px",
+              borderRadius: "8px",
+              border: "1px solid #cbd5e1",
+              background: "transparent",
+              fontSize: "13px",
+              fontWeight: 600,
+              cursor: "pointer",
+              color: "#2563eb",
+            }}
+          >
+            {lang === "en" ? "عربي" : "English"}
           </button>
         </div>
 
