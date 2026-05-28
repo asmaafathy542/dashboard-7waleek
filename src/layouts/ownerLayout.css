@@ -37,9 +37,10 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  position: fixed;
+top: 0;
+left: 0;
+height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 10;
@@ -198,6 +199,12 @@
   padding: 28px;
   overflow-y: auto;
   transition: background 0.3s ease;
+
+  margin-left: 220px;
+}
+
+.owner-sidebar.collapsed + .owner-main {
+  margin-left: 60px;
 }
 
 /* ── Branch Dropdown items ── */
@@ -249,6 +256,9 @@
    TABLET
    ============================================================ */
 @media (max-width: 1024px) {
+  .owner-main {
+  margin-left: 60px;
+}
   .owner-sidebar {
     width: 60px;
   }
@@ -280,7 +290,9 @@
    MOBILE
    ============================================================ */
 @media (max-width: 767px) {
-
+.owner-main {
+  margin-left: 0;
+}
   .owner-layout {
     flex-direction: column;
     min-height: 100vh;
