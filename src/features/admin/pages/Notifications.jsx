@@ -37,12 +37,16 @@ const EMPTY_FORM = { title: "", message: "", target_type: "ALL_USERS", target_us
 export default function AdminNotifications() {
   const { t } = useLanguage();
 
-  const TABS = [t("requests_tab"), t("send_notification"), t("logs")];
+  const TABS = [
+    { key: "requests", label: t("requests_tab") },
+    { key: "send", label: t("send_notification") },
+    { key: "logs", label: t("logs") },
+  ];
 
   const { refetchRequests } = useOutletContext() ?? {};
   const queryClient = useQueryClient();
 
-  const [tab, setTab] = useState(t("requests_tab"));
+  const [tab, setTab] = useState("requests");
   const [actioning, setActioning] = useState(null);
   const [filter, setFilter] = useState("ALL");
 
@@ -83,7 +87,7 @@ export default function AdminNotifications() {
       });
       return Object.values(grouped);
     },
-    enabled: tab === t("logs"),
+    enabled: tab === "logs",
     staleTime: 1000 * 60 * 5,
   });
 
@@ -119,7 +123,7 @@ export default function AdminNotifications() {
     if (!form.title.trim()) { setSendError(t("title_required")); return; }
     if (!form.message.trim()) { setSendError(t("message_required")); return; }
     if (form.target_type === "SPECIFIC_USER" && !form.target_user_id) {
-      setSendError("Please enter a User ID.");
+      setSendError(t("notif_user_id_required"));
       return;
     }
 
@@ -134,7 +138,7 @@ export default function AdminNotifications() {
       setTimeout(() => setSendSuccess(false), 3000);
       queryClient.invalidateQueries({ queryKey: ["admin-notification-logs"] });
     } catch {
-      setSendError("Failed to send. Please try again.");
+      setSendError(t("send_failed"));
     } finally {
       setSending(false);
     }
@@ -200,15 +204,15 @@ export default function AdminNotifications() {
       {/* Header */}
       <div style={st.header}>
         <h1 style={st.title}>🔔 {t("notifications")}</h1>
-        <p style={st.sub}>Manage owner requests and send notifications</p>
+        <p style={st.sub}>{t("notif_manage_sub")}</p>
       </div>
 
       {/* Tabs */}
       <div style={st.tabs}>
-        {TABS.map((item) => (
-          <button key={item} style={st.tab(tab === item)} onClick={() => setTab(item)}>
-            {item}
-            {item === t("requests_tab") && pendingCount > 0 && (
+        {TABS.map(({ key, label }) => (
+          <button key={key} style={st.tab(tab === key)} onClick={() => setTab(key)}>
+            {label}
+            {key === "requests" && pendingCount > 0 && (
               <span style={{ marginLeft: "6px", background: "#ef4444", color: "#fff", fontSize: "10px", fontWeight: 700, padding: "1px 6px", borderRadius: "999px" }}>
                 {pendingCount}
               </span>
@@ -218,14 +222,14 @@ export default function AdminNotifications() {
       </div>
 
       {/* ── TAB 1: Requests ── */}
-      {tab === t("requests_tab") && (
+      {tab === "requests" && (
         <>
           <div style={st.filters}>
             {[
-              { key: "ALL", label: `All (${requests.length})` },
-              { key: "PENDING", label: `Pending (${pendingCount})` },
-              { key: "APPROVED", label: `Approved (${approvedCount})` },
-              { key: "REJECTED", label: `Rejected (${rejectedCount})` },
+              { key: "ALL", label: `${t("all")} (${requests.length})` },
+              { key: "PENDING", label: `${t("pending")} (${pendingCount})` },
+              { key: "APPROVED", label: `${t("approved")} (${approvedCount})` },
+              { key: "REJECTED", label: `${t("rejected")} (${rejectedCount})` },
             ].map(({ key, label }) => (
               <button key={key} style={st.filterBtn(filter === key)} onClick={() => setFilter(key)}>
                 {label}
@@ -297,7 +301,7 @@ export default function AdminNotifications() {
       )}
 
       {/* ── TAB 2: Send Notification ── */}
-      {tab === t("send_notification") && (
+      {tab === "send" && (
         <div style={{ maxWidth: "560px" }}>
           <div style={st.card}>
             <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", marginBottom: "20px" }}>
@@ -307,12 +311,12 @@ export default function AdminNotifications() {
             {/* Target Type */}
             <div style={{ marginBottom: "16px" }}>
               <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
-                Target
+                {t("notif_target")}
               </label>
               <div style={{ display: "flex", gap: "8px" }}>
                 {[
-                  { value: "ALL_USERS", label: "🌍 All Users" },
-                  { value: "SPECIFIC_USER", label: "👤 Specific User" },
+                  { value: "ALL_USERS", label: t("notif_all_users") },
+                  { value: "SPECIFIC_USER", label: t("notif_specific_user") },
                 ].map((opt) => (
                   <button
                     key={opt.value}
@@ -335,11 +339,11 @@ export default function AdminNotifications() {
             {form.target_type === "SPECIFIC_USER" && (
               <div style={{ marginBottom: "16px" }}>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
-                  User ID
+                  {t("notif_user_id")}
                 </label>
                 <input
                   type="number"
-                  placeholder="e.g. 42"
+                  placeholder={t("notif_user_id_placeholder")}
                   value={form.target_user_id}
                   onChange={(e) => setForm((f) => ({ ...f, target_user_id: e.target.value }))}
                   style={{ width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "13px", outline: "none", boxSizing: "border-box" }}
@@ -350,11 +354,11 @@ export default function AdminNotifications() {
             {/* Title */}
             <div style={{ marginBottom: "16px" }}>
               <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
-                Title
+                {t("notif_title_label")}
               </label>
               <input
                 type="text"
-                placeholder="Notification title..."
+                placeholder={t("notif_title_placeholder")}
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 style={{ width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "13px", outline: "none", boxSizing: "border-box" }}
@@ -364,10 +368,10 @@ export default function AdminNotifications() {
             {/* Message */}
             <div style={{ marginBottom: "20px" }}>
               <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
-                Message
+                {t("notif_message_label")}
               </label>
               <textarea
-                placeholder="Write your message here..."
+                placeholder={t("notif_message_placeholder")}
                 value={form.message}
                 onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
                 rows={4}
@@ -383,7 +387,7 @@ export default function AdminNotifications() {
             )}
             {sendSuccess && (
               <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "10px 14px", color: "#166534", fontSize: "13px", marginBottom: "12px" }}>
-                ✅ Notification sent successfully!
+                ✅ {t("sent_success")}
               </div>
             )}
 
@@ -405,14 +409,14 @@ export default function AdminNotifications() {
       )}
 
       {/* ── TAB 3: Logs ── */}
-      {tab === t("logs") && (
+      {tab === "logs" && (
         <>
           {logsLoading ? (
-            <div style={st.loading}>Loading logs...</div>
+            <div style={st.loading}>{t("notif_loading_logs")}</div>
           ) : rawLogs.length === 0 ? (
             <div style={st.empty}>
               <div style={st.emptyIcon}>📋</div>
-              <p>No notification logs yet.</p>
+              <p>{t("notif_no_logs")}</p>
             </div>
           ) : (
             <>
@@ -434,10 +438,10 @@ export default function AdminNotifications() {
                       <p style={st.cardMsg}>{log.message}</p>
                       <div style={st.cardMeta}>
                         {log.user_name && <span>👤 {log.user_name}</span>}
-                        {log.recipients > 1 && <span>👥 {log.recipients} recipients</span>}
+                        {log.recipients > 1 && <span>👥 {log.recipients} {t("notif_recipients")}</span>}
                         <span>🕐 {fmt(log.created_at)}</span>
                         <span style={{ color: log.is_read ? "#22c55e" : "#f59e0b" }}>
-                          {log.is_read ? "✓ Read" : "● Unread"}
+                          {log.is_read ? t("notif_read") : t("notif_unread")}
                         </span>
                       </div>
                     </div>
