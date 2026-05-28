@@ -22,7 +22,7 @@ import Owners from "../features/admin/pages/Owners";
 import AdminPlaces from "../features/admin/pages/Places";
 import Reports from "../features/admin/pages/Reports";
 import Items from "../features/items/pages/Items";
-import SubCategories from "../features/items/pages/SubCategories";
+//import SubCategories from "../features/items/pages/SubCategories";
 import AdminNotifications from "../features/admin/pages/Notifications";
 
 
@@ -45,7 +45,7 @@ export default function AppRoutes() {
       >
         <Route index element={<OwnerDashboard />} />
         <Route path="places" element={<Places />} />
-        <Route path="subcategories" element={<SubCategories />} />
+      {/*  <Route path="subcategories" element={<SubCategories />} /> */}
       <Route path="items" element={<Items />} />
         <Route path="orders" element={<Orders />} />
         <Route path="reviews" element={<Reviews />} />

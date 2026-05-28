@@ -332,7 +332,7 @@ export default function OwnerLayout() {
       { label: t("overview"), path: "", icon: "📊" },
       { label: t("places"), path: "places", icon: "🏠" },
       { label: t("items"), path: "items", icon: "🍔" },
-      //{ label: t("subcategories"), path: "subcategories", icon: "📋" },
+     // { label: t("subcategories"), path: "subcategories", icon: "📋" },
       { label: t("orders"), path: "orders", icon: "📦", badge: orderAlert },
       { label: t("reviews"), path: "reviews", icon: "⭐" },
       { label: t("notifications"), path: "notifications", icon: "🔔" },
