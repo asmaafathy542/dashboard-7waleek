@@ -47,7 +47,7 @@ function MobileBottomNav({ location, notifBadge, navItems, t }) {
 }
 
 export default function AdminLayout() {
-    const { isDark, colors, toggleTheme } = useTheme();
+    const { isDark, colors } = useTheme();
     const { lang, toggleLang, t } = useLanguage();
     const location = useLocation();
     const [collapsed, setCollapsed] = useState(false);
@@ -376,24 +376,6 @@ export default function AdminLayout() {
                     }
                 }} />
             </div>
-
-            {/* ── Floating Mobile Buttons (dark + lang) ── */}
-            <button
-                onClick={toggleTheme}
-                className="admin-mobile-float-btn"
-                style={{ bottom: "80px", right: "14px" }}
-                title={isDark ? "Light Mode" : "Dark Mode"}
-            >
-                {isDark ? "☀️" : "🌙"}
-            </button>
-            <button
-                onClick={toggleLang}
-                className="admin-mobile-float-btn"
-                style={{ bottom: "136px", right: "14px" }}
-                title={lang === "en" ? "عربي" : "English"}
-            >
-                🌐
-            </button>
 
             {/* ── Mobile Bottom Nav ── */}
             <MobileBottomNav
