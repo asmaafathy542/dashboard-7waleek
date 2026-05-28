@@ -183,12 +183,7 @@ function MobileBottomNav({ navItems, location, onAddBranch, isResidential, t }) 
           </Link>
         );
       })}
-      {!isResidential && (
-        <button onClick={onAddBranch}>
-          <span className="nav-icon">➕</span>
-          <span className="nav-label">{t("add_branch_mobile")}</span>
-        </button>
-      )}
+      
       <button
         onClick={() => {
           localStorage.clear();
