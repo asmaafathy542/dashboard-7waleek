@@ -95,7 +95,7 @@ function AdminSettingsFAB({ isDark, toggleTheme, lang, toggleLang }) {
     );
 }
 
-
+export default function AdminLayout() {
     const { isDark, colors, toggleTheme } = useTheme();
     const { lang, toggleLang, t } = useLanguage();
     const location = useLocation();
@@ -443,3 +443,4 @@ function AdminSettingsFAB({ isDark, toggleTheme, lang, toggleLang }) {
             />
         </div>
     );
+}

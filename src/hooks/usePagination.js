@@ -9,17 +9,17 @@ import { useState, useMemo } from "react";
  * @param {number} pageSize  - عدد العناصر في كل صفحة (default 10)
  */
 export function usePagination(items = [], pageSize = 10) {
+    const safeItems = Array.isArray(items) ? items : [];
     const [currentPage, setCurrentPage] = useState(1);
 
-    const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+    const totalPages = Math.max(1, Math.ceil(safeItems.length / pageSize));
 
-    // لو الفلترة خلّت الصفحة الحالية تعدّت الـ total، ارجع للأولى
     const safePage = Math.min(currentPage, totalPages);
 
     const paginated = useMemo(() => {
         const start = (safePage - 1) * pageSize;
-        return items.slice(start, start + pageSize);
-    }, [items, safePage, pageSize]);
+        return safeItems.slice(start, start + pageSize);
+    }, [safeItems, safePage, pageSize]);
 
     const goTo     = (page) => setCurrentPage(Math.max(1, Math.min(page, totalPages)));
     const next     = () => goTo(safePage + 1);
@@ -31,16 +31,15 @@ export function usePagination(items = [], pageSize = 10) {
         currentPage: safePage,
         totalPages,
         pageSize,
-        totalItems: items.length,
+        totalItems: safeItems.length,
         hasNext: safePage < totalPages,
         hasPrev: safePage > 1,
         goTo,
         next,
         prev,
         reset,
-        // range helper: "Showing 1–10 of 100"
-        rangeStart: items.length === 0 ? 0 : (safePage - 1) * pageSize + 1,
-        rangeEnd:   Math.min(safePage * pageSize, items.length),
+        rangeStart: safeItems.length === 0 ? 0 : (safePage - 1) * pageSize + 1,
+        rangeEnd:   Math.min(safePage * pageSize, safeItems.length),
     };
 }
 
