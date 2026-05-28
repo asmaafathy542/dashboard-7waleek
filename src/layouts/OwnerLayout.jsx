@@ -163,7 +163,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
 
 function MobileBottomNav({ navItems, location, onAddBranch, isResidential, t }) {
   const mobileItems = isResidential ? navItems : navItems.filter(item => 
-  ["","Places" , "items", "orders", "reviews", "notifications", "profile"].includes(item.path)
+  ["","places" , "items", "orders", "reviews", "notifications", "profile"].includes(item.path)
 );
   
   return (
