@@ -536,7 +536,6 @@ export default function OwnerLayout() {
         </nav>
 
         <div className="owner-sidebar-logout">
-          <ThemeToggle collapsed={collapsed} />
           <button
             onClick={() => { localStorage.clear(); window.location.href = "/login"; }}
             className="owner-logout-btn"
