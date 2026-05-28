@@ -1,5 +1,3 @@
-
-
 // OwnerLayout.jsx
 
 import { Outlet, Link, useLocation } from "react-router-dom";
@@ -33,9 +31,8 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
         style={{
           position: "fixed",
           bottom: "100px",
-         // left: "50%",
-          //transform: "translateX(-50%)",
-          right: "14px",
+          left: "50%",
+          transform: "translateX(-50%)",
           zIndex: 990,
           display: "flex", alignItems: "center", gap: "8px",
           background: "#0f172a",
