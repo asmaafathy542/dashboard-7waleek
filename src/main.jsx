@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import AppProviders from "./providers/AppProviders.jsx";
 import "./styles/responsive.css"; // ← السطر ده بس اللي اتضاف
+import "./styles/theme.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>

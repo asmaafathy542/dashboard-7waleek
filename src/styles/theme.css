@@ -1,0 +1,90 @@
+/* ============================================================
+   theme.css  —  ألوان داشبورد 7waleek
+   بناءً على AppColors من الـ Flutter app
+   ============================================================ */
+
+/* ── Light Mode (default) ─────────────────────────────────── */
+:root,
+[data-theme="light"] {
+  /* Brand */
+  --color-primary:    #1A3DA8; /* royal blue — الرئيسي */
+  --color-secondary:  #1E88E5; /* sky blue */
+  --color-gold:       #FFD600; /* golden yellow */
+  --color-orange:     #FF8F00; /* orange */
+  --color-navy:       #0D1D6B; /* deep navy */
+
+  /* Backgrounds */
+  --bg-scaffold:      #FFFFFF;
+  --bg-card:          #FFFFFF;
+  --bg-surface:       #EEF3FF; /* soft blue — للـ chips والـ inputs */
+  --bg-sidebar:       #1A3DA8; /* sidebar بالـ primary */
+
+  /* Text */
+  --text-primary:     #080D30; /* near-black navy */
+  --text-secondary:   #3D4F6E; /* dark blue-grey */
+  --text-on-primary:  #FFFFFF; /* نص فوق الـ primary */
+
+  /* Borders & Icons */
+  --border-color:     #C8D4F0;
+  --icon-color:       #1A3DA8;
+
+  /* Shadows */
+  --shadow-sm:        0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md:        0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg:        0 8px 32px rgba(0, 0, 0, 0.16);
+
+  /* States */
+  --hover-bg:         #EEF3FF;
+  --active-bg:        #D6E3FF;
+}
+
+/* ── Dark Mode ─────────────────────────────────────────────── */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-scaffold:      #111A27; /* dark navy-charcoal */
+  --bg-card:          #1A2639; /* clearly above scaffold */
+  --bg-surface:       #223047; /* chips / inputs / hover */
+  --bg-sidebar:       #0D1D6B; /* deep navy للـ sidebar */
+
+  /* Text */
+  --text-primary:     #ECF2FF; /* near-white, high contrast */
+  --text-secondary:   #8EADD0; /* readable muted text */
+  --text-on-primary:  #FFFFFF;
+
+  /* Borders & Icons */
+  --border-color:     #2C4268;
+  --icon-color:       #6CB4FF; /* vibrant sky-blue */
+
+  /* Shadows */
+  --shadow-sm:        0 1px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md:        0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg:        0 8px 32px rgba(0, 0, 0, 0.5);
+
+  /* States */
+  --hover-bg:         #223047;
+  --active-bg:        #1A3DA8;
+}
+
+/* ── Transitions (عشان التحويل يبقى سلس) ──────────────────── */
+*,
+*::before,
+*::after {
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* ── Utility Classes (اختياري — تقدري تستخدميهم في أي مكان) ── */
+.bg-scaffold  { background-color: var(--bg-scaffold); }
+.bg-card      { background-color: var(--bg-card); }
+.bg-surface   { background-color: var(--bg-surface); }
+.bg-sidebar   { background-color: var(--bg-sidebar); }
+.bg-primary   { background-color: var(--color-primary); }
+
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-on-primary{ color: var(--text-on-primary); }
+
+.border-theme { border: 1px solid var(--border-color); }
