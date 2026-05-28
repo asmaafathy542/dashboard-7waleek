@@ -32,9 +32,10 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
         onClick={() => setOpen(true)}
         style={{
           position: "fixed",
-          bottom: "72px",
-          left: "50%",
-          transform: "translateX(-50%)",
+          bottom: "80px",
+         // left: "50%",
+          //transform: "translateX(-50%)",
+          right: "14px",
           zIndex: 990,
           display: "flex", alignItems: "center", gap: "8px",
           background: "#0f172a",
