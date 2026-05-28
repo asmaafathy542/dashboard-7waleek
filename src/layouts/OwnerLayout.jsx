@@ -162,7 +162,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
 }
 
 function MobileBottomNav({ navItems, location, onAddBranch, isResidential, t }) {
-  const mobileItems = navItems.slice(0, 5);
+  const mobileItems = navItems;
   
   return (
     <nav className="mobile-bottom-nav">
