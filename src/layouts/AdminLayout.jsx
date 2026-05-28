@@ -46,7 +46,56 @@ function MobileBottomNav({ location, notifBadge, navItems, t }) {
     );
 }
 
-export default function AdminLayout() {
+// ─────────────────────────────────────────────
+// Settings FAB — بيظهر بس على الموبايل
+// ─────────────────────────────────────────────
+function AdminSettingsFAB({ isDark, toggleTheme, lang, toggleLang }) {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <div className="admin-settings-fab-wrapper">
+            {/* Mini Menu */}
+            {open && (
+                <>
+                    <div
+                        onClick={() => setOpen(false)}
+                        style={{
+                            position: "fixed", inset: 0, zIndex: 998,
+                        }}
+                    />
+                    <div className="admin-settings-fab-menu">
+                        {/* Dark Mode */}
+                        <button
+                            onClick={() => { toggleTheme(); setOpen(false); }}
+                            className="admin-settings-fab-item"
+                        >
+                            <span style={{ fontSize: "18px" }}>{isDark ? "☀️" : "🌙"}</span>
+                            <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
+                        </button>
+                        {/* Language */}
+                        <button
+                            onClick={() => { toggleLang(); setOpen(false); }}
+                            className="admin-settings-fab-item"
+                        >
+                            <span style={{ fontSize: "18px" }}>🌐</span>
+                            <span>{lang === "en" ? "عربي" : "English"}</span>
+                        </button>
+                    </div>
+                </>
+            )}
+
+            {/* Main Button */}
+            <button
+                onClick={() => setOpen((v) => !v)}
+                className="admin-settings-fab-btn"
+            >
+                {open ? "✕" : "⚙️"}
+            </button>
+        </div>
+    );
+}
+
+
     const { isDark, colors, toggleTheme } = useTheme();
     const { lang, toggleLang, t } = useLanguage();
     const location = useLocation();
@@ -377,23 +426,13 @@ export default function AdminLayout() {
                 }} />
             </div>
 
-            {/* ── Floating Mobile Buttons (dark + lang) ── */}
-            <button
-                onClick={toggleTheme}
-                className="admin-mobile-float-btn"
-                style={{ bottom: "80px", right: "14px" }}
-                title={isDark ? "Light Mode" : "Dark Mode"}
-            >
-                {isDark ? "☀️" : "🌙"}
-            </button>
-            <button
-                onClick={toggleLang}
-                className="admin-mobile-float-btn"
-                style={{ bottom: "136px", right: "14px" }}
-                title={lang === "en" ? "عربي" : "English"}
-            >
-                🌐
-            </button>
+            {/* ── Floating Settings Button (mobile only) ── */}
+            <AdminSettingsFAB
+                isDark={isDark}
+                toggleTheme={toggleTheme}
+                lang={lang}
+                toggleLang={toggleLang}
+            />
 
             {/* ── Mobile Bottom Nav ── */}
             <MobileBottomNav
@@ -404,4 +443,3 @@ export default function AdminLayout() {
             />
         </div>
     );
-}

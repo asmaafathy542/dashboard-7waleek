@@ -411,31 +411,76 @@
     padding-bottom: 60px;
   }
 }
-/* ── Admin Floating Mobile Buttons ── */
-.admin-mobile-float-btn {
+/* ── Admin Settings FAB ── */
+.admin-settings-fab-wrapper {
   display: none;
 }
 
 @media (max-width: 768px) {
-  .admin-mobile-float-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .admin-settings-fab-wrapper {
+    display: block;
+  }
+
+  /* Main ⚙️ button — top right */
+  .admin-settings-fab-btn {
     position: fixed;
-    width: 42px;
-    height: 42px;
+    top: 14px;
+    right: 14px;
+    z-index: 999;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: #0f172a;
     border: 1.5px solid rgba(255, 255, 255, 0.15);
     color: #fff;
     font-size: 18px;
     cursor: pointer;
-    z-index: 990;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     transition: background 0.2s;
   }
 
-  .admin-mobile-float-btn:hover {
+  .admin-settings-fab-btn:hover {
     background: #1e293b;
+  }
+
+  /* Mini menu — ظاهر تحت الزرار */
+  .admin-settings-fab-menu {
+    position: fixed;
+    top: 60px;
+    right: 14px;
+    z-index: 999;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    min-width: 150px;
+  }
+
+  .admin-settings-fab-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .admin-settings-fab-item:hover {
+    background: rgba(255, 255, 255, 0.08);
   }
 }
