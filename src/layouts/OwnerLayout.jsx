@@ -161,11 +161,17 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
   );
 }
 
-function MobileBottomNav({ navItems, location, onAddBranch, isResidential, t }) {
-  const mobileItems = isResidential ? navItems : navItems.filter(item => 
-  ["","places" , "items", "orders", "reviews", "notifications", "profile"].includes(item.path)
-);
-  
+function MobileBottomNav({ navItems,
+  location,
+  onAddBranch,
+  isResidential,
+  t,
+  toggleLang,
+  lang, }) {
+  const mobileItems = isResidential ? navItems : navItems.filter(item =>
+    ["", "places", "items", "orders", "reviews", "notifications", "profile"].includes(item.path)
+  );
+
   return (
     <nav className="mobile-bottom-nav">
       {mobileItems.map((item) => {
@@ -186,12 +192,21 @@ function MobileBottomNav({ navItems, location, onAddBranch, isResidential, t }) 
           </Link>
         );
       })}
+
+      <button onClick={toggleLang}>
+        <span className="nav-label">
+          {lang === "en" ? "عربي" : "English"}
+        </span>
+      </button>
+
       <button
         onClick={() => {
           localStorage.clear();
           window.location.href = "/login";
         }}
       >
+
+
         <span className="nav-label">{t("logout")}</span>
       </button>
     </nav>
@@ -332,7 +347,7 @@ export default function OwnerLayout() {
       { label: t("overview"), path: "", icon: "📊" },
       { label: t("places"), path: "places", icon: "🏠" },
       { label: t("items"), path: "items", icon: "🍔" },
-     // { label: t("subcategories"), path: "subcategories", icon: "📋" },
+      // { label: t("subcategories"), path: "subcategories", icon: "📋" },
       { label: t("orders"), path: "orders", icon: "📦", badge: orderAlert },
       { label: t("reviews"), path: "reviews", icon: "⭐" },
       { label: t("notifications"), path: "notifications", icon: "🔔" },
@@ -516,8 +531,8 @@ export default function OwnerLayout() {
               key={item.path}
               to={item.path}
               className={`owner-nav-link ${item.path === ""
-                  ? location.pathname === "/owner-dashboard" ? "active" : ""
-                  : location.pathname.includes(item.path) ? "active" : ""
+                ? location.pathname === "/owner-dashboard" ? "active" : ""
+                : location.pathname.includes(item.path) ? "active" : ""
                 }`}
             >
               <span className="owner-nav-icon">{item.icon}</span>
@@ -580,39 +595,41 @@ export default function OwnerLayout() {
           }}
         />
       </div>
-       <button onClick={toggleTheme} className="mobile-dark-toggle">
-  {isDark ? "☀️" : "🌙"}
-</button>
-<MobileBottomNav
-  navItems={navItems}
-  location={location}
-  onAddBranch={() => setShowAddBranch(true)}
-  isResidential={isResidential}
-  t={t}
-/>
+      <button onClick={toggleTheme} className="mobile-dark-toggle">
+        {isDark ? "☀️" : "🌙"}
+      </button>
+      <MobileBottomNav
+        navItems={navItems}
+        location={location}
+        onAddBranch={() => setShowAddBranch(true)}
+        isResidential={isResidential}
+        t={t}
+        toggleLang={toggleLang}
+        lang={lang}
+      />
 
       {
-    !isResidential && showAddBranch && (
-      <AddBranchModal
-        onClose={() => setShowAddBranch(false)}
-        onSuccess={(newBranch) => {
-          getMyPlaces()
-            .then((data) => {
-              const arr = Array.isArray(data) ? data : data ? [data] : [];
-              setPlaces(arr);
-              const selected = newBranch
-                ? (arr.find((p) => p.id === newBranch.id) ?? arr[arr.length - 1])
-                : arr[arr.length - 1];
-              if (selected) {
-                setSelectedPlace(selected);
-                saveSelectedBranch(selected.id);
-              }
-            })
-            .catch(console.error);
-        }}
-      />
-    )
-  }
+        !isResidential && showAddBranch && (
+          <AddBranchModal
+            onClose={() => setShowAddBranch(false)}
+            onSuccess={(newBranch) => {
+              getMyPlaces()
+                .then((data) => {
+                  const arr = Array.isArray(data) ? data : data ? [data] : [];
+                  setPlaces(arr);
+                  const selected = newBranch
+                    ? (arr.find((p) => p.id === newBranch.id) ?? arr[arr.length - 1])
+                    : arr[arr.length - 1];
+                  if (selected) {
+                    setSelectedPlace(selected);
+                    saveSelectedBranch(selected.id);
+                  }
+                })
+                .catch(console.error);
+            }}
+          />
+        )
+      }
     </div >
   );
 }
