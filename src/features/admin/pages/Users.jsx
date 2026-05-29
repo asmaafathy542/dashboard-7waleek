@@ -170,7 +170,8 @@ export default function Users() {
                             </thead>
                             <tbody>
                                 {paginated.map((user, idx) => {
-                                    const rawId    = user.User_ID ?? user.id ?? user.user_id;
+                                    const rawId    = user.User_ID ?? user.user_id ?? user.id ?? "—";
+                                    const numericId = parseUserId(rawId);
                                     const name     = user.Name ?? user.full_name ?? user.name ?? "—";
                                     const district = user.District ?? "—";
                                     const reviews  = user.Reviews ?? 0;
@@ -183,13 +184,15 @@ export default function Users() {
 
                                     return (
                                         <tr
-                                            key={rawId ?? idx}
+                                            key={numericId ?? idx}
                                             style={{ borderBottom: idx < paginated.length - 1 ? "1px solid #f1f0ec" : "none", transition: "background 0.1s" }}
                                             onMouseEnter={(e) => e.currentTarget.style.background = "#f8fafc"}
                                             onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                                         >
                                             <td style={{ padding: "12px 14px", color: "#94a3b8", fontWeight: 500, whiteSpace: "nowrap" }}>
-                                                {rawId}
+                                                <span style={{ fontFamily: "monospace", background: "#f1f5f9", padding: "2px 8px", borderRadius: "6px", fontSize: "12px", color: "#334155", fontWeight: 600 }}>
+                                                    #{numericId ?? rawId}
+                                                </span>
                                             </td>
                                             <td style={{ padding: "12px 14px" }}>
                                                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
