@@ -10,7 +10,7 @@
   justify-content: center;
   height: 200px;
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── Header ── */
@@ -24,14 +24,14 @@
 .od-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
   letter-spacing: -0.02em;
   margin-bottom: 0.25rem;
 }
 
 .od-subtitle {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── Cards ── */
@@ -43,8 +43,8 @@
 }
 
 .od-card {
-  background: #ffffff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.5rem;
   display: flex;
@@ -64,21 +64,21 @@
 .od-card-value {
   font-size: 2rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
   letter-spacing: -0.03em;
   line-height: 1;
 }
 
 .od-card-label {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
   font-weight: 500;
 }
 
 /* ── Chart ── */
 .od-chart-card {
-  background: #ffffff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -87,10 +87,10 @@
 .od-chart-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e4e2dd;
+  border-bottom: 1px solid var(--border);
 }
 
 .od-chart-empty {
@@ -99,7 +99,7 @@
   justify-content: center;
   height: 200px;
   font-size: 0.875rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── Info Row ── */
@@ -111,8 +111,8 @@
 }
 
 .od-info-card {
-  background: #ffffff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -126,7 +126,7 @@
 
 .od-info-label {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
   font-weight: 500;
   margin-bottom: 0.25rem;
   text-transform: uppercase;
@@ -136,13 +136,13 @@
 .od-info-value {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 /* ── Latest Orders ── */
 .od-latest-card {
-  background: #ffffff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -154,12 +154,12 @@
   align-items: center;
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e4e2dd;
+  border-bottom: 1px solid var(--border);
 }
 
 .od-view-all {
   font-size: 0.8rem;
-  color: #2563eb;
+  color: var(--color-primary);
   text-decoration: none;
   font-weight: 500;
 }
@@ -180,7 +180,7 @@
   gap: 1rem;
   font-size: 0.85rem;
   padding: 0.5rem 0;
-  border-bottom: 1px solid #f1f0ec;
+  border-bottom: 1px solid var(--border);
 }
 
 .od-order-row:last-child {
@@ -189,23 +189,23 @@
 
 .od-order-id {
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--icon-muted);
   width: 40px;
 }
 
 .od-order-name {
   flex: 1;
-  color: #0f172a;
+  color: var(--text-main);
   font-weight: 500;
 }
 
 .od-order-price {
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 .od-order-date {
-  color: #94a3b8;
+  color: var(--icon-muted);
   font-size: 0.78rem;
 }
 
@@ -216,9 +216,9 @@
   font-weight: 500;
 }
 
-.od-status-pending  { background: #fef9c3; color: #854d0e; }
-.od-status-accepted { background: #dcfce7; color: #16a34a; }
-.od-status-rejected { background: #fee2e2; color: #dc2626; }
+.od-status-pending  { background: var(--warning-bg); color: var(--warning); }
+.od-status-accepted { background: var(--success-bg); color: var(--success); }
+.od-status-rejected { background: var(--danger-bg); color: var(--danger); }
 
 /* ── Alert ── */
 .od-alert {
@@ -233,14 +233,14 @@
 
 .od-alert-warning {
   background: #fefce8;
-  border-color: #fde047;
-  color: #854d0e;
+  border-color: var(--warning-bg);
+  color: var(--warning);
 }
 
 .od-alert-urgent {
-  background: #fef2f2;
-  border-color: #fca5a5;
-  color: #dc2626;
+  background: var(--danger-bg);
+  border-color: var(--danger-bg);
+  color: var(--danger);
 }
 
 .od-alert-icon {
@@ -279,7 +279,7 @@
 .od-opportunity-title {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #2563eb;
+  color: var(--color-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.35rem;
@@ -296,17 +296,17 @@
 .od-refresh-btn {
   padding: 0.45rem 1rem;
   border-radius: 8px;
-  border: 1px solid #e4e2dd;
-  background: #ffffff;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
   font-size: 0.8rem;
   font-weight: 500;
-  color: #0f172a;
+  color: var(--text-main);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .od-refresh-btn:hover {
-  background: #f7f6f3;
+  background: var(--bg-surface);
 }
 
 .od-refresh-btn:disabled {
@@ -334,7 +334,7 @@
 
 .od-date-tabs {
   display: flex;
-  background: #f1f0ec;
+  background: var(--bg-surface);
   border-radius: 10px;
   padding: 3px;
   gap: 2px;
@@ -347,19 +347,19 @@
   border: none;
   background: transparent;
   border-radius: 8px;
-  color: #64748b;
+  color: var(--text-sub);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .od-date-tab:hover {
   background: #e2e0da;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .od-date-tab-active {
-  background: #fff !important;
-  color: #1e293b !important;
+  background: var(--bg-card) !important;
+  color: var(--text-main) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
@@ -372,21 +372,21 @@
 .od-date-input {
   padding: 5px 10px;
   font-size: 13px;
-  border: 1px solid #e4e2dd;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
-  color: #1e293b;
+  background: var(--bg-card);
+  color: var(--text-main);
   outline: none;
   cursor: pointer;
 }
 
 .od-date-input:focus {
-  border-color: #2563eb;
+  border-color: var(--color-primary);
 }
 
 .od-date-sep {
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── AI Summary ── */
@@ -412,7 +412,7 @@
 .od-ai-summary-title {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #0369a1;
+  color: var(--info);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -426,7 +426,7 @@
 }
 
 .od-ai-summary-empty {
-  color: #94a3b8;
+  color: var(--icon-muted);
   font-weight: 400;
   font-style: italic;
 }
@@ -467,7 +467,7 @@
 
 .od-heatmap-legend-label {
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
   font-weight: 500;
 }
 

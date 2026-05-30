@@ -9,7 +9,7 @@
   justify-content: center;
   height: 200px;
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── Header ── */
@@ -20,14 +20,14 @@
 .rv-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
   letter-spacing: -0.02em;
   margin-bottom: 0.25rem;
 }
 
 .rv-subtitle {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── Empty ── */
@@ -38,10 +38,10 @@
   justify-content: center;
   height: 200px;
   gap: 0.75rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
   font-size: 0.9rem;
-  background: #ffffff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
 }
 
@@ -58,8 +58,8 @@
 
 /* ── Card ── */
 .rv-card {
-  background: #ffffff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
 }
@@ -76,8 +76,8 @@
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--text-on-dark);
   font-size: 0.9rem;
   font-weight: 600;
   display: flex;
@@ -89,12 +89,12 @@
 .rv-user {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 .rv-date {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
   margin-top: 0.1rem;
 }
 
@@ -117,22 +117,22 @@
 }
 
 .star.filled {
-  color: #f59e0b;
+  color: var(--accent);
 }
 
 .rv-rating-num {
   font-size: 0.78rem;
   font-weight: 600;
-  color: #475569;
+  color: var(--text-sub);
 }
 
 /* ── Comment ── */
 .rv-comment {
   font-size: 0.875rem;
-  color: #475569;
+  color: var(--text-sub);
   line-height: 1.6;
   padding-top: 0.75rem;
-  border-top: 1px solid #f1f0ec;
+  border-top: 1px solid var(--border);
 }
 
 /* ── Sentiment Summary ── */
@@ -162,7 +162,7 @@
   font-weight: 500;
 }
 
-.rv-sentiment-positive { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
-.rv-sentiment-negative { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
-.rv-sentiment-neutral  { background: #f8fafc; border-color: #e2e8f0; color: #64748b; }
-.rv-sentiment-unknown  { background: #fafaf9; border-color: #e4e2dd; color: #94a3b8; }
+.rv-sentiment-positive { background: var(--success-bg); border-color: var(--success-bg); color: var(--success); }
+.rv-sentiment-negative { background: var(--danger-bg); border-color: var(--danger-bg); color: var(--danger); }
+.rv-sentiment-neutral  { background: var(--bg-surface); border-color: var(--border); color: var(--text-sub); }
+.rv-sentiment-unknown  { background: var(--hover-bg); border-color: var(--border); color: var(--icon-muted); }

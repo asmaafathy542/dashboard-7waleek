@@ -73,10 +73,10 @@ export default function Users() {
             {/* Header */}
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "2rem" }}>
                 <div>
-                    <h1 style={{ fontSize: "1.5rem", fontWeight: 600, color: "#0f172a", letterSpacing: "-0.02em", marginBottom: "0.25rem" }}>
+                    <h1 style={{ fontSize: "1.5rem", fontWeight: 600, color: "var(--text-main)", letterSpacing: "-0.02em", marginBottom: "0.25rem" }}>
                        {t("users")} 👥
                     </h1>
-                    <p style={{ fontSize: "0.85rem", color: "#94a3b8" }}>
+                    <p style={{ fontSize: "0.85rem", color: "var(--icon-muted)" }}>
                         {loading ? "Loading..." : `${users.length} ${t("total_users")}`}
                     </p>
                 </div>
@@ -84,7 +84,7 @@ export default function Users() {
                     onClick={fetchUsers}
                     style={{
                         padding: "8px 16px", borderRadius: "8px", border: "1px solid #e4e2dd",
-                        background: "#fff", fontSize: "13px", cursor: "pointer", color: "#475569", fontWeight: 500,
+                        background: "var(--bg-card)", fontSize: "13px", cursor: "pointer", color: "var(--text-sub)", fontWeight: 500,
                     }}
                 >
                     🔄 {t("refresh")}
@@ -96,7 +96,7 @@ export default function Users() {
                 <div style={{ position: "relative", maxWidth: "380px" }}>
                     <span style={{
                         position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)",
-                        fontSize: "14px", color: "#94a3b8", pointerEvents: "none",
+                        fontSize: "14px", color: "var(--icon-muted)", pointerEvents: "none",
                     }}>🔍</span>
                     <input
                         type="text"
@@ -106,9 +106,9 @@ export default function Users() {
                         style={{
                             width: "100%", padding: "9px 12px 9px 36px",
                             borderRadius: "8px", border: "1px solid #e4e2dd",
-                            fontSize: "13px", color: "#0f172a", outline: "none",
+                            fontSize: "13px", color: "var(--text-main)", outline: "none",
                             fontFamily: "'Inter', sans-serif", boxSizing: "border-box",
-                            background: "#fff",
+                            background: "var(--bg-card)",
                         }}
                     />
                     {search && (
@@ -116,13 +116,13 @@ export default function Users() {
                             onClick={() => setSearch("")}
                             style={{
                                 position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)",
-                                background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: "14px",
+                                background: "none", border: "none", cursor: "pointer", color: "var(--icon-muted)", fontSize: "14px",
                             }}
                         >✕</button>
                     )}
                 </div>
                 {search && (
-                    <p style={{ fontSize: "12px", color: "#94a3b8", marginTop: "6px" }}>
+                    <p style={{ fontSize: "12px", color: "var(--icon-muted)", marginTop: "6px" }}>
                         {filtered.length} result{filtered.length !== 1 ? "s" : ""} for "{search}"
                     </p>
                 )}
@@ -131,8 +131,8 @@ export default function Users() {
             {/* Error */}
             {error && (
                 <div style={{
-                    background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px",
-                    padding: "12px 16px", marginBottom: "1rem", fontSize: "13px", color: "#b91c1c",
+                    background: "var(--danger-bg)", border: "1px solid #fecaca", borderRadius: "10px",
+                    padding: "12px 16px", marginBottom: "1rem", fontSize: "13px", color: "var(--danger)",
                 }}>
                     ⚠️ {error}
                 </div>
@@ -140,27 +140,27 @@ export default function Users() {
 
             {/* Table */}
             {loading ? (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px", color: "#94a3b8", fontSize: "0.9rem" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--icon-muted)", fontSize: "0.9rem" }}>
                     Loading...
                 </div>
             ) : filtered.length === 0 ? (
                 <div style={{
-                    background: "#fff", border: "1px solid #e4e2dd", borderRadius: "12px",
-                    padding: "3rem", textAlign: "center", color: "#94a3b8",
+                    background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px",
+                    padding: "3rem", textAlign: "center", color: "var(--icon-muted)",
                 }}>
                     <div style={{ fontSize: "2rem", marginBottom: "8px" }}>👥</div>
                     <p style={{ fontSize: "14px" }}>{search ? "No users match your search." : "No users found."}</p>
                 </div>
             ) : (
-                <div style={{ background: "#fff", border: "1px solid #e4e2dd", borderRadius: "12px", overflow: "hidden" }}>
+                <div style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", overflow: "hidden" }}>
                     <div style={{ overflowX: "auto" }}>
                         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
                             <thead>
-                                <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e4e2dd" }}>
+                                <tr style={{ background: "var(--bg-surface)", borderBottom: "1px solid #e4e2dd" }}>
                                     {[t("id"), t("name"), t("district"), t("reviews"), t("saves"), t("joined"), t("status")].map((h) => (
                                         <th key={h} style={{
                                             padding: "10px 14px", textAlign: "left",
-                                            fontSize: "11px", fontWeight: 600, color: "#64748b",
+                                            fontSize: "11px", fontWeight: 600, color: "var(--text-sub)",
                                             textTransform: "uppercase", letterSpacing: "0.05em", whiteSpace: "nowrap",
                                         }}>
                                             {h}
@@ -186,11 +186,11 @@ export default function Users() {
                                         <tr
                                             key={numericId ?? idx}
                                             style={{ borderBottom: idx < paginated.length - 1 ? "1px solid #f1f0ec" : "none", transition: "background 0.1s" }}
-                                            onMouseEnter={(e) => e.currentTarget.style.background = "#f8fafc"}
+                                            onMouseEnter={(e) => e.currentTarget.style.background = "var(--bg-surface)"}
                                             onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                                         >
-                                            <td style={{ padding: "12px 14px", color: "#94a3b8", fontWeight: 500, whiteSpace: "nowrap" }}>
-                                                <span style={{ fontFamily: "monospace", background: "#f1f5f9", padding: "2px 8px", borderRadius: "6px", fontSize: "12px", color: "#334155", fontWeight: 600 }}>
+                                            <td style={{ padding: "12px 14px", color: "var(--icon-muted)", fontWeight: 500, whiteSpace: "nowrap" }}>
+                                                <span style={{ fontFamily: "monospace", background: "var(--bg-surface)", padding: "2px 8px", borderRadius: "6px", fontSize: "12px", color: "var(--text-sub)", fontWeight: 600 }}>
                                                     #{numericId ?? rawId}
                                                 </span>
                                             </td>
@@ -198,35 +198,35 @@ export default function Users() {
                                                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                                                     <div style={{
                                                         width: "32px", height: "32px", borderRadius: "50%",
-                                                        background: "#1e40af", color: "#fff",
+                                                        background: "var(--color-primary-hover)", color: "var(--bg-card)",
                                                         display: "flex", alignItems: "center", justifyContent: "center",
                                                         fontSize: "13px", fontWeight: 600, flexShrink: 0,
                                                     }}>
                                                         {name.charAt(0).toUpperCase()}
                                                     </div>
-                                                    <span style={{ fontWeight: 500, color: "#0f172a" }}>{name}</span>
+                                                    <span style={{ fontWeight: 500, color: "var(--text-main)" }}>{name}</span>
                                                 </div>
                                             </td>
-                                            <td style={{ padding: "12px 14px", color: "#475569" }}>{district}</td>
+                                            <td style={{ padding: "12px 14px", color: "var(--text-sub)" }}>{district}</td>
                                             <td style={{ padding: "12px 14px", textAlign: "center" }}>
-                                                <span style={{ fontWeight: reviews > 0 ? 600 : 400, color: reviews > 0 ? "#2563eb" : "#94a3b8" }}>
+                                                <span style={{ fontWeight: reviews > 0 ? 600 : 400, color: reviews > 0 ? "var(--color-primary)" : "var(--icon-muted)" }}>
                                                     {reviews}
                                                 </span>
                                             </td>
                                             <td style={{ padding: "12px 14px", textAlign: "center" }}>
-                                                <span style={{ fontWeight: saves > 0 ? 600 : 400, color: saves > 0 ? "#7c3aed" : "#94a3b8" }}>
+                                                <span style={{ fontWeight: saves > 0 ? 600 : 400, color: saves > 0 ? "var(--color-secondary)" : "var(--icon-muted)" }}>
                                                     {saves}
                                                 </span>
                                             </td>
-                                            <td style={{ padding: "12px 14px", color: "#94a3b8", whiteSpace: "nowrap" }}>
+                                            <td style={{ padding: "12px 14px", color: "var(--icon-muted)", whiteSpace: "nowrap" }}>
                                                 {joined}
                                             </td>
                                             <td style={{ padding: "12px 14px" }}>
                                                 <span style={{
                                                     fontSize: "11px", fontWeight: 600,
                                                     padding: "3px 10px", borderRadius: "999px",
-                                                    background: isActive ? "#f0fdf4" : "#fef2f2",
-                                                    color: isActive ? "#166534" : "#991b1b",
+                                                    background: isActive ? "var(--success-bg)" : "var(--danger-bg)",
+                                                    color: isActive ? "var(--success)" : "var(--danger)",
                                                     border: isActive ? "1px solid #bbf7d0" : "1px solid #fecaca",
                                                 }}>
                                                     {isActive ? t("active") : t("inactive")}

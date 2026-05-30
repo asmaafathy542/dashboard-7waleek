@@ -12,7 +12,7 @@
   justify-content: center;
   height: 200px;
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── Header ── */
@@ -21,14 +21,14 @@
 .nt-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
   letter-spacing: -0.02em;
   margin-bottom: 0.25rem;
 }
 
 .nt-subtitle {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── Stats Row ── */
@@ -42,8 +42,8 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: #fff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1rem 1.1rem;
 }
@@ -56,20 +56,20 @@
 .nt-stat-value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
   line-height: 1;
 }
 
 .nt-stat-label {
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
   margin-top: 0.2rem;
 }
 
 /* ── Send Card ── */
 .nt-send-card {
-  background: #ffffff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.5rem;
 }
@@ -77,10 +77,10 @@
 .nt-send-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e4e2dd;
+  border-bottom: 1px solid var(--border);
 }
 
 .nt-send-grid {
@@ -99,22 +99,22 @@
 .nt-form-row label {
   font-size: 0.78rem;
   font-weight: 500;
-  color: #64748b;
+  color: var(--text-sub);
 }
 
 .nt-input {
   padding: 0.55rem 0.75rem;
   border-radius: 8px;
-  border: 1px solid #e4e2dd;
+  border: 1px solid var(--border);
   font-size: 0.85rem;
-  color: #0f172a;
+  color: var(--text-main);
   outline: none;
   font-family: inherit;
-  background: #fff;
+  background: var(--bg-card);
   transition: border-color 0.15s;
 }
 
-.nt-input:focus { border-color: #0f172a; }
+.nt-input:focus { border-color: var(--text-main); }
 
 .nt-textarea {
   min-height: 80px;
@@ -123,7 +123,7 @@
 
 .nt-error {
   font-size: 0.8rem;
-  color: #dc2626;
+  color: var(--danger);
   margin-top: 0.5rem;
 }
 
@@ -131,12 +131,12 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #f0fdf4;
+  background: var(--success-bg);
   border: 1px solid #bbf7d0;
   border-radius: 8px;
   padding: 0.6rem 0.9rem;
   font-size: 0.83rem;
-  color: #16a34a;
+  color: var(--success);
   font-weight: 500;
   margin-top: 0.75rem;
 }
@@ -147,8 +147,8 @@
   padding: 0.65rem;
   border-radius: 8px;
   border: none;
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--text-main);
+  color: var(--text-on-dark);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -168,7 +168,7 @@
 .nt-list-label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-sub);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -181,10 +181,10 @@
   justify-content: center;
   height: 180px;
   gap: 0.75rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
   font-size: 0.9rem;
-  background: #ffffff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
 }
 
@@ -202,8 +202,8 @@
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  background: #ffffff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.1rem 1.25rem;
   transition: box-shadow 0.15s;
@@ -230,7 +230,7 @@
 
 .nt-message {
   font-size: 0.875rem;
-  color: #0f172a;
+  color: var(--text-main);
   font-weight: 600;
   line-height: 1.5;
 }
@@ -240,15 +240,15 @@
   font-weight: 500;
   padding: 0.2rem 0.65rem;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--bg-surface);
+  color: var(--text-sub);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .nt-body {
   font-size: 0.82rem;
-  color: #475569;
+  color: var(--text-sub);
   margin: 0 0 0.6rem 0;
   line-height: 1.55;
 }
@@ -267,27 +267,27 @@
   align-items: center;
   gap: 0.3rem;
   font-size: 0.78rem;
-  color: #64748b;
-  background: #f8fafc;
-  border: 1px solid #e4e2dd;
+  color: var(--text-sub);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.2rem 0.55rem;
 }
 
-.nt-metric strong { color: #0f172a; }
+.nt-metric strong { color: var(--text-main); }
 
 .nt-metric-icon { font-size: 0.8rem; }
 
 .nt-metric-rate {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: #1d4ed8;
+  background: var(--info-bg);
+  border-color: var(--info-bg);
+  color: var(--info);
   font-weight: 600;
 }
 
 .nt-date {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── Mobile ── */

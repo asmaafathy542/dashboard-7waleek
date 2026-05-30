@@ -17,21 +17,21 @@
 .prop-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
   margin: 0 0 4px;
   letter-spacing: -0.02em;
 }
 
 .prop-subtitle {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
   margin: 0;
 }
 
 .prop-add-btn {
   padding: 9px 20px;
-  background: #0f172a;
-  color: #fff;
+  background: var(--text-main);
+  color: var(--text-on-dark);
   border: none;
   border-radius: 10px;
   font-size: 13px;
@@ -41,7 +41,7 @@
   transition: background 0.15s;
   white-space: nowrap;
 }
-.prop-add-btn:hover { background: #1e293b; }
+.prop-add-btn:hover { background: var(--bg-card); }
 
 /* Search */
 .prop-search-wrap {
@@ -64,16 +64,16 @@
 .prop-search {
   width: 100%;
   padding: 9px 36px;
-  border: 1px solid #e4e2dd;
+  border: 1px solid var(--border);
   border-radius: 10px;
   font-size: 13px;
   outline: none;
   font-family: inherit;
   box-sizing: border-box;
-  background: #fff;
-  color: #0f172a;
+  background: var(--bg-card);
+  color: var(--text-main);
 }
-.prop-search:focus { border-color: #0f172a; }
+.prop-search:focus { border-color: var(--text-main); }
 .prop-search-clear {
   position: absolute;
   right: 10px;
@@ -82,7 +82,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #94a3b8;
+  color: var(--icon-muted);
   font-size: 13px;
 }
 [dir="rtl"] .prop-search-clear {
@@ -97,7 +97,7 @@
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: #94a3b8;
+  color: var(--icon-muted);
   gap: 12px;
   font-size: 14px;
 }
@@ -105,7 +105,7 @@
   width: 32px;
   height: 32px;
   border: 3px solid #e4e2dd;
-  border-top-color: #0f172a;
+  border-top-color: var(--text-main);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -115,9 +115,9 @@
 .prop-empty {
   text-align: center;
   padding: 60px 20px;
-  color: #94a3b8;
-  background: #fff;
-  border: 1px solid #e4e2dd;
+  color: var(--icon-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
 }
 .prop-empty-icon { font-size: 48px; margin-bottom: 12px; }
@@ -132,8 +132,8 @@
 
 /* Card */
 .prop-card {
-  background: #fff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
   transition: box-shadow 0.15s, transform 0.15s;
@@ -148,7 +148,7 @@
 .prop-card-img-wrap {
   position: relative;
   height: 160px;
-  background: #f1f0ec;
+  background: var(--bg-surface);
   overflow: hidden;
 }
 .prop-card-img {
@@ -180,12 +180,12 @@
   right: 10px;
 }
 .prop-availability-badge.available {
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--success-bg);
+  color: var(--success);
 }
 .prop-availability-badge.unavailable {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 
 /* Card body */
@@ -198,13 +198,13 @@
 .prop-card-title {
   font-size: 15px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
   margin: 0;
   line-height: 1.3;
 }
 .prop-card-desc {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-sub);
   margin: 0;
   line-height: 1.5;
   display: -webkit-box;
@@ -215,7 +215,7 @@
 .prop-card-price {
   font-size: 16px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
   margin-top: 4px;
 }
 .prop-card-meta {
@@ -223,15 +223,15 @@
   flex-direction: column;
   gap: 3px;
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-sub);
 }
 .prop-card-stats {
   display: flex;
   gap: 12px;
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--icon-muted);
   padding-top: 6px;
-  border-top: 1px solid #f1f0ec;
+  border-top: 1px solid var(--border);
 }
 .prop-card-actions {
   display: flex;
@@ -251,15 +251,15 @@
   border: none;
 }
 .prop-edit-btn {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--bg-surface);
+  color: var(--text-main);
 }
-.prop-edit-btn:hover { background: #e2e8f0; }
+.prop-edit-btn:hover { background: var(--hover-bg); }
 .prop-del-btn {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: var(--danger-bg);
+  color: var(--danger);
 }
-.prop-del-btn:hover { background: #fee2e2; }
+.prop-del-btn:hover { background: var(--danger-bg); }
 .prop-del-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Modal */
@@ -275,7 +275,7 @@
   backdrop-filter: blur(2px);
 }
 .prop-modal {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 20px;
   width: 100%;
   max-width: 520px;
@@ -288,20 +288,20 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px 16px;
-  border-bottom: 1px solid #f1f0ec;
+  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  background: #fff;
+  background: var(--bg-card);
   z-index: 1;
 }
 .prop-modal-header h2 {
   font-size: 1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
   margin: 0;
 }
 .prop-modal-close {
-  background: #f1f5f9;
+  background: var(--bg-surface);
   border: none;
   border-radius: 8px;
   width: 32px;
@@ -311,7 +311,7 @@
   justify-content: center;
   cursor: pointer;
   font-size: 15px;
-  color: #64748b;
+  color: var(--text-sub);
 }
 .prop-modal-body {
   padding: 20px 24px 24px;
@@ -338,27 +338,27 @@
 }
 .prop-input {
   padding: 9px 12px;
-  border: 1px solid #e4e2dd;
+  border: 1px solid var(--border);
   border-radius: 10px;
   font-size: 13px;
-  color: #0f172a;
+  color: var(--text-main);
   outline: none;
   font-family: inherit;
-  background: #fafaf9;
+  background: var(--hover-bg);
   transition: border-color 0.15s;
   width: 100%;
   box-sizing: border-box;
 }
-.prop-input:focus { border-color: #0f172a; background: #fff; }
+.prop-input:focus { border-color: var(--text-main); background: var(--bg-card); }
 .prop-textarea { resize: vertical; min-height: 80px; }
 .prop-hint {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 .prop-error {
-  background: #fef2f2;
+  background: var(--danger-bg);
   border: 1px solid #fecaca;
-  color: #b91c1c;
+  color: var(--danger);
   font-size: 12px;
   padding: 10px 14px;
   border-radius: 8px;
@@ -367,8 +367,8 @@
 .prop-save-btn {
   width: 100%;
   padding: 12px;
-  background: #0f172a;
-  color: #fff;
+  background: var(--text-main);
+  color: var(--text-on-dark);
   border: none;
   border-radius: 10px;
   font-size: 14px;
@@ -378,5 +378,5 @@
   margin-top: 4px;
   transition: background 0.15s;
 }
-.prop-save-btn:hover:not(:disabled) { background: #1e293b; }
+.prop-save-btn:hover:not(:disabled) { background: var(--bg-card); }
 .prop-save-btn:disabled { background: #94a3b8; cursor: not-allowed; }

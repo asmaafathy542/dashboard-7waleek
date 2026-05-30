@@ -113,20 +113,20 @@ export default function AdminNotifications() {
   const st = {
     page:    { padding: "0" },
     header:  { marginBottom: "24px" },
-    title:   { fontSize: "22px", fontWeight: 700, color: "#0f172a", margin: 0 },
-    sub:     { fontSize: "13px", color: "#94a3b8", marginTop: "4px" },
+    title:   { fontSize: "22px", fontWeight: 700, color: "var(--text-main)", margin: 0 },
+    sub:     { fontSize: "13px", color: "var(--icon-muted)", marginTop: "4px" },
     statsRow: {
       display: "grid", gridTemplateColumns: "repeat(3,1fr)",
       gap: "12px", marginBottom: "24px",
     },
     statCard: {
       display: "flex", alignItems: "center", gap: "12px",
-      background: "#fff", border: "1px solid #e4e2dd",
+      background: "var(--bg-card)", border: "1px solid #e4e2dd",
       borderRadius: "12px", padding: "14px 16px",
     },
     statIcon:  { fontSize: "1.4rem", flexShrink: 0 },
-    statVal:   { fontSize: "1.3rem", fontWeight: 700, color: "#0f172a", lineHeight: 1 },
-    statLabel: { fontSize: "11px", color: "#94a3b8", marginTop: "3px" },
+    statVal:   { fontSize: "1.3rem", fontWeight: 700, color: "var(--text-main)", lineHeight: 1 },
+    statLabel: { fontSize: "11px", color: "var(--icon-muted)", marginTop: "3px" },
     tabs: {
       display: "flex", gap: "4px",
       marginBottom: "24px", borderBottom: "1px solid #e4e2dd",
@@ -134,45 +134,45 @@ export default function AdminNotifications() {
     tab: (active) => ({
       padding: "8px 20px", fontSize: "13px",
       fontWeight: active ? 600 : 400,
-      color: active ? "#2563eb" : "#64748b",
+      color: active ? "var(--color-primary)" : "var(--text-sub)",
       background: "transparent", border: "none", cursor: "pointer",
       borderBottom: active ? "2px solid #2563eb" : "2px solid transparent",
       transition: "all 0.15s",
     }),
     card: {
-      background: "#fff", border: "1px solid #e4e2dd",
+      background: "var(--bg-card)", border: "1px solid #e4e2dd",
       borderRadius: "12px", padding: "16px 20px", marginBottom: "10px",
     },
     cardTop: {
       display: "flex", alignItems: "flex-start",
       justifyContent: "space-between", gap: "12px", flexWrap: "wrap",
     },
-    cardTitle: { fontSize: "14px", fontWeight: 600, color: "#0f172a" },
-    cardMsg:   { fontSize: "13px", color: "#475569", marginTop: "4px", lineHeight: 1.55 },
-    cardMeta:  { fontSize: "11px", color: "#94a3b8", marginTop: "8px", display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" },
+    cardTitle: { fontSize: "14px", fontWeight: 600, color: "var(--text-main)" },
+    cardMsg:   { fontSize: "13px", color: "var(--text-sub)", marginTop: "4px", lineHeight: 1.55 },
+    cardMeta:  { fontSize: "11px", color: "var(--icon-muted)", marginTop: "8px", display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" },
     metric: {
       display: "inline-flex", alignItems: "center", gap: "4px",
-      fontSize: "11px", color: "#64748b",
-      background: "#f8fafc", border: "1px solid #e4e2dd",
+      fontSize: "11px", color: "var(--text-sub)",
+      background: "var(--bg-surface)", border: "1px solid #e4e2dd",
       borderRadius: "6px", padding: "2px 8px",
     },
-    metricStrong: { color: "#0f172a", fontWeight: 600 },
+    metricStrong: { color: "var(--text-main)", fontWeight: 600 },
     targetBadge: {
       fontSize: "11px", fontWeight: 500,
       padding: "2px 10px", borderRadius: "999px",
-      background: "#f1f5f9", color: "#475569",
+      background: "var(--bg-surface)", color: "var(--text-sub)",
       whiteSpace: "nowrap",
     },
     archiveBtn: (busy) => ({
       padding: "5px 14px", borderRadius: "8px", border: "none",
-      background: busy ? "#94a3b8" : "#f1f5f9",
-      color: busy ? "#fff" : "#64748b",
+      background: busy ? "var(--icon-muted)" : "var(--bg-surface)",
+      color: busy ? "var(--bg-card)" : "var(--text-sub)",
       fontSize: "12px", fontWeight: 600,
       cursor: busy ? "not-allowed" : "pointer",
       transition: "all 0.15s",
     }),
-    loading: { padding: "48px", textAlign: "center", color: "#94a3b8" },
-    empty:   { textAlign: "center", padding: "64px 16px", color: "#94a3b8" },
+    loading: { padding: "48px", textAlign: "center", color: "var(--icon-muted)" },
+    empty:   { textAlign: "center", padding: "64px 16px", color: "var(--icon-muted)" },
     emptyIcon: { fontSize: "2.5rem", marginBottom: "10px" },
   };
 
@@ -250,7 +250,7 @@ export default function AdminNotifications() {
                           {req.target_type === "ALL_USERS" ? (
                             <span style={st.targetBadge}>🌍 All Users</span>
                           ) : (
-                            <span style={{ ...st.targetBadge, background: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe" }}>
+                            <span style={{ ...st.targetBadge, background: "var(--info-bg)", color: "var(--color-primary-hover)", border: "1px solid #bfdbfe" }}>
                               👤 Specific User
                               {req.target_user_id && (
                                 <span style={{ marginLeft: "6px", fontWeight: 700 }}>
@@ -281,7 +281,7 @@ export default function AdminNotifications() {
                             </span>
                           )}
                           {readRate !== null && (
-                            <span style={{ ...st.metric, background: "#eff6ff", borderColor: "#bfdbfe", color: "#1d4ed8", fontWeight: 600 }}>
+                            <span style={{ ...st.metric, background: "var(--info-bg)", borderColor: "var(--info-bg)", color: "var(--color-primary-hover)", fontWeight: 600 }}>
                               📊 {readRate}%
                             </span>
                           )}
@@ -294,8 +294,8 @@ export default function AdminNotifications() {
                           style={st.archiveBtn(busy)}
                           disabled={busy}
                           onClick={() => handleArchive(req.id)}
-                          onMouseEnter={e => { if (!busy) { e.currentTarget.style.background = "#e2e8f0"; e.currentTarget.style.color = "#0f172a"; } }}
-                          onMouseLeave={e => { if (!busy) { e.currentTarget.style.background = "#f1f5f9"; e.currentTarget.style.color = "#64748b"; } }}
+                          onMouseEnter={e => { if (!busy) { e.currentTarget.style.background = "var(--border)"; e.currentTarget.style.color = "var(--text-main)"; } }}
+                          onMouseLeave={e => { if (!busy) { e.currentTarget.style.background = "var(--bg-surface)"; e.currentTarget.style.color = "var(--text-sub)"; } }}
                         >
                           📦 {t("archive")}
                         </button>
@@ -321,13 +321,13 @@ export default function AdminNotifications() {
       {tab === "send" && (
         <div style={{ maxWidth: "560px" }}>
           <div style={st.card}>
-            <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", marginBottom: "20px" }}>
+            <h2 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-main)", marginBottom: "20px" }}>
               📤 {t("send_notification")}
             </h2>
 
             {/* Target */}
             <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-sub)", marginBottom: "6px" }}>
                 {t("notif_target")}
               </label>
               <div style={{ display: "flex", gap: "8px" }}>
@@ -340,9 +340,9 @@ export default function AdminNotifications() {
                     onClick={() => setForm((f) => ({ ...f, target_type: opt.value, target_user_id: "" }))}
                     style={{
                       padding: "7px 16px", borderRadius: "8px", border: "1.5px solid",
-                      borderColor: form.target_type === opt.value ? "#2563eb" : "#e2e8f0",
-                      background: form.target_type === opt.value ? "#eff6ff" : "#fff",
-                      color: form.target_type === opt.value ? "#2563eb" : "#64748b",
+                      borderColor: form.target_type === opt.value ? "var(--color-primary)" : "var(--border)",
+                      background: form.target_type === opt.value ? "var(--info-bg)" : "var(--bg-card)",
+                      color: form.target_type === opt.value ? "var(--color-primary)" : "var(--text-sub)",
                       fontSize: "13px", fontWeight: 500, cursor: "pointer",
                     }}
                   >
@@ -355,7 +355,7 @@ export default function AdminNotifications() {
             {/* User ID */}
             {form.target_type === "SPECIFIC_USER" && (
               <div style={{ marginBottom: "16px" }}>
-                <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-sub)", marginBottom: "6px" }}>
                   {t("notif_user_id")}
                 </label>
                 <input
@@ -370,7 +370,7 @@ export default function AdminNotifications() {
 
             {/* Title */}
             <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-sub)", marginBottom: "6px" }}>
                 {t("notif_title_label")}
               </label>
               <input
@@ -384,7 +384,7 @@ export default function AdminNotifications() {
 
             {/* Message */}
             <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-sub)", marginBottom: "6px" }}>
                 {t("notif_message_label")}
               </label>
               <textarea
@@ -397,12 +397,12 @@ export default function AdminNotifications() {
             </div>
 
             {sendError && (
-              <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "8px", padding: "10px 14px", color: "#991b1b", fontSize: "13px", marginBottom: "12px" }}>
+              <div style={{ background: "var(--danger-bg)", border: "1px solid #fecaca", borderRadius: "8px", padding: "10px 14px", color: "var(--danger)", fontSize: "13px", marginBottom: "12px" }}>
                 ⚠️ {sendError}
               </div>
             )}
             {sendSuccess && (
-              <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "10px 14px", color: "#166534", fontSize: "13px", marginBottom: "12px" }}>
+              <div style={{ background: "var(--success-bg)", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "10px 14px", color: "var(--success)", fontSize: "13px", marginBottom: "12px" }}>
                 ✅ {t("sent_success")}
               </div>
             )}
@@ -412,8 +412,8 @@ export default function AdminNotifications() {
               disabled={sending}
               style={{
                 width: "100%", padding: "11px", borderRadius: "10px", border: "none",
-                background: sending ? "#94a3b8" : "#2563eb",
-                color: "#fff", fontSize: "14px", fontWeight: 600,
+                background: sending ? "var(--icon-muted)" : "var(--color-primary)",
+                color: "var(--bg-card)", fontSize: "14px", fontWeight: 600,
                 cursor: sending ? "not-allowed" : "pointer",
               }}
             >

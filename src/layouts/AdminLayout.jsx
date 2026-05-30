@@ -261,7 +261,7 @@ export default function AdminLayout() {
                 }}>
                     <div style={{
                         width: "38px", height: "38px", borderRadius: "10px",
-                        background: "#1e40af",
+                        background: "var(--color-primary)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: "18px", flexShrink: 0,
                     }}>🛡️</div>
@@ -294,7 +294,7 @@ export default function AdminLayout() {
                                     textDecoration: "none",
                                     fontSize: "14px",
                                     fontWeight: isActive ? 500 : 400,
-                                    background: isActive ? "#2563eb" : "transparent",
+                                    background: isActive ? "var(--color-primary)" : "transparent",
                                     transition: "all 0.15s",
                                     justifyContent: collapsed ? "center" : "flex-start",
                                     position: "relative",
@@ -307,7 +307,7 @@ export default function AdminLayout() {
                                 {!collapsed && <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
                                 {badge > 0 && (
                                     <span style={{
-                                        background: "#ef4444", color: "#fff",
+                                        background: "var(--danger)", color: "#fff",
                                         fontSize: collapsed ? "0.6rem" : "0.7rem",
                                         fontWeight: 700, padding: "2px 7px",
                                         borderRadius: "999px", minWidth: "20px",

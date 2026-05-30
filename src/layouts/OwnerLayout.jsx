@@ -35,7 +35,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
           transform: "translateX(-50%)",
           zIndex: 990,
           display: "flex", alignItems: "center", gap: "8px",
-          background: "#0f172a",
+          background: "var(--bg-sidebar)",
           border: "1.5px solid rgba(255,255,255,0.15)",
           borderRadius: "999px",
           padding: "8px 16px",
@@ -106,7 +106,7 @@ function MobileBranchSwitcher({ places, selectedPlace, onSelect, onAddBranch, is
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
                       fontSize: "14px", fontWeight: 600,
-                      color: selectedPlace?.id === p.id ? "#1d4ed8" : "#0f172a",
+                      color: selectedPlace?.id === p.id ? "var(--color-primary)" : "var(--bg-sidebar)",
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                     }}>
                       {p.name}

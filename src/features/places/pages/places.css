@@ -12,7 +12,7 @@
   justify-content: center;
   height: 200px;
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── Header ── */
@@ -26,7 +26,7 @@
 .pl-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
   letter-spacing: -0.02em;
   margin-bottom: 0.5rem;
 }
@@ -40,18 +40,18 @@
 }
 
 .pl-badge.active {
-  background: #dcfce7;
-  color: #16a34a;
+  background: var(--success-bg);
+  color: var(--success);
 }
 
 .pl-badge.inactive {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 
 .pl-meta {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
   margin-top: 0.5rem;
 }
 
@@ -64,8 +64,8 @@
 
 /* ── Card ── */
 .pl-card {
-  background: #ffffff;
-  border: 1px solid #e4e2dd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.5rem;
 }
@@ -73,10 +73,10 @@
 .pl-card-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e4e2dd;
+  border-bottom: 1px solid var(--border);
 }
 
 /* ── Info Rows ── */
@@ -90,14 +90,14 @@
 .pl-info-label {
   font-size: 0.7rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--icon-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .pl-info-value {
   font-size: 0.875rem;
-  color: #0f172a;
+  color: var(--text-main);
   line-height: 1.5;
 }
 
@@ -107,9 +107,9 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.65rem 0.875rem;
-  border: 1px solid #e4e2dd;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  color: #0f172a;
+  color: var(--text-main);
   text-decoration: none;
   font-size: 0.875rem;
   margin-bottom: 0.6rem;
@@ -117,9 +117,9 @@
 }
 
 .pl-social-link:hover {
-  border-color: #2563eb;
-  color: #2563eb;
-  background: #eff6ff;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--info-bg);
 }
 
 /* ── Images ── */
@@ -138,7 +138,7 @@
   height: 140px;
   object-fit: cover;
   border-radius: 8px;
-  border: 1px solid #e4e2dd;
+  border: 1px solid var(--border);
 }
 
 /* ── Image Wrap ── */
@@ -154,7 +154,7 @@
   height: 26px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.55);
-  color: #ffffff;
+  color: var(--text-on-dark);
   border: none;
   font-size: 0.75rem;
   cursor: pointer;
@@ -181,7 +181,7 @@
   justify-content: space-between;
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e4e2dd;
+  border-bottom: 1px solid var(--border);
 }
 
 .pl-card-title-row .pl-card-title {
@@ -193,9 +193,9 @@
 .pl-add-btn {
   padding: 0.35rem 0.85rem;
   border-radius: 8px;
-  border: 1px solid #e4e2dd;
-  background: #0f172a;
-  color: #ffffff;
+  border: 1px solid var(--border);
+  background: var(--text-main);
+  color: var(--text-on-dark);
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
@@ -208,7 +208,7 @@
 
 .pl-no-images {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
 }
 
 /* ── Upload Modal ── */
@@ -223,7 +223,7 @@
 }
 
 .pl-modal {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 16px;
   width: 100%;
   max-width: 440px;
@@ -235,13 +235,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e4e2dd;
+  border-bottom: 1px solid var(--border);
 }
 
 .pl-modal-header h2 {
   font-size: 1rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
   margin: 0;
 }
 
@@ -249,12 +249,12 @@
   background: none;
   border: none;
   font-size: 1rem;
-  color: #94a3b8;
+  color: var(--icon-muted);
   cursor: pointer;
 }
 
 .pl-modal-close:hover {
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 .pl-modal-body {
@@ -273,34 +273,34 @@
 .pl-form-row label {
   font-size: 0.78rem;
   font-weight: 500;
-  color: #64748b;
+  color: var(--text-sub);
 }
 
 .pl-input {
   padding: 0.55rem 0.75rem;
   border-radius: 8px;
-  border: 1px solid #e4e2dd;
+  border: 1px solid var(--border);
   font-size: 0.85rem;
-  color: #0f172a;
+  color: var(--text-main);
   outline: none;
   font-family: inherit;
 }
 
 .pl-input:focus {
-  border-color: #0f172a;
+  border-color: var(--text-main);
 }
 
 .pl-error {
   font-size: 0.8rem;
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .pl-submit-btn {
   padding: 0.65rem;
   border-radius: 8px;
   border: none;
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--text-main);
+  color: var(--text-on-dark);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -324,8 +324,8 @@
 
 .pl-edit-btn {
   padding: 0.5rem 1rem;
-  background: #2563eb;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--text-on-dark);
   border: none;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -333,7 +333,7 @@
 }
 
 .pl-edit-btn:hover {
-  background: #1d4ed8;
+  background: var(--color-primary-hover);
 }
 
 .pl-modal-large {

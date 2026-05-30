@@ -131,7 +131,7 @@
     justify-content: center !important;
     gap: 2px !important;
     flex: 1 !important;
-    color: #94a3b8 !important;
+    color: var(--icon-muted) !important;
     text-decoration: none !important;
     font-size: 9px !important;
     font-family: 'Inter', sans-serif !important;
@@ -148,7 +148,7 @@
   .mobile-bottom-nav a.active,
   .mobile-bottom-nav a:hover,
   .mobile-bottom-nav button:hover {
-    color: #ffffff !important;
+    color: var(--text-on-dark) !important;
   }
 
   .mobile-bottom-nav a.active::after {
@@ -158,7 +158,7 @@
     left: 20% !important;
     right: 20% !important;
     height: 2px !important;
-    background: #2563eb !important;
+    background: var(--color-primary) !important;
     border-radius: 0 0 2px 2px !important;
   }
 
@@ -180,7 +180,7 @@
     top: 4px !important;
     right: calc(50% - 18px) !important;
     background: #ef4444 !important;
-    color: #fff !important;
+    color: var(--text-on-dark) !important;
     font-size: 8px !important;
     font-weight: 700 !important;
     padding: 1px 4px !important;
@@ -430,9 +430,9 @@
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #0f172a;
+    background: var(--text-main);
     border: 1.5px solid rgba(255, 255, 255, 0.15);
-    color: #fff;
+    color: var(--text-on-dark);
     font-size: 18px;
     cursor: pointer;
     display: flex;
@@ -443,7 +443,7 @@
   }
 
   .admin-settings-fab-btn:hover {
-    background: #1e293b;
+    background: var(--bg-card);
   }
 
   /* Mini menu — ظاهر تحت الزرار */
@@ -452,7 +452,7 @@
     top: 116px;
     right: 14px;
     z-index: 999;
-    background: #0f172a;
+    background: var(--text-main);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px;
     padding: 6px;

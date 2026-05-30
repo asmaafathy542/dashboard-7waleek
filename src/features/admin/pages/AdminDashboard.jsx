@@ -29,15 +29,15 @@ function KpiCard({ icon, label, value, linkTo, color, delta }) {
     return (
         <Link to={linkTo ?? "#"} style={{ textDecoration: "none" }}>
             <div
-                style={{ background: "#fff", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem", transition: "box-shadow 0.15s", cursor: linkTo ? "pointer" : "default" }}
+                style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem", transition: "box-shadow 0.15s", cursor: linkTo ? "pointer" : "default" }}
                 onMouseEnter={(e) => { if (linkTo) e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.07)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
             >
                 <div style={{ fontSize: "1.5rem" }}>{icon}</div>
-                <div style={{ fontSize: "2rem", fontWeight: 600, color: color ?? "#0f172a", letterSpacing: "-0.03em", lineHeight: 1 }}>{value ?? "—"}</div>
-                <div style={{ fontSize: "0.8rem", color: "#94a3b8", fontWeight: 500 }}>{label}</div>
+                <div style={{ fontSize: "2rem", fontWeight: 600, color: color ?? "var(--text-main)", letterSpacing: "-0.03em", lineHeight: 1 }}>{value ?? "—"}</div>
+                <div style={{ fontSize: "0.8rem", color: "var(--icon-muted)", fontWeight: 500 }}>{label}</div>
                 {delta && !isZero && (
-                    <div style={{ fontSize: "0.75rem", fontWeight: 600, color: isPositive ? "#16a34a" : "#dc2626", background: isPositive ? "#f0fdf4" : "#fef2f2", border: `1px solid ${isPositive ? "#bbf7d0" : "#fecaca"}`, borderRadius: "999px", padding: "2px 8px", alignSelf: "flex-start" }}>
+                    <div style={{ fontSize: "0.75rem", fontWeight: 600, color: isPositive ? "var(--success)" : "var(--danger)", background: isPositive ? "var(--success-bg)" : "var(--danger-bg)", border: `1px solid ${isPositive ? "var(--success-bg)" : "var(--danger-bg)"}`, borderRadius: "999px", padding: "2px 8px", alignSelf: "flex-start" }}>
                         {isPositive ? "↑" : "↓"} {delta}
                     </div>
                 )}
@@ -50,13 +50,13 @@ function KpiCard({ icon, label, value, linkTo, color, delta }) {
 function CustomTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null;
     return (
-        <div style={{ background: "#fff", border: "1px solid #e4e2dd", borderRadius: "10px", padding: "10px 14px", fontSize: "12px", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
-            <div style={{ fontWeight: 600, color: "#0f172a", marginBottom: "6px" }}>{label}</div>
+        <div style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "10px", padding: "10px 14px", fontSize: "12px", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
+            <div style={{ fontWeight: 600, color: "var(--text-main)", marginBottom: "6px" }}>{label}</div>
             {payload.map((p) => (
                 <div key={p.dataKey} style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "3px" }}>
                     <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: p.color, flexShrink: 0 }} />
-                    <span style={{ color: "#64748b" }}>{p.name}:</span>
-                    <span style={{ fontWeight: 600, color: "#0f172a" }}>{p.value?.toLocaleString()}</span>
+                    <span style={{ color: "var(--text-sub)" }}>{p.name}:</span>
+                    <span style={{ fontWeight: 600, color: "var(--text-main)" }}>{p.value?.toLocaleString()}</span>
                 </div>
             ))}
         </div>
@@ -115,15 +115,15 @@ export default function AdminDashboard() {
     const handleRefresh = () => { refetchOverview?.(); refetchRequests?.(); };
 
     const LINES = [
-        { key: "visits",    name: "Visits",    color: "#2563eb" },
-        { key: "new_users", name: "New Users", color: "#10b981" },
-        { key: "reviews",   name: "Reviews",   color: "#f59e0b" },
-        { key: "calls",     name: "Calls",     color: "#8b5cf6" },
+        { key: "visits",    name: "Visits",    color: "var(--color-primary)" },
+        { key: "new_users", name: "New Users", color: "var(--success)" },
+        { key: "reviews",   name: "Reviews",   color: "var(--accent)" },
+        { key: "calls",     name: "Calls",     color: "var(--color-secondary)" },
     ];
 
     if (overviewLoading) {
         return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px", color: "#94a3b8", fontSize: "0.9rem" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--icon-muted)", fontSize: "0.9rem" }}>
                 {t("loading")}
             </div>
         );
@@ -135,12 +135,12 @@ export default function AdminDashboard() {
             {/* ── Header ── */}
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "2rem" }}>
                 <div>
-                    <h1 style={{ fontSize: "1.5rem", fontWeight: 600, color: "#0f172a", letterSpacing: "-0.02em", marginBottom: "0.25rem" }}>
+                    <h1 style={{ fontSize: "1.5rem", fontWeight: 600, color: "var(--text-main)", letterSpacing: "-0.02em", marginBottom: "0.25rem" }}>
                         {t("welcome_admin")}
                     </h1>
-                    <p style={{ fontSize: "0.85rem", color: "#94a3b8" }}>{t("platform_summary")}</p>
+                    <p style={{ fontSize: "0.85rem", color: "var(--icon-muted)" }}>{t("platform_summary")}</p>
                 </div>
-                <button onClick={handleRefresh} style={{ padding: "8px 16px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "#fff", fontSize: "13px", cursor: "pointer", color: "#475569", fontWeight: 500 }}>
+                <button onClick={handleRefresh} style={{ padding: "8px 16px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", cursor: "pointer", color: "var(--text-sub)", fontWeight: 500 }}>
                     🔄 {t("refresh")}
                 </button>
             </div>
@@ -156,11 +156,11 @@ export default function AdminDashboard() {
             </div>
 
             {/* ── Platform Trends Chart ── */}
-            <div style={{ background: "#fff", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "1.5rem", marginBottom: "1.5rem" }}>
+            <div style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "1.5rem", marginBottom: "1.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", paddingBottom: "0.75rem", borderBottom: "1px solid #e4e2dd" }}>
                     <div>
-                        <h2 style={{ fontSize: "0.9rem", fontWeight: 600, color: "#0f172a", margin: 0 }}>📈 Platform Trends</h2>
-                        <p style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: "3px" }}>Last 7 days activity</p>
+                        <h2 style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-main)", margin: 0 }}>📈 Platform Trends</h2>
+                        <p style={{ fontSize: "0.75rem", color: "var(--icon-muted)", marginTop: "3px" }}>Last 7 days activity</p>
                     </div>
                     {/* Legend toggles */}
                     <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -171,14 +171,14 @@ export default function AdminDashboard() {
                                 style={{
                                     display: "flex", alignItems: "center", gap: "5px",
                                     padding: "3px 10px", borderRadius: "999px", border: "1.5px solid",
-                                    borderColor: activeLine && activeLine !== l.key ? "#e4e2dd" : l.color,
-                                    background: activeLine && activeLine !== l.key ? "#f8fafc" : `${l.color}15`,
-                                    color: activeLine && activeLine !== l.key ? "#94a3b8" : l.color,
+                                    borderColor: activeLine && activeLine !== l.key ? "var(--border)" : l.color,
+                                    background: activeLine && activeLine !== l.key ? "var(--bg-surface)" : `${l.color}15`,
+                                    color: activeLine && activeLine !== l.key ? "var(--icon-muted)" : l.color,
                                     fontSize: "11px", fontWeight: 600, cursor: "pointer",
                                     transition: "all 0.15s",
                                 }}
                             >
-                                <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: activeLine && activeLine !== l.key ? "#cbd5e1" : l.color }} />
+                                <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: activeLine && activeLine !== l.key ? "var(--border)" : l.color }} />
                                 {l.name}
                             </button>
                         ))}
@@ -186,19 +186,19 @@ export default function AdminDashboard() {
                 </div>
 
                 {trendLoading ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px", color: "#94a3b8", fontSize: "0.875rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--icon-muted)", fontSize: "0.875rem" }}>
                         {t("loading")}
                     </div>
                 ) : trendData.length === 0 ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px", color: "#94a3b8", fontSize: "0.875rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--icon-muted)", fontSize: "0.875rem" }}>
                         📊 No trend data available.
                     </div>
                 ) : (
                     <ResponsiveContainer width="100%" height={240}>
                         <LineChart data={trendData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f1f0ec" vertical={false} />
-                            <XAxis dataKey="displayDate" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                            <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} allowDecimals={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-surface)" vertical={false} />
+                            <XAxis dataKey="displayDate" tick={{ fontSize: 11, fill: "var(--icon-muted)" }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 11, fill: "var(--icon-muted)" }} axisLine={false} tickLine={false} allowDecimals={false} />
                             <Tooltip content={<CustomTooltip />} />
                             {LINES.map((l) => (
                                 <Line
@@ -219,22 +219,22 @@ export default function AdminDashboard() {
             </div>
 
             {/* ── Latest Notifications ── */}
-            <div style={{ background: "#fff", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "1.5rem" }}>
+            <div style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "1.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", paddingBottom: "0.75rem", borderBottom: "1px solid #e4e2dd" }}>
-                    <h2 style={{ fontSize: "0.9rem", fontWeight: 600, color: "#0f172a", margin: 0 }}>
+                    <h2 style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-main)", margin: 0 }}>
                         🔔 Latest Notifications
                     </h2>
-                    <Link to="notifications" style={{ fontSize: "0.78rem", color: "#2563eb", fontWeight: 500, textDecoration: "none" }}>
+                    <Link to="notifications" style={{ fontSize: "0.78rem", color: "var(--color-primary)", fontWeight: 500, textDecoration: "none" }}>
                         View all →
                     </Link>
                 </div>
 
                 {notifsLoading ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "80px", color: "#94a3b8", fontSize: "0.875rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "80px", color: "var(--icon-muted)", fontSize: "0.875rem" }}>
                         {t("loading")}
                     </div>
                 ) : recentNotifs.length === 0 ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "80px", color: "#94a3b8", fontSize: "0.875rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "80px", color: "var(--icon-muted)", fontSize: "0.875rem" }}>
                         🔕 No notifications yet.
                     </div>
                 ) : (
@@ -244,43 +244,43 @@ export default function AdminDashboard() {
                             const hasRead = notif.read_count > 0;
                             const readRate = hasSent ? Math.round((notif.read_count / notif.total_sent) * 100) : null;
                             return (
-                                <div key={notif.id} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 14px", borderRadius: "10px", background: "#f8fafc", border: "1px solid #e4e2dd", flexWrap: "wrap" }}>
-                                    <div style={{ width: "34px", height: "34px", borderRadius: "8px", background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", flexShrink: 0 }}>
+                                <div key={notif.id} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 14px", borderRadius: "10px", background: "var(--bg-surface)", border: "1px solid #e4e2dd", flexWrap: "wrap" }}>
+                                    <div style={{ width: "34px", height: "34px", borderRadius: "8px", background: "var(--info-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", flexShrink: 0 }}>
                                         📢
                                     </div>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                                            <span style={{ fontSize: "0.83rem", fontWeight: 600, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "260px" }}>
+                                            <span style={{ fontSize: "0.83rem", fontWeight: 600, color: "var(--text-main)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "260px" }}>
                                                 {notif.title || "Notification"}
                                             </span>
                                             <span style={{
                                                 fontSize: "0.7rem", fontWeight: 500, padding: "1px 8px", borderRadius: "999px",
-                                                background: notif.target_type === "ALL_USERS" ? "#f1f5f9" : "#eff6ff",
-                                                color: notif.target_type === "ALL_USERS" ? "#475569" : "#1d4ed8",
-                                                border: `1px solid ${notif.target_type === "ALL_USERS" ? "#e2e8f0" : "#bfdbfe"}`,
+                                                background: notif.target_type === "ALL_USERS" ? "var(--bg-surface)" : "var(--info-bg)",
+                                                color: notif.target_type === "ALL_USERS" ? "var(--text-sub)" : "var(--color-primary-hover)",
+                                                border: `1px solid ${notif.target_type === "ALL_USERS" ? "var(--border)" : "var(--info-bg)"}`,
                                                 flexShrink: 0,
                                             }}>
                                                 {notif.target_type === "ALL_USERS" ? "🌍 All Users" : `👤 ID: ${notif.target_user_id ?? "?"}`}
                                             </span>
                                         </div>
                                         <div style={{ display: "flex", gap: "10px", marginTop: "4px", flexWrap: "wrap", alignItems: "center" }}>
-                                            {notif.sender_name && <span style={{ fontSize: "0.72rem", color: "#64748b" }}>🏪 {notif.sender_name}</span>}
-                                            <span style={{ fontSize: "0.72rem", color: "#94a3b8" }}>🕐 {fmt(notif.created_at)}</span>
+                                            {notif.sender_name && <span style={{ fontSize: "0.72rem", color: "var(--text-sub)" }}>🏪 {notif.sender_name}</span>}
+                                            <span style={{ fontSize: "0.72rem", color: "var(--icon-muted)" }}>🕐 {fmt(notif.created_at)}</span>
                                         </div>
                                     </div>
                                     <div style={{ display: "flex", gap: "6px", alignItems: "center", flexShrink: 0, flexWrap: "wrap" }}>
                                         {hasSent && (
-                                            <span style={{ fontSize: "0.72rem", color: "#64748b", background: "#fff", border: "1px solid #e4e2dd", borderRadius: "6px", padding: "2px 8px" }}>
-                                                📤 <strong style={{ color: "#0f172a" }}>{notif.total_sent}</strong>
+                                            <span style={{ fontSize: "0.72rem", color: "var(--text-sub)", background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "6px", padding: "2px 8px" }}>
+                                                📤 <strong style={{ color: "var(--text-main)" }}>{notif.total_sent}</strong>
                                             </span>
                                         )}
                                         {hasRead && (
-                                            <span style={{ fontSize: "0.72rem", color: "#64748b", background: "#fff", border: "1px solid #e4e2dd", borderRadius: "6px", padding: "2px 8px" }}>
-                                                👁 <strong style={{ color: "#0f172a" }}>{notif.read_count}</strong>
+                                            <span style={{ fontSize: "0.72rem", color: "var(--text-sub)", background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "6px", padding: "2px 8px" }}>
+                                                👁 <strong style={{ color: "var(--text-main)" }}>{notif.read_count}</strong>
                                             </span>
                                         )}
                                         {readRate !== null && (
-                                            <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "#1d4ed8", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "6px", padding: "2px 8px" }}>
+                                            <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "var(--color-primary-hover)", background: "var(--info-bg)", border: "1px solid #bfdbfe", borderRadius: "6px", padding: "2px 8px" }}>
                                                 📊 {readRate}%
                                             </span>
                                         )}
