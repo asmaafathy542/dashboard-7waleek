@@ -474,11 +474,12 @@ export default function OwnerDashboard() {
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
+                                       
                                         gap: "12px",
                                         padding: "12px 16px",
-                                        background: "#f8fafc",
+                                         background: "var(--bg-surface)",
                                         borderRadius: "10px",
-                                        border: "1px solid #e4e2dd",
+                                        border: "1px solid var(--border)",
                                         transition: "box-shadow 0.15s",
                                     }}
                                 >
@@ -503,7 +504,7 @@ export default function OwnerDashboard() {
                                             style={{
                                                 fontWeight: 600,
                                                 fontSize: "14px",
-                                                color: "#0f172a",
+                                                color: "var(--text-main)",
                                                 whiteSpace: "nowrap",
                                                 overflow: "hidden",
                                                 textOverflow: "ellipsis",
@@ -512,7 +513,7 @@ export default function OwnerDashboard() {
                                             {item.name}
                                         </div>
                                         {item.subcategory_name && (
-                                            <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "2px" }}>
+                                            <div style={{ fontSize: "12px", color: "var(--icon-muted)", marginTop: "2px" }}>
                                                 {item.subcategory_name}
                                             </div>
                                         )}
@@ -536,7 +537,7 @@ export default function OwnerDashboard() {
                                         style={{
                                             fontWeight: 700,
                                             fontSize: "15px",
-                                            color: "#10b981",
+                                           color: "var(--success)",
                                             flexShrink: 0,
                                         }}
                                     >

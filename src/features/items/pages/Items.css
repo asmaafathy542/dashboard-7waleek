@@ -910,3 +910,12 @@
 @media (max-width: 380px) {
   .it-grid { grid-template-columns: 1fr !important; }
 }
+
+/* ── Pagination Dark Mode Fix ── */
+.it-content nav,
+.it-content [class*="pagination"],
+.it-content [class*="pag-"] {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  color: var(--text-main) !important;
+}

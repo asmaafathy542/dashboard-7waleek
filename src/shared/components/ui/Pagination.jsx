@@ -1,22 +1,3 @@
-/**
- * Pagination Component
- * ----------------------
- * Props:
- *   currentPage  {number}
- *   totalPages   {number}
- *   totalItems   {number}
- *   rangeStart   {number}
- *   rangeEnd     {number}
- *   hasNext      {boolean}
- *   hasPrev      {boolean}
- *   onNext       {function}
- *   onPrev       {function}
- *   onGoTo       {function}  - (page) => void
- *   pageSize     {number}    optional — لو عايز تغيير حجم الصفحة
- *   onPageSize   {function}  optional — (newSize) => void
- *   pageSizeOptions {number[]} optional — default [10, 25, 50]
- */
-
 import { useLanguage } from "../../../context/LanguageContext";
 
 export default function Pagination({
@@ -37,7 +18,6 @@ export default function Pagination({
     const { t } = useLanguage();
     if (totalItems === 0) return null;
 
-    // بيعمل window من 5 أرقام حول الصفحة الحالية
     const getPageNumbers = () => {
         if (totalPages <= 7) {
             return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -68,18 +48,18 @@ export default function Pagination({
         fontSize: "13px",
         fontWeight: 500,
         cursor: "pointer",
-        border: "1px solid #e4e2dd",
-        background: "#fff",
-        color: "#475569",
+        border: "1px solid var(--border)",
+        background: "var(--bg-card)",
+        color: "var(--text-sub)",
         transition: "all 0.15s",
         fontFamily: "inherit",
     };
 
     const activeBtn = {
         ...btnBase,
-        background: "#0f172a",
-        color: "#fff",
-        border: "1px solid #0f172a",
+        background: "var(--text-main)",
+        color: "var(--text-on-dark)",
+        border: "1px solid var(--text-main)",
         fontWeight: 600,
         cursor: "default",
     };
@@ -99,17 +79,16 @@ export default function Pagination({
                 flexWrap: "wrap",
                 gap: "12px",
                 padding: "12px 16px",
-                borderTop: "1px solid #f1f0ec",
-                background: "#f8fafc",
+                borderTop: "1px solid var(--border)",
+                background: "var(--bg-card)",
                 fontSize: "13px",
-                color: "#64748b",
+                color: "var(--text-sub)",
             }}
         >
-            {/* Left: info + page size */}
             <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
                 <span>
-                    {t("showing")} <strong style={{ color: "#0f172a" }}>{rangeStart}–{rangeEnd}</strong> {t("of")}{" "}
-                    <strong style={{ color: "#0f172a" }}>{totalItems}</strong>
+                    {t("showing")} <strong style={{ color: "var(--text-main)" }}>{rangeStart}–{rangeEnd}</strong> {t("of")}{" "}
+                    <strong style={{ color: "var(--text-main)" }}>{totalItems}</strong>
                 </span>
 
                 {onPageSize && (
@@ -119,10 +98,10 @@ export default function Pagination({
                         style={{
                             padding: "4px 8px",
                             borderRadius: "6px",
-                            border: "1px solid #e4e2dd",
+                            border: "1px solid var(--border)",
                             fontSize: "12px",
-                            color: "#475569",
-                            background: "#fff",
+                            color: "var(--text-sub)",
+                            background: "var(--bg-card)",
                             cursor: "pointer",
                             outline: "none",
                         }}
@@ -134,58 +113,52 @@ export default function Pagination({
                 )}
             </div>
 
-            {/* Right: page buttons */}
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                    {/* Prev */}
-                    <button
-                        style={hasPrev ? btnBase : disabledBtn}
-                        onClick={hasPrev ? onPrev : undefined}
-                        disabled={!hasPrev}
-                        title="Previous page"
-                    >
-                        ←
-                    </button>
+                <button
+                    style={hasPrev ? btnBase : disabledBtn}
+                    onClick={hasPrev ? onPrev : undefined}
+                    disabled={!hasPrev}
+                    title="Previous page"
+                >
+                    ←
+                </button>
 
-                    {/* Page numbers */}
-                    {getPageNumbers().map((page, idx) =>
-                        page === "..." ? (
-                            <span
-                                key={`ellipsis-${idx}`}
-                                style={{ padding: "0 4px", color: "#94a3b8", userSelect: "none" }}
-                            >
-                                …
-                            </span>
-                        ) : (
-                            <button
-                                key={page}
-                                style={page === currentPage ? activeBtn : btnBase}
-                                onClick={() => page !== currentPage && onGoTo(page)}
-                                onMouseEnter={(e) => {
-                                    if (page !== currentPage) {
-                                        e.currentTarget.style.background = "#f1f5f9";
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (page !== currentPage) {
-                                        e.currentTarget.style.background = "#fff";
-                                    }
-                                }}
-                            >
-                                {page}
-                            </button>
-                        )
-                    )}
+                {getPageNumbers().map((page, idx) =>
+                    page === "..." ? (
+                        <span
+                            key={`ellipsis-${idx}`}
+                            style={{ padding: "0 4px", color: "var(--icon-muted)", userSelect: "none" }}
+                        >
+                            …
+                        </span>
+                    ) : (
+                        <button
+                            key={page}
+                            style={page === currentPage ? activeBtn : btnBase}
+                            onClick={() => page !== currentPage && onGoTo(page)}
+                            onMouseEnter={(e) => {
+                                if (page !== currentPage)
+                                    e.currentTarget.style.background = "var(--hover-bg)";
+                            }}
+                            onMouseLeave={(e) => {
+                                if (page !== currentPage)
+                                    e.currentTarget.style.background = "var(--bg-card)";
+                            }}
+                        >
+                            {page}
+                        </button>
+                    )
+                )}
 
-                    {/* Next */}
-                    <button
-                        style={hasNext ? btnBase : disabledBtn}
-                        onClick={hasNext ? onNext : undefined}
-                        disabled={!hasNext}
-                        title="Next page"
-                    >
-                        →
-                    </button>
-                </div>
+                <button
+                    style={hasNext ? btnBase : disabledBtn}
+                    onClick={hasNext ? onNext : undefined}
+                    disabled={!hasNext}
+                    title="Next page"
+                >
+                    →
+                </button>
+            </div>
         </div>
     );
 }
