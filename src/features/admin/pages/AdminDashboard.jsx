@@ -23,27 +23,115 @@ const fmtDate = (d) =>
     d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : d;
 
 // ── KPI Card ────────────────────────────────────────────────────────────────
-function KpiCard({ icon, label, value, linkTo, color, delta }) {
+const KPI_COLORS = {
+    purple: { accent: "#7F77DD", iconBg: "#EEEDFE", iconColor: "#534AB7" },
+    teal:   { accent: "#1D9E75", iconBg: "#E1F5EE", iconColor: "#0F6E56" },
+    blue:   { accent: "#378ADD", iconBg: "#E6F1FB", iconColor: "#185FA5" },
+    amber:  { accent: "#BA7517", iconBg: "#FAEEDA", iconColor: "#854F0B" },
+    pink:   { accent: "#D4537E", iconBg: "#FBEAF0", iconColor: "#993556" },
+    coral:  { accent: "#D85A30", iconBg: "#FAECE7", iconColor: "#993C1D" },
+};
+
+function KpiCard({ icon, label, value, linkTo, colorKey = "blue", delta }) {
+    const c = KPI_COLORS[colorKey] ?? KPI_COLORS.blue;
     const isPositive = delta && delta.startsWith("+");
     const isZero = delta === "0%" || delta === "+0%";
-    return (
-        <Link to={linkTo ?? "#"} style={{ textDecoration: "none" }}>
-            <div
-                style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem", transition: "box-shadow 0.15s", cursor: linkTo ? "pointer" : "default" }}
-                onMouseEnter={(e) => { if (linkTo) e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.07)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
-            >
-                <div style={{ fontSize: "1.5rem" }}>{icon}</div>
-                <div style={{ fontSize: "2rem", fontWeight: 600, color: color ?? "var(--text-main)", letterSpacing: "-0.03em", lineHeight: 1 }}>{value ?? "—"}</div>
-                <div style={{ fontSize: "0.8rem", color: "var(--icon-muted)", fontWeight: 500 }}>{label}</div>
-                {delta && !isZero && (
-                    <div style={{ fontSize: "0.75rem", fontWeight: 600, color: isPositive ? "var(--success)" : "var(--danger)", background: isPositive ? "var(--success-bg)" : "var(--danger-bg)", border: `1px solid ${isPositive ? "var(--success-bg)" : "var(--danger-bg)"}`, borderRadius: "999px", padding: "2px 8px", alignSelf: "flex-start" }}>
-                        {isPositive ? "↑" : "↓"} {delta}
-                    </div>
-                )}
+
+    const cardStyle = {
+        background: "var(--bg-card)",
+        border: "1px solid #e4e2dd",
+        borderRadius: "12px",
+        padding: "1.25rem 1.25rem 1rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "6px",
+        cursor: linkTo ? "pointer" : "default",
+        transition: "border-color 0.15s, background 0.15s",
+        textDecoration: "none",
+        position: "relative",
+        overflow: "hidden",
+    };
+
+    const content = (
+        <div
+            style={cardStyle}
+            onMouseEnter={(e) => {
+                if (linkTo) {
+                    e.currentTarget.style.borderColor = "var(--color-primary)";
+                    e.currentTarget.style.background = "var(--bg-surface)";
+                }
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#e4e2dd";
+                e.currentTarget.style.background = "var(--bg-card)";
+            }}
+        >
+            {/* Accent top bar */}
+            <div style={{
+                position: "absolute",
+                top: 0, left: 0, right: 0,
+                height: "3px",
+                background: c.accent,
+                borderRadius: "12px 12px 0 0",
+            }} />
+
+            {/* Icon */}
+            <div style={{
+                width: "36px", height: "36px",
+                borderRadius: "8px",
+                background: c.iconBg,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "18px",
+                marginBottom: "4px",
+                marginTop: "4px",
+            }}>
+                <span style={{ color: c.iconColor, fontSize: "18px" }}>{icon}</span>
             </div>
-        </Link>
+
+            {/* Value */}
+            <div style={{
+                fontSize: "28px",
+                fontWeight: 600,
+                color: "var(--text-main)",
+                letterSpacing: "-0.03em",
+                lineHeight: 1,
+            }}>
+                {value?.toLocaleString() ?? "—"}
+            </div>
+
+            {/* Label */}
+            <div style={{
+                fontSize: "12px",
+                color: "var(--icon-muted)",
+                fontWeight: 400,
+            }}>
+                {label}
+            </div>
+
+            {/* Delta badge */}
+            {delta && !isZero && (
+                <div style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "3px",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    padding: "2px 8px",
+                    borderRadius: "999px",
+                    marginTop: "2px",
+                    alignSelf: "flex-start",
+                    background: isPositive ? "var(--success-bg)" : "var(--danger-bg)",
+                    color: isPositive ? "var(--success)" : "var(--danger)",
+                }}>
+                    {isPositive ? "↑" : "↓"} {delta}
+                </div>
+            )}
+        </div>
     );
+
+    return linkTo ? (
+        <Link to={linkTo} style={{ textDecoration: "none" }}>{content}</Link>
+    ) : content;
 }
 
 // ── Custom Tooltip ───────────────────────────────────────────────────────────
@@ -68,13 +156,12 @@ export default function AdminDashboard() {
     const { refetchOverview, overview, overviewLoading, refetchRequests } = useOutletContext() ?? {};
     const { t } = useLanguage();
 
-    const [recentNotifs, setRecentNotifs]     = useState([]);
-    const [notifsLoading, setNotifsLoading]   = useState(true);
-    const [trendData, setTrendData]           = useState([]);
-    const [trendLoading, setTrendLoading]     = useState(true);
-    const [activeLine, setActiveLine]         = useState(null);
+    const [recentNotifs, setRecentNotifs]   = useState([]);
+    const [notifsLoading, setNotifsLoading] = useState(true);
+    const [trendData, setTrendData]         = useState([]);
+    const [trendLoading, setTrendLoading]   = useState(true);
+    const [activeLine, setActiveLine]       = useState(null);
 
-    // ── جيب آخر 5 إشعارات ───────────────────────────────────────
     useEffect(() => {
         const load = async () => {
             setNotifsLoading(true);
@@ -91,7 +178,6 @@ export default function AdminDashboard() {
         load();
     }, []);
 
-    // ── جيب الـ trending لآخر 7 أيام ────────────────────────────
     useEffect(() => {
         const load = async () => {
             setTrendLoading(true);
@@ -147,12 +233,12 @@ export default function AdminDashboard() {
 
             {/* ── KPI Cards ── */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
-                <KpiCard icon="👥" label={t("new_users")}     value={overview?.new_users}     linkTo="users"  delta={overview?.users_delta} />
-                <KpiCard icon="🏪" label={t("new_owners")}    value={overview?.new_owners}    linkTo="owners" delta={overview?.owners_delta} />
-                <KpiCard icon="📍" label={t("active_places")} value={overview?.active_places} linkTo="places" />
-                <KpiCard icon="👁️" label={t("visits")}        value={overview?.visits}        delta={overview?.visits_delta} />
-                <KpiCard icon="⭐" label={t("reviews")}       value={overview?.reviews}       delta={overview?.reviews_delta} />
-                <KpiCard icon="📞" label={t("calls")}         value={overview?.calls}         delta={overview?.calls_delta} />
+                <KpiCard icon="👥" label={t("new_users")}     value={overview?.new_users}     linkTo="users"  colorKey="purple" delta={overview?.users_delta} />
+                <KpiCard icon="🏪" label={t("new_owners")}    value={overview?.new_owners}    linkTo="owners" colorKey="teal"   delta={overview?.owners_delta} />
+                <KpiCard icon="📍" label={t("active_places")} value={overview?.active_places} linkTo="places" colorKey="blue" />
+                <KpiCard icon="👁️" label={t("visits")}        value={overview?.visits}                        colorKey="amber" delta={overview?.visits_delta} />
+                <KpiCard icon="⭐" label={t("reviews")}       value={overview?.reviews}                       colorKey="pink"  delta={overview?.reviews_delta} />
+                <KpiCard icon="📞" label={t("calls")}         value={overview?.calls}                         colorKey="coral" delta={overview?.calls_delta} />
             </div>
 
             {/* ── Platform Trends Chart ── */}
@@ -162,7 +248,6 @@ export default function AdminDashboard() {
                         <h2 style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-main)", margin: 0 }}>📈 Platform Trends</h2>
                         <p style={{ fontSize: "0.75rem", color: "var(--icon-muted)", marginTop: "3px" }}>Last 7 days activity</p>
                     </div>
-                    {/* Legend toggles */}
                     <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                         {LINES.map((l) => (
                             <button

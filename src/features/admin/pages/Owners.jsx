@@ -21,9 +21,9 @@ const apiFetch = async (path, options = {}) => {
 };
 
 const OWNER_TYPE_COLORS = {
-  COMMERCIAL:  { bg: "var(--info-bg)", color: "var(--color-primary-hover)", border: "var(--info-bg)" },
+  COMMERCIAL: { bg: "var(--info-bg)", color: "var(--color-primary-hover)", border: "var(--info-bg)" },
   RESIDENTIAL: { bg: "var(--bg-surface)", color: "var(--color-secondary)", border: "var(--bg-surface)" },
-  null:        { bg: "var(--bg-surface)", color: "var(--text-sub)", border: "var(--border)" },
+  null: { bg: "var(--bg-surface)", color: "var(--text-sub)", border: "var(--border)" },
 };
 
 const ownerTypeStyle = (type) => OWNER_TYPE_COLORS[type] ?? OWNER_TYPE_COLORS[null];
@@ -81,20 +81,20 @@ export default function Owners() {
   const queryClient = useQueryClient();
   const { t } = useLanguage();
 
-  const [search, setSearch]           = useState("");
-  const [filterType, setFilterType]   = useState("ALL");
+  const [search, setSearch] = useState("");
+  const [filterType, setFilterType] = useState("ALL");
   const [actionLoading, setActionLoading] = useState(null);
-  const [toasts, setToasts]           = useState([]);
-  const [dialog, setDialog]           = useState(null);
-  const [showModal, setShowModal]     = useState(false);
-  const [form, setForm]               = useState(EMPTY_FORM);
-  const [formError, setFormError]     = useState("");
-  const [creating, setCreating]       = useState(false);
+  const [toasts, setToasts] = useState([]);
+  const [dialog, setDialog] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState("");
+  const [creating, setCreating] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [viewOwner, setViewOwner]     = useState(null);
+  const [viewOwner, setViewOwner] = useState(null);
   const [ownerDetails, setOwnerDetails] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
-  const [pageSize, setPageSize]       = useState(10);
+  const [pageSize, setPageSize] = useState(10);
 
   // ── useQuery ──────────────────────────────────────────────────────────
   const { data: owners = [], isLoading: loading, isError } = useQuery({
@@ -177,16 +177,16 @@ export default function Owners() {
   const handleCreateOwner = async () => {
     setFormError("");
     if (!form.full_name.trim()) return setFormError("Full name is required.");
-    if (!form.email.trim())     return setFormError("Email is required.");
-    if (!form.password.trim())  return setFormError("Password is required.");
+    if (!form.email.trim()) return setFormError("Email is required.");
+    if (!form.password.trim()) return setFormError("Password is required.");
     setCreating(true);
     try {
       const newOwner = await apiFetch("/dashboard/admin/owners", {
         method: "POST",
         body: JSON.stringify({
-          full_name:  form.full_name.trim(),
-          email:      form.email.trim(),
-          password:   form.password.trim(),
+          full_name: form.full_name.trim(),
+          email: form.email.trim(),
+          password: form.password.trim(),
           owner_type: form.owner_type,
         }),
       });
@@ -222,7 +222,7 @@ export default function Owners() {
 
       let itemsCount = 0;
       if (itemsData.status === "fulfilled" && subcatsData.status === "fulfilled") {
-        const allItems   = Array.isArray(itemsData.value)   ? itemsData.value   : itemsData.value?.data   ?? [];
+        const allItems = Array.isArray(itemsData.value) ? itemsData.value : itemsData.value?.data ?? [];
         const allSubcats = Array.isArray(subcatsData.value) ? subcatsData.value : subcatsData.value?.data ?? [];
         const ownerSubcatIds = allSubcats
           .filter((s) => s.owner_id === owner.id || ownerPlaceIds.includes(s.place_id))
@@ -233,7 +233,7 @@ export default function Owners() {
       let ordersCount = 0;
       let ordersPerBranch = {};
       if (ordersData.status === "fulfilled") {
-        const allOrders  = Array.isArray(ordersData.value) ? ordersData.value : ordersData.value?.data ?? ordersData.value?.orders ?? [];
+        const allOrders = Array.isArray(ordersData.value) ? ordersData.value : ordersData.value?.data ?? ordersData.value?.orders ?? [];
         const ownerOrders = allOrders.filter((o) => o.owner_id === owner.id || ownerPlaceIds.includes(o.place_id));
         ordersCount = ownerOrders.length;
         ownerOrders.forEach((o) => {
@@ -275,11 +275,11 @@ export default function Owners() {
   useMemo(() => { resetPage(); }, [search, filterType]);
 
   const stats = useMemo(() => ({
-    total:       owners.length,
-    verified:    owners.filter((o) => o.is_verified).length,
-    commercial:  owners.filter((o) => o.owner_type === "COMMERCIAL").length,
+    total: owners.length,
+    verified: owners.filter((o) => o.is_verified).length,
+    commercial: owners.filter((o) => o.owner_type === "COMMERCIAL").length,
     residential: owners.filter((o) => o.owner_type === "RESIDENTIAL").length,
-    banned:      owners.filter((o) => !o.is_active).length,
+    banned: owners.filter((o) => !o.is_active).length,
   }), [owners]);
 
   return (
@@ -316,8 +316,8 @@ export default function Owners() {
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             onClick={() => { setShowModal(true); setFormError(""); setForm(EMPTY_FORM); }}
-            style={{ padding: "8px 16px", borderRadius: "8px", border: "none", background: "var(--text-main)", fontSize: "13px", cursor: "pointer", color: "var(--bg-card)", fontWeight: 600 }}
-          > {t("create_owner")}</button>
+            style={{ padding: "8px 16px", borderRadius: "8px", border: "none", background: "var(--color-primary)", color: "var(--text-on-dark)", fontSize: "13px", cursor: "pointer", fontWeight: 600 }}
+          > ➕ {t("create_owner")} </button>
           <button
             onClick={fetchOwners}
             style={{ padding: "8px 16px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", cursor: "pointer", color: "var(--text-sub)", fontWeight: 500 }}
@@ -327,18 +327,28 @@ export default function Owners() {
 
       {/* Stats */}
       {!loading && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "12px", marginBottom: "1.5rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px", marginBottom: "1.5rem" }}>
           {[
-            { label: t("total") ,      value: stats.total,       color: "var(--text-main)", icon: "🏪" },
-            { label: t("verified"),    value: stats.verified,    color: "var(--success)", icon: "✅" },
-            { label: t("commercial"),  value: stats.commercial,  color: "var(--color-primary-hover)", icon: "🏬" },
-            { label: t("residential"), value: stats.residential, color: "var(--color-secondary)", icon: "🏠" },
-            { label: t("banned"),      value: stats.banned,      color: "var(--danger)", icon: "🚫" },
+            { label: t("total"), value: stats.total, icon: "🏪", bg: "#E6F1FB", color: "#0C447C", trend: "All time" },
+            { label: t("verified"), value: stats.verified, icon: "✅", bg: "#EAF3DE", color: "#27500A", trend: `${Math.round(stats.verified / stats.total * 100) || 0}%` },
+            { label: t("commercial"), value: stats.commercial, icon: "🏬", bg: "#E6F1FB", color: "#0C447C", trend: `${Math.round(stats.commercial / stats.total * 100) || 0}%` },
+            { label: t("residential"), value: stats.residential, icon: "🏠", bg: "#EEEDFE", color: "#3C3489", trend: `${Math.round(stats.residential / stats.total * 100) || 0}%` },
+            { label: t("banned"), value: stats.banned, icon: "🚫", bg: "#FCEBEB", color: "#791F1F", trend: `${Math.round(stats.banned / stats.total * 100) || 0}%` },
+            
           ].map((s) => (
-            <div key={s.label} style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "14px 16px" }}>
-              <div style={{ fontSize: "18px", marginBottom: "4px" }}>{s.icon}</div>
-              <div style={{ fontSize: "1.3rem", fontWeight: 700, color: s.color }}>{s.value}</div>
-              <div style={{ fontSize: "11px", color: "var(--icon-muted)", fontWeight: 500, marginTop: "2px" }}>{s.label}</div>
+            <div key={s.label} style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <span style={{ fontSize: "18px" }}>{s.icon}</span>
+              </div>
+              <div>
+                <div style={{ fontSize: "26px", fontWeight: 600, color: s.color, lineHeight: 1 }}>{s.value}</div>
+                <div style={{ fontSize: "12px", color: "var(--icon-muted)", marginTop: "4px" }}>{s.label}</div>
+              </div>
+              <div style={{ width: "100%", height: "1px", background: "#e4e2dd" }} />
+              <div style={{ fontSize: "11px", fontWeight: 500, color: s.color, display: "flex", alignItems: "center", gap: "4px" }}>
+                <i className="ti ti-percentage" style={{ fontSize: "12px" }} aria-hidden="true" />
+                {s.trend}
+              </div>
             </div>
           ))}
         </div>
@@ -361,19 +371,19 @@ export default function Owners() {
         </div>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
           {[
-            { key: "ALL",         label: t("all_types") },
-{ key: "COMMERCIAL",  label: `🏬 ${t("commercial")}` },
-{ key: "RESIDENTIAL", label: `🏠 ${t("residential")}` },
-{ key: "NONE",        label: `❓ ${t("no_type")}` },
+            { key: "ALL", label: t("all_types") },
+            { key: "COMMERCIAL", label: `🏬 ${t("commercial")}` },
+            { key: "RESIDENTIAL", label: `🏠 ${t("residential")}` },
+            { key: "NONE", label: `❓ ${t("no_type")}` },
           ].map((f) => (
             <button
               key={f.key}
               onClick={() => setFilterType(f.key)}
               style={{
                 padding: "8px 14px", borderRadius: "8px", fontSize: "12px", fontWeight: 500, cursor: "pointer",
-                border:      filterType === f.key ? "1px solid #0f172a" : "1px solid #e4e2dd",
-                background:  filterType === f.key ? "var(--text-main)" : "var(--bg-card)",
-                color:       filterType === f.key ? "var(--bg-card)" : "var(--text-sub)",
+                border: filterType === f.key ? "none" : "1px solid #e4e2dd",
+                background: filterType === f.key ? "var(--color-primary)" : "var(--bg-card)",
+                color: filterType === f.key ? "#ffffff" : "var(--text-sub)",
               }}
             >{f.label}</button>
           ))}
@@ -415,10 +425,10 @@ export default function Owners() {
               </thead>
               <tbody>
                 {paginated.map((owner, idx) => {
-                  const typeStyle       = ownerTypeStyle(owner.owner_type);
-                  const isVerifying     = actionLoading?.id === owner.id && actionLoading?.type === "verify";
+                  const typeStyle = ownerTypeStyle(owner.owner_type);
+                  const isVerifying = actionLoading?.id === owner.id && actionLoading?.type === "verify";
                   const isTogglingStatus = actionLoading?.id === owner.id && actionLoading?.type === "status";
-                  const joined          = owner.created_at ? new Date(owner.created_at).toLocaleDateString() : "—";
+                  const joined = owner.created_at ? new Date(owner.created_at).toLocaleDateString() : "—";
 
                   return (
                     <tr
@@ -587,10 +597,10 @@ export default function Owners() {
               </div>
 
               {[
-                { label: "ID",      value: viewOwner.id },
-                { label: "Email",   value: viewOwner.email },
+                { label: "ID", value: viewOwner.id },
+                { label: "Email", value: viewOwner.email },
                 { label: "Provider", value: viewOwner.provider ?? "local" },
-                { label: "Joined",  value: viewOwner.created_at ? new Date(viewOwner.created_at).toLocaleString() : "—" },
+                { label: "Joined", value: viewOwner.created_at ? new Date(viewOwner.created_at).toLocaleString() : "—" },
                 { label: "Updated", value: viewOwner.updated_at ? new Date(viewOwner.updated_at).toLocaleString() : "—" },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "var(--bg-surface)", borderRadius: "8px", border: "1px solid #f1f0ec" }}>
@@ -605,7 +615,7 @@ export default function Owners() {
                 <>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
                     {[
-                      { icon: "📦", label: "Items",  value: ownerDetails.itemsCount },
+                      { icon: "📦", label: "Items", value: ownerDetails.itemsCount },
                       { icon: "🛒", label: "Orders", value: ownerDetails.ordersCount },
                       { icon: "🏪", label: "Places", value: ownerDetails.places.length },
                     ].map((s) => (
@@ -625,11 +635,11 @@ export default function Owners() {
                             🏪 BRANCH {ownerDetails.places.length > 1 ? idx + 1 : ""}
                           </p>
                           {[
-                            { label: "Name",     value: place.name },
+                            { label: "Name", value: place.name },
                             { label: "Category", value: place.category ?? place.category_id ?? "—" },
-                            { label: "Status",   value: place.is_active ? "Active" : "Inactive" },
-                            { label: "Address",  value: place.address ?? place.location ?? "—" },
-                            { label: "Orders",   value: ownerDetails.ordersPerBranch?.[place.id] ?? 0 },
+                            { label: "Status", value: place.is_active ? "Active" : "Inactive" },
+                            { label: "Address", value: place.address ?? place.location ?? "—" },
+                            { label: "Orders", value: ownerDetails.ordersPerBranch?.[place.id] ?? 0 },
                           ].map(({ label, value }) => (
                             <div key={label} style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
                               <span style={{ fontSize: "11px", color: "var(--text-sub)", fontWeight: 600 }}>{label}</span>

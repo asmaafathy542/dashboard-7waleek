@@ -183,26 +183,26 @@ function CreatePlaceModal({ onClose, onCreated }) {
                             </div>
                             <input type="text" placeholder="Google Maps link" value={form.location_link}
                                 onChange={(e) => {
-                                  const url = e.target.value;
-                                  setForm((prev) => {
-                                    const updated = { ...prev, location_link: url };
-                                    const patterns = [
-                                      /@(-?\d+\.\d+),(-?\d+\.\d+)/,
-                                      /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
-                                      /[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
-                                      /\/(-?\d+\.\d+),(-?\d+\.\d+)/,
-                                    ];
-                                    for (const pattern of patterns) {
-                                      const match = url.match(pattern);
-                                      if (match) {
-                                        updated.latitude = match[1];
-                                        updated.longitude = match[2];
-                                        break;
-                                      }
-                                    }
-                                    return updated;
-                                  });
-                                  setError("");
+                                    const url = e.target.value;
+                                    setForm((prev) => {
+                                        const updated = { ...prev, location_link: url };
+                                        const patterns = [
+                                            /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+                                            /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+                                            /[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
+                                            /\/(-?\d+\.\d+),(-?\d+\.\d+)/,
+                                        ];
+                                        for (const pattern of patterns) {
+                                            const match = url.match(pattern);
+                                            if (match) {
+                                                updated.latitude = match[1];
+                                                updated.longitude = match[2];
+                                                break;
+                                            }
+                                        }
+                                        return updated;
+                                    });
+                                    setError("");
                                 }}
                                 style={inputStyle} />
                             {form.location_link && !form.latitude && (
@@ -513,11 +513,11 @@ export default function AdminPlaces() {
 
     const filterBtnStyle = (isActive) => ({
         padding: "7px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: 500,
-        cursor: "pointer", border: isActive ? "1.5px solid #0f172a" : "1px solid #e4e2dd",
-        background: isActive ? "var(--text-main)" : "var(--bg-card)",
-        color: isActive ? "var(--bg-card)" : "var(--text-sub)",
+        cursor: "pointer",
+        border: isActive ? "none" : "1px solid #e4e2dd",
+        background: isActive ? "var(--color-primary)" : "var(--bg-card)",
+        color: isActive ? "#ffffff" : "var(--text-sub)",
     });
-
     return (
         <div style={{ maxWidth: "1200px" }}>
 
@@ -528,8 +528,8 @@ export default function AdminPlaces() {
                     <p style={{ fontSize: "0.85rem", color: "var(--icon-muted)" }}>{loading ? "Loading..." : `${total} ${t("total_places")}`}</p>
                 </div>
                 <div style={{ display: "flex", gap: "10px" }}>
-                    <button onClick={() => setShowCreate(true)} style={{ padding: "8px 16px", borderRadius: "8px", border: "none", background: "var(--text-main)", color: "var(--bg-card)", fontSize: "13px", cursor: "pointer", fontWeight: 600 }}>
-                        + {t("create_place")}
+                    <button onClick={() => setShowCreate(true)} style={{ padding: "8px 14px", borderRadius: "8px", border: "none", background: "var(--color-primary)", color: "var(--text-on-dark)", fontSize: "13px", cursor: "pointer", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
+                        ➕ {t("create_place")}
                     </button>
                     <button onClick={fetchData} style={{ padding: "8px 16px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", cursor: "pointer", color: "var(--text-sub)", fontWeight: 500 }}>
                         🔄 {t("refresh")}
@@ -538,17 +538,25 @@ export default function AdminPlaces() {
             </div>
 
             {/* Stats */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "1.5rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "1.5rem" }}>
                 {[
-                    { icon: "🏪", label: t("total"), value: total, bg: "var(--bg-surface)", color: "var(--text-main)" },
-                    { icon: "✅", label: t("active"), value: active, bg: "var(--success-bg)", color: "var(--success)" },
-                    { icon: "❌", label: t("inactive"), value: inactive, bg: "var(--danger-bg)", color: "var(--danger)" },
-                    { icon: "⏸️", label: t("suspended"), value: suspended, bg: "var(--warning-bg)", color: "var(--warning)" },
+                    { icon: "🏪", label: t("total"), value: total, bg: "#E6F1FB", color: "#0C447C", trend: "All time" },
+                    { icon: "✅", label: t("active"), value: active, bg: "#EAF3DE", color: "#27500A", trend: `${Math.round(active / total * 100) || 0}%` },
+                    { icon: "❌", label: t("inactive"), value: inactive, bg: "#FCEBEB", color: "#791F1F", trend: `${Math.round(inactive / total * 100) || 0}%` },
+                    { icon: "⏸️", label: t("suspended"), value: suspended, bg: "#FAEEDA", color: "#633806", trend: `${Math.round(suspended / total * 100) || 0}%` },
                 ].map((s) => (
-                    <div key={s.label} style={{ background: s.bg, borderRadius: "12px", padding: "16px 20px", border: "1px solid #e4e2dd" }}>
-                        <div style={{ fontSize: "22px", marginBottom: "6px" }}>{s.icon}</div>
-                        <div style={{ fontSize: "1.6rem", fontWeight: 700, color: s.color }}>{s.value}</div>
-                        <div style={{ fontSize: "12px", color: "var(--text-sub)", marginTop: "2px" }}>{s.label}</div>
+                    <div key={s.label} style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                        <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <span style={{ fontSize: "18px" }}>{s.icon}</span>
+                        </div>
+                        <div>
+                            <div style={{ fontSize: "26px", fontWeight: 600, color: s.color, lineHeight: 1 }}>{s.value}</div>
+                            <div style={{ fontSize: "12px", color: "var(--icon-muted)", marginTop: "4px" }}>{s.label}</div>
+                        </div>
+                        <div style={{ width: "100%", height: "1px", background: "#e4e2dd" }} />
+                        <div style={{ fontSize: "11px", fontWeight: 500, color: s.color }}>
+                            % {s.trend}
+                        </div>
                     </div>
                 ))}
             </div>
@@ -628,7 +636,7 @@ export default function AdminPlaces() {
                                             <td style={{ padding: "12px 14px", color: "var(--icon-muted)", fontWeight: 500 }}>{place.Place_ID}</td>
                                             <td style={{ padding: "12px 14px" }}>
                                                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                                    <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "var(--text-main)", color: "var(--bg-card)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 600, flexShrink: 0 }}>
+                                                    <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "var(--color-primary-hover)", color: "var(--bg-card)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 600, flexShrink: 0 }}>
                                                         {(place.Name ?? "?").charAt(0).toUpperCase()}
                                                     </div>
                                                     <span style={{ fontWeight: 500, color: "var(--text-main)" }}>{place.Name}</span>
