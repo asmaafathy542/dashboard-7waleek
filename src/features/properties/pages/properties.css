@@ -163,7 +163,7 @@
   align-items: center;
   justify-content: center;
   font-size: 48px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e4e2dd 100%);
+ background: var(--bg-surface);
 }
 
 .prop-availability-badge {
@@ -329,7 +329,7 @@
 .prop-form-row label {
   font-size: 12px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-sub);
 }
 .prop-form-grid {
   display: grid;

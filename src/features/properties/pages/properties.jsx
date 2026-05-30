@@ -221,7 +221,7 @@ export default function Properties() {
               <div className="prop-card-body">
                 <h3 className="prop-card-title">{prop.title}</h3>
                 {prop.owner_name && (
-                  <div style={{ fontSize: "12px", color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}>
+                  <div style={{ fontSize: "12px", color: "var(--text-sub)", display: "flex", alignItems: "center", gap: "4px" }}>
                     👤 {prop.owner_name}
                   </div>
                 )}
@@ -269,43 +269,43 @@ export default function Properties() {
                     <img src={viewProp.main_image_url} alt={viewProp.title}
                       style={{ width: "100%", borderRadius: "12px", maxHeight: "200px", objectFit: "cover" }} />
                   ) : (
-                    <div style={{ width: "100%", height: "140px", background: "#f1f0ec", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "48px" }}>🏠</div>
+                    <div style={{ width: "100%", height: "140px",  background: "var(--bg-surface)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "48px" }}>🏠</div>
                   )}
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "#0f172a" }}>{viewProp.title}</h3>
+                    <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "var(--text-main)" }}>{viewProp.title}</h3>
                     <span style={{ fontSize: "11px", fontWeight: 700, padding: "3px 12px", borderRadius: "999px", background: viewProp.is_available ? "#dcfce7" : "#fee2e2", color: viewProp.is_available ? "#15803d" : "#b91c1c" }}>
                       {viewProp.is_available ? (ar ? "متاح" : "Available") : (ar ? "غير متاح" : "Unavailable")}
                     </span>
                   </div>
 
                   {viewProp.owner_name && (
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 14px", background: "#f8fafc", border: "1px solid #e4e2dd", borderRadius: "10px", fontSize: "13px", color: "#475569", fontWeight: 500 }}>
-                      👤 <span style={{ color: "#0f172a", fontWeight: 600 }}>{viewProp.owner_name}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 14px", background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "13px", color: "var(--text-sub)", fontWeight: 500 }}>
+                      👤 <span style={{ color: "var(--text-main)", fontWeight: 600 }}>{viewProp.owner_name}</span>
                     </div>
                   )}
 
                   {viewProp.description && (
-                    <p style={{ fontSize: "13px", color: "#475569", margin: 0, lineHeight: 1.6 }}>{viewProp.description}</p>
+                    <p style={{ fontSize: "13px", color: "var(--text-sub)", margin: 0, lineHeight: 1.6 }}>{viewProp.description}</p>
                   )}
 
-                  <div style={{ background: "#f8fafc", border: "1px solid #e4e2dd", borderRadius: "10px", padding: "12px 16px", fontSize: "18px", fontWeight: 700, color: "#0f172a" }}>
+                  <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: "10px", padding: "12px 16px", fontSize: "18px", fontWeight: 700, color: "#0f172a" }}>
                     💰 {Number(viewProp.price).toLocaleString()} {ar ? "جنيه" : "EGP"}
                   </div>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                    {viewProp.contact_number?.length > 0 && <div style={{ fontSize: "13px", color: "#475569" }}>📞 {viewProp.contact_number.join(" / ")}</div>}
-                    {viewProp.whatsapp_number && <div style={{ fontSize: "13px", color: "#475569" }}>💬 {viewProp.whatsapp_number}</div>}
-                    {viewProp.latitude && viewProp.longitude && <div style={{ fontSize: "13px", color: "#475569" }}>📍 {viewProp.latitude}, {viewProp.longitude}</div>}
+                    {viewProp.contact_number?.length > 0 && <div style={{ fontSize: "13px", color: "var(--text-sub)" }}>📞 {viewProp.contact_number.join(" / ")}</div>}
+                    {viewProp.whatsapp_number && <div style={{ fontSize: "13px",color: "var(--text-sub)" }}>💬 {viewProp.whatsapp_number}</div>}
+                    {viewProp.latitude && viewProp.longitude && <div style={{ fontSize: "13px", color: "var(--text-sub)"}}>📍 {viewProp.latitude}, {viewProp.longitude}</div>}
                   </div>
 
-                  <div style={{ display: "flex", gap: "16px", padding: "12px 0", borderTop: "1px solid #f1f0ec", fontSize: "13px", color: "#94a3b8" }}>
+                  <div style={{ display: "flex", gap: "16px", padding: "12px 0", borderTop: "1px solid var(--border)", fontSize: "13px", color: "var(--icon-muted)" }}>
                     <span>⭐ {viewProp.review_count ?? 0} {ar ? "تقييم" : "reviews"}</span>
                     <span>❤️ {viewProp.favorite_count ?? 0} {ar ? "حفظ" : "saves"}</span>
                   </div>
 
                   {viewProp.created_at && (
-                    <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+                    <div style={{ fontSize: "11px", color: "var(--icon-muted)" }}>
                       {ar ? "تاريخ الإضافة:" : "Date added:"} {new Date(viewProp.created_at).toLocaleDateString(ar ? "ar-EG" : "en-US")}
                     </div>
                   )}

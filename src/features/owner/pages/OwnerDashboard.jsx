@@ -167,16 +167,16 @@ function ResidentialOverview() {
                                     alignItems: "center",
                                     justifyContent: "space-between",
                                     padding: "12px 16px",
-                                    background: "#f8fafc",
+                                    background: "var(--bg-surface)",
                                     borderRadius: "10px",
-                                    border: "1px solid #e4e2dd",
+                                    border: "1px solid var(--border)",
                                 }}
                             >
                                 <div>
-                                    <div style={{ fontWeight: 600, fontSize: "14px", color: "#0f172a" }}>
+                                    <div style={{ fontWeight: 600, fontSize: "14px", color: "var(--text-main)" }}>
                                         {prop.title}
                                     </div>
-                                    <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "2px" }}>
+                                    <div style={{ fontSize: "12px",color: "var(--icon-muted)", marginTop: "2px" }}>
                                         ⭐ {prop.review_count ?? 0} {t("reviews")} · ❤️ {prop.favorite_count ?? 0} {t("stat_favorites")}
                                     </div>
                                 </div>

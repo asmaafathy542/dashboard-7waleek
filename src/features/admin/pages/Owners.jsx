@@ -529,10 +529,10 @@ export default function Owners() {
               <div>
                 <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: "6px" }}>Owner Type</label>
                 <div style={{ display: "flex", gap: "8px" }}>
-                  {["COMMERCIAL", "RESIDENTIAL"].map((t) => (
-                    <button key={t} onClick={() => setForm((f) => ({ ...f, owner_type: t }))}
-                      style={{ flex: 1, padding: "9px", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer", border: form.owner_type === t ? "2px solid #0f172a" : "1px solid #e4e2dd", background: form.owner_type === t ? "var(--text-main)" : "var(--bg-card)", color: form.owner_type === t ? "var(--bg-card)" : "var(--text-sub)" }}>
-                      {t === "COMMERCIAL" ? `🏬 ${t("commercial")}` : `🏠 ${t("residential")}`}
+                  {["COMMERCIAL", "RESIDENTIAL"].map((type) => (
+                    <button key={type} onClick={() => setForm((f) => ({ ...f, owner_type: type }))}
+                      style={{ flex: 1, padding: "9px", borderRadius: "8px", fontSize: "12px", fontWeight: 600, cursor: "pointer", border: form.owner_type === type ? "2px solid #0f172a" : "1px solid #e4e2dd", background: form.owner_type === t ? "var(--text-main)" : "var(--bg-card)", color: form.owner_type === t ? "var(--bg-card)" : "var(--text-sub)" }}>
+                      {type === "COMMERCIAL" ? `🏬 ${t("commercial")}` : `🏠 ${t("residential")}`}
                     </button>
                   ))}
                 </div>

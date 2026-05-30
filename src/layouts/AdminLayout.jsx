@@ -165,11 +165,11 @@ export default function AdminLayout() {
     const overviewFetchedRef = useRef(false);
 
     const navItems = [
-        { label: t("overview"),      path: "",              icon: "📊" },
-        { label: t("owners"),        path: "owners",        icon: "🏪" },
-        { label: t("places"),        path: "places",        icon: "📍" },
-        { label: t("users"),         path: "users",         icon: "👥" },
-        { label: t("reports"),       path: "reports",       icon: "🚩" },
+        { label: t("overview"), path: "", icon: "📊" },
+        { label: t("owners"), path: "owners", icon: "🏪" },
+        { label: t("places"), path: "places", icon: "📍" },
+        { label: t("users"), path: "users", icon: "👥" },
+        { label: t("reports"), path: "reports", icon: "🚩" },
         { label: t("notifications"), path: "notifications", icon: "🔔" },
     ];
 
@@ -333,28 +333,33 @@ export default function AdminLayout() {
                     />
 
                     {/* Logout */}
-                    <button
-                        title={collapsed ? "Logout" : ""}
-                        onClick={() => { localStorage.clear(); window.location.href = "/login"; }}
-                        style={{
-                            width: "100%",
-                            padding: collapsed ? "10px" : "10px 12px",
-                            background: "transparent",
-                            border: "1px solid rgba(255,255,255,0.1)",
-                            borderRadius: "8px", color: "#94a3b8",
-                            fontFamily: "'Inter', sans-serif",
-                            fontSize: "14px", cursor: "pointer",
-                            display: "flex", alignItems: "center",
-                            justifyContent: "center",
-                            gap: collapsed ? 0 : "10px",
-                            transition: "all 0.15s",
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.color = "#fff"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#94a3b8"; }}
-                    >
-                        <span>🚪</span>
-                        {!collapsed && <span>{t("logout")}</span>}
-                    </button>
+                  {/* Logout */}
+<button
+    title={collapsed ? "Logout" : ""}
+    onClick={() => { localStorage.clear(); window.location.href = "/login"; }}
+    style={{
+        width: "100%",
+        padding: collapsed ? "13px" : "13px 16px",
+        background: "transparent",
+        border: "2px solid rgba(239, 68, 68, 0.6)",
+        borderRadius: "10px",
+        color: "#f87171",
+        fontFamily: "'Inter', sans-serif",
+        fontSize: "14px",
+        fontWeight: 500,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: collapsed ? 0 : "10px",
+        transition: "all 0.2s",
+    }}
+    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.22)"; e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.6)"; e.currentTarget.style.color = "#fca5a5"; }}
+    onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(239, 68, 68, 0.12)"; e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.35)"; e.currentTarget.style.color = "#f87171"; }}
+>
+    <span>🚪</span>
+    {!collapsed && <span>{t("logout")}</span>}
+</button>
                 </div>
             </div>
 

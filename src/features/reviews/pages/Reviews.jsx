@@ -65,11 +65,19 @@ function ResidentialReviews({ ar }) {
   const { paginated, reset: resetPage } = pagination;
 
   
-  const computedSentiment = {
-    positive: reviews.filter((r) => r.sentiment === "positive").length,
-    negative: reviews.filter((r) => r.sentiment === "negative").length,
-    neutral:  reviews.filter((r) => r.sentiment === "neutral").length,
-  };
+const getSentiment = (review) => {
+  if (review.sentiment) return review.sentiment;
+  const rating = review.rating ?? review.stars;
+  if (rating >= 4) return "positive";
+  if (rating <= 2) return "negative";
+  return "neutral";
+};
+
+const computedSentiment = {
+  positive: reviews.filter((r) => getSentiment(r) === "positive").length,
+  negative: reviews.filter((r) => getSentiment(r) === "negative").length,
+  neutral:  reviews.filter((r) => getSentiment(r) === "neutral").length,
+};
 
   if (loading) return <div className="rv-loading">{ar ? "جاري التحميل..." : "Loading..."}</div>;
 
@@ -158,23 +166,7 @@ function ResidentialReviews({ ar }) {
         />
       )}
 
-      {confirmDelete && (
-        <div className="or-modal-overlay" onClick={() => !deleting && setConfirmDelete(null)}>
-          <div className="or-confirm-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>{ar ? "حذف هذا التقييم؟" : "Delete this review?"}</h3>
-            <p>{ar ? "من:" : "By:"} {confirmDelete.user_name || (ar ? "مجهول" : "Anonymous")}</p>
-            <p>{ar ? "هذا الإجراء لا يمكن التراجع عنه." : "This action cannot be undone."}</p>
-            <div className="or-confirm-actions">
-              <button className="or-confirm-cancel" onClick={() => setConfirmDelete(null)} disabled={deleting}>
-                {ar ? "إلغاء" : "Cancel"}
-              </button>
-              <button className="or-confirm-delete" onClick={handleDelete} disabled={deleting}>
-                {deleting ? (ar ? "جاري الحذف..." : "Deleting...") : (ar ? "حذف" : "Delete")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     
     </div>
   );
 }
@@ -212,33 +204,26 @@ export default function Reviews() {
   const { paginated, reset: resetPage } = pagination;
   useMemo(() => { resetPage(); }, [allBranches, reviews.length]);
 
-  const handleDelete = async () => {
-    if (!confirmDelete) return;
-    setDeleting(true);
-    try {
-      await deleteReview(confirmDelete.id);
-      queryClient.setQueryData(["reviews", selectedPlaceId, allBranches], (old) => ({
-        items: (old?.items ?? []).filter((r) => r.id !== confirmDelete.id),
-        total: (old?.total ?? 1) - 1,
-      }));
-      setConfirmDelete(null);
-    } catch (err) {
-      alert(err?.response?.data?.error?.message || (ar ? "فشل الحذف، حاول مرة أخرى." : "Failed to delete, please try again."));
-    } finally {
-      setDeleting(false);
-    }
-  };
+
 
   if (isResidential) return <ResidentialReviews ar={ar} />;
 
   if (!selectedPlaceId) return <div className="rv-loading">{ar ? "جاري تحميل الفرع..." : "Loading branch..."}</div>;
   if (loading)          return <div className="rv-loading">{ar ? "جاري التحميل..." : "Loading..."}</div>;
 
-  const computedSentiment = {
-    positive: reviews.filter((r) => r.sentiment === "positive").length,
-    negative: reviews.filter((r) => r.sentiment === "negative").length,
-    neutral:  reviews.filter((r) => r.sentiment === "neutral").length,
-  };
+ const getSentiment = (review) => {
+  if (review.sentiment) return review.sentiment;
+  const rating = review.rating ?? review.stars;
+  if (rating >= 4) return "positive";
+  if (rating <= 2) return "negative";
+  return "neutral";
+};
+
+const computedSentiment = {
+  positive: reviews.filter((r) => getSentiment(r) === "positive").length,
+  negative: reviews.filter((r) => getSentiment(r) === "negative").length,
+  neutral:  reviews.filter((r) => getSentiment(r) === "neutral").length,
+};
 
   return (
     <div className="rv-page">
