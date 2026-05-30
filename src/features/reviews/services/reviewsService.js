@@ -34,12 +34,6 @@ export const getReviewsSentiment = async (placeId) => {
   return res.data;
 };
 
-export const deleteReview = async (reviewId) => {
-  const res = await api.delete(`/owner/reviews/${reviewId}`, {
-    headers: authHeader(),
-  });
-  return res.data;
-};
 
 export const getPropertyReviews = async (propertyId) => {
   const res = await api.get(

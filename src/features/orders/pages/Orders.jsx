@@ -6,7 +6,6 @@ import { useLanguage } from "../../../context/LanguageContext";
 import {
   getOrdersByBranch,
   updateOrderStatus,
-  deleteOrder,
 } from "../services/ordersService";
 import * as XLSX from "xlsx";
 import { usePagination } from "../../../hooks/usePagination";
@@ -24,14 +23,20 @@ const STATUS_OPTIONS = [
 ];
 
 // الـ flow الجديد — كل status ممكن يروح فين
-const ALLOWED_TRANSITIONS = {
-  PENDING:           ["CONFIRMED", "CANCELLED"],
-  CONFIRMED:         ["PREPARING", "CANCELLED"],
-  PREPARING:         ["READY_FOR_PICKUP", "OUT_FOR_DELIVERY", "CANCELLED"],
-  READY_FOR_PICKUP:  ["COMPLETED"],
-  OUT_FOR_DELIVERY:  ["COMPLETED"],
-  COMPLETED:         [],
-  CANCELLED:         [],
+const getAllowedTransitions = (order) => {
+  const type = order?.order_type; // "TAKE_AWAY" or "CASH_ON_DELIVERY" etc.
+  
+  return {
+    PENDING:          ["CONFIRMED", "CANCELLED"],
+    CONFIRMED:        ["PREPARING", "CANCELLED"],
+    PREPARING:        type === "TAKE_AWAY"
+                        ? ["READY_FOR_PICKUP", "CANCELLED"]
+                        : ["OUT_FOR_DELIVERY", "CANCELLED"],
+    READY_FOR_PICKUP: ["COMPLETED"],
+    OUT_FOR_DELIVERY: ["COMPLETED"],
+    COMPLETED:        [],
+    CANCELLED:        [],
+  };
 };
 
 const statusClass = {
@@ -79,8 +84,6 @@ export default function Orders() {
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [newOrderAlert, setNewOrderAlert] = useState(null);
   const [copiedId, setCopiedId] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(null);
-  const [deleting, setDeleting] = useState(false);
   const knownIdsRef = useRef(null);
 
   const { data: orders = [], isLoading: loading } = useQuery({
@@ -130,22 +133,7 @@ export default function Orders() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirmDelete) return;
-    setDeleting(true);
-    try {
-      await deleteOrder(confirmDelete.id);
-      queryClient.setQueryData(["orders", selectedPlaceId], (prev) =>
-        (prev ?? []).filter((o) => o.id !== confirmDelete.id)
-      );
-      setSelected(null);
-      setConfirmDelete(null);
-    } catch (err) {
-      alert(err?.response?.data?.error?.message || t("or_delete_failed"));
-    } finally {
-      setDeleting(false);
-    }
-  };
+  
 
   const copyUserId = (userId) => {
     navigator.clipboard.writeText(String(userId)).then(() => {
@@ -294,10 +282,10 @@ export default function Orders() {
                       className={`or-status ${statusClass[order.status]}`}
                       value={order.status}
                       onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                      disabled={ALLOWED_TRANSITIONS[order.status]?.length === 0}
+                     disabled={getAllowedTransitions(order)[order.status]?.length === 0}
                     >
                       <option value={order.status}>{statusLabel[order.status]}</option>
-                      {ALLOWED_TRANSITIONS[order.status]?.map((s) => (
+                      {getAllowedTransitions(order)[order.status]?.map((s) => (
                         <option key={s} value={s}>{statusLabel[s]}</option>
                       ))}
                     </select>
@@ -324,11 +312,6 @@ export default function Orders() {
             <div className="or-modal-header">
               <h2>{t("or_order_hash")}{selected.id}</h2>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                {["COMPLETED", "CANCELLED"].includes(selected.status) && (
-                  <button className="or-delete-btn or-delete-btn--modal" onClick={() => setConfirmDelete(selected)}>
-                    🗑 {t("it_delete")}
-                  </button>
-                )}
                 <button className="or-modal-close" onClick={() => setSelected(null)}>✕</button>
               </div>
             </div>
@@ -371,10 +354,10 @@ export default function Orders() {
                     className={`or-status ${statusClass[selected.status]}`}
                     value={selected.status}
                     onChange={(e) => handleStatusChange(selected.id, e.target.value)}
-                    disabled={ALLOWED_TRANSITIONS[selected.status]?.length === 0}
+                    disabled={getAllowedTransitions(selected)[selected.status]?.length === 0}
                   >
                     <option value={selected.status}>{statusLabel[selected.status]}</option>
-                    {ALLOWED_TRANSITIONS[selected.status]?.map((s) => (
+                    {getAllowedTransitions(selected)[selected.status]?.map((s) => (
                       <option key={s} value={s}>{statusLabel[s]}</option>
                     ))}
                   </select>
@@ -409,22 +392,6 @@ export default function Orders() {
         </div>
       )}
 
-      {/* Confirm Delete */}
-      {confirmDelete && (
-        <div className="or-modal-overlay" onClick={() => !deleting && setConfirmDelete(null)}>
-          <div className="or-confirm-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>{t("or_confirm_delete_title")} #{confirmDelete.id}?</h3>
-            <p>{t("or_field_name")}: {confirmDelete.full_name}</p>
-            <p>{t("or_confirm_delete_warn")}</p>
-            <div className="or-confirm-actions">
-              <button className="or-confirm-cancel" onClick={() => setConfirmDelete(null)} disabled={deleting}>{t("it_cancel")}</button>
-              <button className="or-confirm-delete" onClick={handleDelete} disabled={deleting}>
-                {deleting ? t("or_deleting") : t("it_delete")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

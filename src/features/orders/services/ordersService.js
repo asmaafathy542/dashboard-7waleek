@@ -28,9 +28,3 @@ export const getOrderById = async (orderId) => {
   const res = await api.get(`/owner/orders/${cleanId}`);
   return res.data;
 };
-
-/** حذف أوردر */
-export const deleteOrder = async (orderId) => {
-  const res = await api.delete(`/owner/orders/${orderId}`);
-  return res.data;
-};

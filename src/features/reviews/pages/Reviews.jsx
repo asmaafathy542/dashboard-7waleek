@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getReviews, getAllReviews, deleteReview, getPropertyReviews } from "../services/reviewsService";
+import { getReviews, getAllReviews, getPropertyReviews } from "../services/reviewsService";
 import { getMyProperties } from "../../properties/services/propertiesServices";
 import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
@@ -27,8 +27,6 @@ const sentimentBadge = {
 // ── RESIDENTIAL Reviews ───────────────────────────────────────────────────────
 function ResidentialReviews({ ar }) {
   const queryClient = useQueryClient();
-  const [confirmDelete, setConfirmDelete] = useState(null);
-  const [deleting, setDeleting]           = useState(false);
   const [pageSize, setPageSize]           = useState(10);
 
   const { data: properties = [], isLoading: propsLoading } = useQuery({
@@ -66,26 +64,7 @@ function ResidentialReviews({ ar }) {
   const pagination = usePagination(reviews, pageSize);
   const { paginated, reset: resetPage } = pagination;
 
-  const handleDelete = async () => {
-    if (!confirmDelete) return;
-    setDeleting(true);
-    try {
-      await deleteReview(confirmDelete.id);
-      queryClient.setQueryData(
-        ["residential-all-reviews", properties.map((p) => p.id)],
-        (old) => ({
-          items: (old?.items ?? []).filter((r) => r.id !== confirmDelete.id),
-          total: (old?.total ?? 1) - 1,
-        })
-      );
-      setConfirmDelete(null);
-    } catch (err) {
-      alert(err?.response?.data?.error?.message || (ar ? "فشل الحذف، حاول مرة أخرى." : "Failed to delete, please try again."));
-    } finally {
-      setDeleting(false);
-    }
-  };
-
+  
   const computedSentiment = {
     positive: reviews.filter((r) => r.sentiment === "positive").length,
     negative: reviews.filter((r) => r.sentiment === "negative").length,
@@ -160,9 +139,7 @@ function ResidentialReviews({ ar }) {
                     {ar ? sentimentBadge[review.sentiment].ar : sentimentBadge[review.sentiment].en}
                   </span>
                 )}
-                <button className="or-delete-btn" onClick={() => setConfirmDelete(review)} title={ar ? "حذف التقييم" : "Delete review"}>
-                  🗑
-                </button>
+               
               </div>
               {review.comment && <p className="rv-comment">{review.comment}</p>}
             </div>
@@ -215,8 +192,7 @@ export default function Reviews() {
 
   const [allBranches,   setAllBranches]   = useState(false);
   const [pageSize,      setPageSize]      = useState(10);
-  const [confirmDelete, setConfirmDelete] = useState(null);
-  const [deleting,      setDeleting]      = useState(false);
+
 
   const placeMap = {};
   (places ?? []).forEach((p) => { placeMap[p.id] = p.name; });
@@ -345,9 +321,7 @@ export default function Reviews() {
                     {ar ? sentimentBadge[review.sentiment].ar : sentimentBadge[review.sentiment].en}
                   </span>
                 )}
-                <button className="or-delete-btn" onClick={() => setConfirmDelete(review)} title={ar ? "حذف التقييم" : "Delete review"}>
-                  🗑
-                </button>
+               
               </div>
               {review.comment && <p className="rv-comment">{review.comment}</p>}
             </div>
@@ -366,23 +340,7 @@ export default function Reviews() {
         />
       )}
 
-      {confirmDelete && (
-        <div className="or-modal-overlay" onClick={() => !deleting && setConfirmDelete(null)}>
-          <div className="or-confirm-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>{ar ? "حذف هذا التقييم؟" : "Delete this review?"}</h3>
-            <p>{ar ? "من:" : "By:"} {confirmDelete.user_name || (ar ? "مجهول" : "Anonymous")}</p>
-            <p>{ar ? "هذا الإجراء لا يمكن التراجع عنه." : "This action cannot be undone."}</p>
-            <div className="or-confirm-actions">
-              <button className="or-confirm-cancel" onClick={() => setConfirmDelete(null)} disabled={deleting}>
-                {ar ? "إلغاء" : "Cancel"}
-              </button>
-              <button className="or-confirm-delete" onClick={handleDelete} disabled={deleting}>
-                {deleting ? (ar ? "جاري الحذف..." : "Deleting...") : (ar ? "حذف" : "Delete")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     
     </div>
   );
 }
