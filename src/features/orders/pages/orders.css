@@ -301,11 +301,10 @@
 }
 
 .or-filter-tab.active {
-  background: var(--text-main);
+  background: var(--color-primary);
   color: var(--text-on-dark);
-  border-color: var(--text-main);
+  border-color: var(--color-primary);
 }
-
 .or-filter-count {
   background: rgba(255,255,255,0.2);
   border-radius: 999px;
@@ -444,9 +443,9 @@
 }
 
 .or-status.status-preparing {
-  background: var(--warning-bg);
-  color: var(--warning);
-  border-color: var(--warning-bg);
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
 }
 
 .or-status.status-ready {
@@ -456,11 +455,10 @@
 }
 
 .or-status.status-delivery {
-  background: var(--bg-surface);
-  color: var(--color-secondary);
-  border-color: var(--border);
+  background: #eff6ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
 }
-
 .or-status.status-completed {
   background: var(--success-bg);
   color: var(--success);
@@ -468,8 +466,7 @@
 }
 
 .or-status.status-cancelled {
-  background: var(--danger-bg);
-  color: var(--danger);
-  border-color: var(--danger-bg);
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
 }
-

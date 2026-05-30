@@ -55,14 +55,14 @@ export default function Pagination({
         fontFamily: "inherit",
     };
 
-    const activeBtn = {
-        ...btnBase,
-        background: "var(--text-main)",
-        color: "var(--text-on-dark)",
-        border: "1px solid var(--text-main)",
-        fontWeight: 600,
-        cursor: "default",
-    };
+   const activeBtn = {
+  ...btnBase,
+  background: "var(--color-primary)",
+  color: "var(--text-on-dark)",
+  border: "1px solid var(--color-primary)",
+  fontWeight: 600,
+  cursor: "default",
+};
 
     const disabledBtn = {
         ...btnBase,

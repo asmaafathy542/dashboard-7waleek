@@ -45,16 +45,38 @@
 .od-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  transition: box-shadow 0.15s;
+  transition: box-shadow 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.od-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  border-radius: 16px 16px 0 0;
 }
 
 .od-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 6px 20px rgba(33, 72, 176, 0.1);
+  transform: translateY(-2px);
+}
+
+.od-card-label {
+  font-size: 0.78rem;
+  color: var(--icon-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .od-card-icon {
@@ -67,12 +89,6 @@
   color: var(--text-main);
   letter-spacing: -0.03em;
   line-height: 1;
-}
-
-.od-card-label {
-  font-size: 0.8rem;
-  color: var(--icon-muted);
-  font-weight: 500;
 }
 
 /* ── Chart ── */

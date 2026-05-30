@@ -4,116 +4,107 @@
    عشان تبقى أهدأ وأريح للعين في بيئة الداشبورد
    ============================================================ */
 
+
 /* ── Light Mode ─────────────────────────────────────────────── */
 :root,
 [data-theme="light"] {
 
-  /* ── Brand (أهدأ شوية من الأصل) */
-  --color-primary:   #2148B0;   /* royal blue — مش فاقع */
-  --color-primary-hover: #1A3DA8;
-  --color-secondary: #3A8FD4;   /* sky blue — أهدأ */
-  --color-accent:    #E8B84B;   /* gold مخففة — للـ highlights */
-  --color-navy:      #0D1D6B;   /* deep navy — للـ sidebar */
+  /* ── Brand */
+  --color-primary:      #2148B0;
+  --color-primary-hover:#1A3DA8;
+  --color-secondary:    #3A8FD4;
+  --color-accent:       #E8B84B;
+  --color-navy:         #0D1D6B;
 
   /* ── Backgrounds */
-  --bg-main:         #EAEFF8;   /* أبيض مش صافي — أريح للعين */
-  --bg-card:         #FFFFFF;
-  --bg-surface:      #EBF0FA;   /* chips / inputs / hover */
-  --bg-sidebar:      #162040;   /* navy داكن هادي مش زرقاء فاقعة */
+  --bg-main:    #E8EDF6;
+  --bg-card:    #F0F5FF;
+  --bg-surface: #EBF0FA;
+  --bg-sidebar: #162040;
 
   /* ── Text */
-  --text-main:       #1A2340;   /* navy داكن — أريح من الأسود الصافي */
-  --text-sub:        #4A5A7A;   /* مuted blue-grey */
+  --text-main:       #1A2340;
+  --text-sub:        #4A5A7A;
   --text-on-dark:    #FFFFFF;
   --text-on-surface: #2B3A5C;
 
   /* ── Borders */
-  --border:          #D5DEF0;   /* pale blue-grey */
-  --border-focus:    #2148B0;
+  --border:       #D5DEF0;
+  --border-focus: #2148B0;
 
   /* ── Icon */
-  --icon:            #2148B0;
-  --icon-muted:      #7A90B8;
+  --icon:       #2148B0;
+  --icon-muted: #7A90B8;
 
   /* ── States */
-  --hover-bg:        #E4EAFB;
-  --active-bg:       #CDD8F5;
-  --selected-bg:     #D8E4FF;
+  --hover-bg:    #E4EAFB;
+  --active-bg:   #CDD8F5;
+  --selected-bg: #D8E4FF;
 
-  /* ── Status colors (هادية مش صارخة) */
-  --success:         #2D8A5E;
-  --success-bg:      #E8F5EE;
-  --warning:         #B07D20;
-  --warning-bg:      #FBF3DC;
-  --danger:          #C0392B;
-  --danger-bg:       #FAEAE8;
-  --info:            #2470A8;
-  --info-bg:         #E1EEF8;
+  /* ── Status */
+  --success:    #2D8A5E;  --success-bg: #E8F5EE;
+  --warning:    #B07D20;  --warning-bg: #FBF3DC;
+  --danger:     #C0392B;  --danger-bg:  #FAEAE8;
+  --info:       #2470A8;  --info-bg:    #E1EEF8;
 
   /* ── Shadows */
-  --shadow-sm:       0 1px 3px rgba(20, 40, 100, 0.07);
-  --shadow-md:       0 4px 12px rgba(20, 40, 100, 0.10);
-  --shadow-lg:       0 8px 28px rgba(20, 40, 100, 0.13);
+  --shadow-sm: 0 1px 3px rgba(20,40,100,0.07);
+  --shadow-md: 0 4px 12px rgba(20,40,100,0.10);
+  --shadow-lg: 0 8px 28px rgba(20,40,100,0.13);
 }
 
-/* ── Dark Mode ──────────────────────────────────────────────── */
 [data-theme="dark"] {
 
   /* ── Brand */
-  --color-primary:   #4A72D4;   /* أفتح من اللايت عشان يظهر على الداكن */
-  --color-primary-hover: #3A60C0;
-  --color-secondary: #5BA3E0;
-  --color-accent:    #D4A840;   /* gold مخففة */
-  --color-navy:      #0D1D6B;
+  --color-primary:      #4A72D4;
+  --color-primary-hover:#3A60C0;
+  --color-secondary:    #5BA3E0;
+  --color-accent:       #D4A840;
+  --color-navy:         #0D1D6B;
 
   /* ── Backgrounds */
-  --bg-main:         #111A27;   /* dark navy-charcoal */
-  --bg-card:         #1A2639;   /* clearly above scaffold */
-  --bg-surface:      #223047;   /* chips / inputs */
-  --bg-sidebar:      #0E1729;   /* أغنق من الـ bg-main بدرجة */
+  --bg-main:    #111A27;
+  --bg-card:    #1A2639;
+  --bg-surface: #223047;
+  --bg-sidebar: #0E1729;
 
   /* ── Text */
-  --text-main:       #E4EBF8;   /* near-white — مش أبيض صافي */
-  --text-sub:        #8EADD0;   /* muted blue */
+  --text-main:       #E4EBF8;
+  --text-sub:        #8EADD0;
   --text-on-dark:    #FFFFFF;
   --text-on-surface: #B8CCEC;
 
   /* ── Borders */
-  --border:          #2C4268;
-  --border-focus:    #4A72D4;
+  --border:       #2C4268;
+  --border-focus: #4A72D4;
 
   /* ── Icon */
-  --icon:            #6CB4FF;
-  --icon-muted:      #4A6A98;
+  --icon:       #6CB4FF;
+  --icon-muted: #4A6A98;
 
   /* ── States */
-  --hover-bg:        #1E3050;
-  --active-bg:       #243660;
-  --selected-bg:     #1A3DA8;
+  --hover-bg:    #1E3050;
+  --active-bg:   #243660;
+  --selected-bg: #1A3DA8;
 
-  /* ── Status colors */
-  --success:         #3DAA72;
-  --success-bg:      #1A3328;
-  --warning:         #D4A030;
-  --warning-bg:      #2E2412;
-  --danger:          #E05545;
-  --danger-bg:       #2E1A18;
-  --info:            #5BA3E0;
-  --info-bg:         #152035;
+  /* ── Status */
+  --success:  #3DAA72;  --success-bg: #1A3328;
+  --warning:  #D4A030;  --warning-bg: #2E2412;
+  --danger:   #E05545;  --danger-bg:  #2E1A18;
+  --info:     #5BA3E0;  --info-bg:    #152035;
 
   /* ── Shadows */
-  --shadow-sm:       0 1px 4px rgba(0, 0, 0, 0.30);
-  --shadow-md:       0 4px 16px rgba(0, 0, 0, 0.40);
-  --shadow-lg:       0 8px 32px rgba(0, 0, 0, 0.50);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.30);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.50);
 }
 
-/* ── Global Reset / Base ───────────────────────────────────── */
+/* ── Global ── */
 body {
   background-color: var(--bg-main);
   color: var(--text-main);
 }
 
-/* ── Smooth Theme Transition ───────────────────────────────── */
 *, *::before, *::after {
   transition:
     background-color 0.2s ease,
@@ -122,26 +113,23 @@ body {
     box-shadow 0.2s ease;
 }
 
-/* ── Utility Classes ───────────────────────────────────────── */
-.bg-main      { background-color: var(--bg-main); }
-.bg-card      { background-color: var(--bg-card); }
-.bg-surface   { background-color: var(--bg-surface); }
-.bg-sidebar   { background-color: var(--bg-sidebar); }
-.bg-primary   { background-color: var(--color-primary); }
-
+/* ── Utility ── */
+.bg-main    { background-color: var(--bg-main); }
+.bg-card    { background-color: var(--bg-card); }
+.bg-surface { background-color: var(--bg-surface); }
+.bg-sidebar { background-color: var(--bg-sidebar); }
+.bg-primary { background-color: var(--color-primary); }
 .text-main    { color: var(--text-main); }
 .text-sub     { color: var(--text-sub); }
 .text-on-dark { color: var(--text-on-dark); }
-
 .border-theme { border: 1px solid var(--border); }
 
-/* Badge helpers */
 .badge-success { color: var(--success); background: var(--success-bg); }
 .badge-warning { color: var(--warning); background: var(--warning-bg); }
-.badge-danger  { color: var(--danger);  background: var(--danger-bg);  }
-.badge-info    { color: var(--info);    background: var(--info-bg);    }
+.badge-danger  { color: var(--danger);  background: var(--danger-bg); }
+.badge-info    { color: var(--info);    background: var(--info-bg); }
 
-/* ── Form Inputs — Dark Mode ───────────────────────────────── */
+/* ── Dark Mode Inputs ── */
 [data-theme="dark"] input,
 [data-theme="dark"] textarea,
 [data-theme="dark"] select {
