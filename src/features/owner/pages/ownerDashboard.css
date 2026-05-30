@@ -232,7 +232,7 @@
 }
 
 .od-alert-warning {
-  background: #fefce8;
+  background: var(--warning-bg);
   border-color: var(--warning-bg);
   color: var(--warning);
 }
@@ -264,8 +264,8 @@
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  background: linear-gradient(135deg, #eff6ff, #f5f3ff);
-  border: 1px solid #bfdbfe;
+  background: var(--info-bg);
+  border: 1px solid var(--info-bg);
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
   margin-bottom: 1.5rem;
@@ -287,7 +287,7 @@
 
 .od-opportunity-msg {
   font-size: 0.9rem;
-  color: #1e3a5f;
+  color: var(--info);
   line-height: 1.6;
   font-weight: 500;
 }
@@ -353,7 +353,7 @@
 }
 
 .od-date-tab:hover {
-  background: #e2e0da;
+  background: var(--border);
   color: var(--text-main);
 }
 
@@ -391,8 +391,8 @@
 
 /* ── AI Summary ── */
 .od-ai-summary-card {
-  background: linear-gradient(135deg, #f0f9ff, #eff6ff);
-  border: 1px solid #bae6fd;
+  background: var(--info-bg);
+  border: 1px solid var(--info-bg);
   border-radius: 14px;
   padding: 1.25rem 1.5rem;
   margin-bottom: 1.5rem;
@@ -419,7 +419,7 @@
 
 .od-ai-summary-text {
   font-size: 0.9rem;
-  color: #1e3a5f;
+  color: var(--info);
   line-height: 1.7;
   font-weight: 500;
   margin: 0;
@@ -441,7 +441,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #0369a1;
+  background: var(--info);
   animation: od-dot-bounce 1.2s infinite ease-in-out;
 }
 
@@ -519,70 +519,33 @@
 }
 
 /* ── Dark Mode ── */
-[data-theme="dark"] .od-title {
-  color: #ECF2FF;
-}
 
-[data-theme="dark"] .od-card {
-  background: #1A2639;
-  border-color: #2C4268;
-}
 
-[data-theme="dark"] .od-card-value {
-  color: #ECF2FF;
-}
 
-[data-theme="dark"] .od-chart-card {
-  background: #1A2639;
-  border-color: #2C4268;
-}
 
-[data-theme="dark"] .od-chart-title {
-  color: #ECF2FF;
-  border-bottom-color: #2C4268;
-}
 
-[data-theme="dark"] .od-info-card {
-  background: #1A2639;
-  border-color: #2C4268;
-}
 
-[data-theme="dark"] .od-info-value {
-  color: #ECF2FF;
-}
 
-[data-theme="dark"] .od-refresh-btn {
-  background: #1A2639;
-  border-color: #2C4268;
-  color: #ECF2FF;
-}
 
-[data-theme="dark"] .od-refresh-btn:hover {
-  background: #223047;
-}
 
-[data-theme="dark"] .od-date-tabs {
-  background: #223047;
-}
 
-[data-theme="dark"] .od-date-tab {
-  color: #8EADD0;
-}
 
-[data-theme="dark"] .od-date-tab-active {
-  background: #1A2639 !important;
-  color: #ECF2FF !important;
-}
 
-[data-theme="dark"] .od-date-input {
-  background: #1A2639;
-  border-color: #2C4268;
-  color: #ECF2FF;
-}
 
-[data-theme="dark"] .od-chart-card > div > div[style] {
-  border-color: #2C4268;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @media (max-width: 767px) {
   .od-cards {

@@ -99,13 +99,13 @@ function stringToHours(str) {
 function ConfirmPopup({ message, subMessage, onConfirm, onCancel, confirmLabel = "Confirm", cancelLabel = "Cancel", danger = false }) {
   return (
     <div onClick={onCancel} style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000, padding: "1rem" }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: "14px", width: "100%", maxWidth: "360px", boxShadow: "0 20px 60px rgba(0,0,0,0.18)", padding: "28px 24px", textAlign: "center" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "var(--bg-card)", borderRadius: "14px", width: "100%", maxWidth: "360px", boxShadow: "0 20px 60px rgba(0,0,0,0.18)", padding: "28px 24px", textAlign: "center" }}>
         <div style={{ fontSize: "2.2rem", marginBottom: "12px" }}>{danger ? "🙈" : "👁️"}</div>
-        <p style={{ fontSize: "15px", fontWeight: 700, color: "#0f172a", marginBottom: "6px" }}>{message}</p>
-        <p style={{ fontSize: "13px", color: "#94a3b8", marginBottom: "22px" }}>{subMessage}</p>
+        <p style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-main)", marginBottom: "6px" }}>{message}</p>
+        <p style={{ fontSize: "13px", color: "var(--icon-muted)", marginBottom: "22px" }}>{subMessage}</p>
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={onCancel} style={{ flex: 1, padding: "10px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "#fff", fontSize: "13px", fontWeight: 500, cursor: "pointer", color: "#475569" }}>{cancelLabel}</button>
-          <button onClick={onConfirm} style={{ flex: 1, padding: "10px", borderRadius: "8px", border: "none", background: danger ? "#ef4444" : "#22c55e", color: "#fff", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>{confirmLabel}</button>
+          <button onClick={onCancel} style={{ flex: 1, padding: "10px", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg-card)", fontSize: "13px", fontWeight: 500, cursor: "pointer", color: "var(--text-sub)" }}>{cancelLabel}</button>
+          <button onClick={onConfirm} style={{ flex: 1, padding: "10px", borderRadius: "8px", border: "none", background: danger ? "var(--danger)" : "var(--success)", color: "var(--bg-card)", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>{confirmLabel}</button>
         </div>
       </div>
     </div>
@@ -481,14 +481,14 @@ export default function Places() {
       onClick={() => !disabled && onClick()}
       style={{
         width: "46px", height: "26px", borderRadius: "13px",
-        background: on ? "#22c55e" : "#ef4444",
+        background: on ? "var(--success)" : "var(--danger)",
         position: "relative", cursor: disabled ? "not-allowed" : "pointer",
         transition: "background 0.2s", flexShrink: 0,
         opacity: disabled ? 0.5 : 1,
       }}
     >
       <div style={{
-        width: "18px", height: "18px", borderRadius: "50%", background: "#fff",
+        width: "18px", height: "18px", borderRadius: "50%", background: "var(--bg-card)",
         position: "absolute", top: "4px",
         left: on ? "24px" : "4px",
         transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
@@ -516,8 +516,8 @@ export default function Places() {
             disabled={togglingBranch}
             style={{
               padding: "8px 16px", borderRadius: "10px", border: "none",
-              background: togglingBranch ? "#94a3b8" : isActive ? "#ef4444" : "#22c55e",
-              color: "#fff", fontWeight: 600, fontSize: "13px",
+              background: togglingBranch ? "var(--icon-muted)" : isActive ? "var(--danger)" : "var(--success)",
+              color: "var(--bg-card)", fontWeight: 600, fontSize: "13px",
               cursor: togglingBranch ? "not-allowed" : "pointer",
               opacity: togglingBranch ? 0.7 : 1, transition: "all 0.2s", whiteSpace: "nowrap",
             }}
@@ -530,10 +530,10 @@ export default function Places() {
       {/* ── Hidden branch banner ── */}
       {!isActive && (
         <div style={{
-          background: "#fef2f2", border: "1.5px solid #fca5a5", borderRadius: "12px",
+          background: "var(--danger-bg)", border: "1.5px solid #fca5a5", borderRadius: "12px",
           padding: "12px 16px", marginBottom: "16px",
           display: "flex", alignItems: "center", gap: "10px",
-          fontSize: "14px", color: "#b91c1c", fontWeight: 500,
+          fontSize: "14px", color: "var(--danger)", fontWeight: 500,
         }}>
           {t("bs_branch_hidden_notice")}
           <button
@@ -541,7 +541,7 @@ export default function Places() {
             disabled={togglingBranch}
             style={{
               marginLeft: "auto", padding: "6px 14px", borderRadius: "8px",
-              border: "none", background: "#22c55e", color: "#fff",
+              border: "none", background: "var(--success)", color: "var(--bg-card)",
               fontWeight: 600, fontSize: "13px",
               cursor: togglingBranch ? "not-allowed" : "pointer",
             }}
@@ -581,11 +581,11 @@ export default function Places() {
             <span className="pl-info-label">📍 {t("bs_location")}</span>
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginTop: "4px" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                <span style={{ fontSize: "0.7rem", color: "#94a3b8", fontWeight: 500 }}>LATITUDE</span>
+                <span style={{ fontSize: "0.7rem", color: "var(--icon-muted)", fontWeight: 500 }}>LATITUDE</span>
                 <span className="pl-info-value">{place.latitude != null ? place.latitude : "—"}</span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                <span style={{ fontSize: "0.7rem", color: "#94a3b8", fontWeight: 500 }}>LONGITUDE</span>
+                <span style={{ fontSize: "0.7rem", color: "var(--icon-muted)", fontWeight: 500 }}>LONGITUDE</span>
                 <span className="pl-info-value">{place.longitude != null ? place.longitude : "—"}</span>
               </div>
             </div>
@@ -594,7 +594,7 @@ export default function Places() {
                 href={place.location_link} target="_blank" rel="noreferrer"
                 style={{
                   display: "inline-flex", alignItems: "center", gap: "5px",
-                  marginTop: "6px", fontSize: "12px", color: "#2563eb",
+                  marginTop: "6px", fontSize: "12px", color: "var(--color-primary)",
                   textDecoration: "none", fontWeight: 500,
                 }}
               >
@@ -617,7 +617,7 @@ export default function Places() {
             <a className="pl-social-link" href={place.tiktok_url} target="_blank" rel="noreferrer">🎵 TikTok</a>
           )}
           {!place.instagram_url && !place.facebook_url && !place.tiktok_url && (
-            <p style={{ color: "#94a3b8", fontSize: "13px" }}>{t("bs_no_social")}</p>
+            <p style={{ color: "var(--icon-muted)", fontSize: "13px" }}>{t("bs_no_social")}</p>
           )}
         </div>
       </div>
@@ -626,20 +626,20 @@ export default function Places() {
       <div className="pl-card">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
           <h2 className="pl-card-title" style={{ margin: 0 }}>{t("bs_delivery_settings")}</h2>
-          {deliveryLoading && <span style={{ fontSize: "12px", color: "#94a3b8" }}>{t("loading")}</span>}
+          {deliveryLoading && <span style={{ fontSize: "12px", color: "var(--icon-muted)" }}>{t("loading")}</span>}
         </div>
 
         {/* Free Delivery toggle */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "14px 16px", borderRadius: "12px", marginBottom: "20px",
-          background: deliverySettings.is_free_delivery ? "#f0fdf4" : "#fafafa",
-          border: `1.5px solid ${deliverySettings.is_free_delivery ? "#86efac" : "#e4e2dd"}`,
+          background: deliverySettings.is_free_delivery ? "var(--success-bg)" : "var(--bg-surface)",
+          border: `1.5px solid ${deliverySettings.is_free_delivery ? "var(--success-bg)" : "var(--border)"}`,
           transition: "all 0.2s",
         }}>
           <div>
-            <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>{t("bs_free_delivery")}</div>
-            <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>
+            <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-main)" }}>{t("bs_free_delivery")}</div>
+            <div style={{ fontSize: "12px", color: "var(--text-sub)", marginTop: "2px" }}>
               {t("bs_free_delivery_sub")}
             </div>
           </div>
@@ -653,7 +653,7 @@ export default function Places() {
         {/* Base delivery price */}
         {!deliverySettings.is_free_delivery && (
           <div style={{ marginBottom: "20px" }}>
-            <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "8px" }}>
+            <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-sub)", marginBottom: "8px" }}>
               {t("bs_base_delivery_price")}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -666,7 +666,7 @@ export default function Places() {
                 value={deliverySettings.delivery_price}
                 onChange={(e) => setDeliverySettings((prev) => ({ ...prev, delivery_price: e.target.value }))}
               />
-              <span style={{ fontSize: "13px", color: "#64748b", fontWeight: 500 }}>EGP</span>
+              <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 500 }}>EGP</span>
             </div>
           </div>
         )}
@@ -674,7 +674,7 @@ export default function Places() {
         {/* Delivery Zones */}
         <div style={{ marginBottom: "20px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
-            <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569" }}>
+            <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-sub)" }}>
               {t("bs_delivery_zones")}
             </div>
 
@@ -687,9 +687,9 @@ export default function Places() {
             <div
               style={{
                 fontSize: "13px",
-                color: "#94a3b8",
+                color: "var(--icon-muted)",
                 padding: "14px",
-                background: "#f8fafc",
+                background: "var(--bg-surface)",
                 borderRadius: "10px",
                 textAlign: "center",
                 border: "1px dashed #e4e2dd",
@@ -703,7 +703,7 @@ export default function Places() {
                 <div key={idx} style={{
                   display: "flex", alignItems: "center", gap: "8px",
                   padding: "10px 12px", borderRadius: "10px",
-                  border: "1px solid #e4e2dd", background: "#fafafa",
+                  border: "1px solid var(--border)", background: "var(--bg-surface)",
                 }}>
                   <input
                     className="pl-input"
@@ -722,12 +722,12 @@ export default function Places() {
                     value={zone.price}
                     onChange={(e) => updateZone(idx, "price", e.target.value)}
                   />
-                  <span style={{ fontSize: "12px", color: "#64748b", flexShrink: 0 }}>EGP</span>
+                  <span style={{ fontSize: "12px", color: "var(--text-sub)", flexShrink: 0 }}>EGP</span>
                   <button
                     onClick={() => removeZone(idx)}
                     style={{
                       width: "28px", height: "28px", borderRadius: "50%",
-                      border: "none", background: "#fee2e2", color: "#dc2626",
+                      border: "none", background: "var(--danger-bg)", color: "var(--danger)",
                       cursor: "pointer", fontSize: "14px", flexShrink: 0,
                       display: "flex", alignItems: "center", justifyContent: "center",
                     }}
@@ -763,7 +763,7 @@ export default function Places() {
           </h2>
 
           {orderSettingsLoading && (
-            <span style={{ fontSize: "12px", color: "#94a3b8" }}>
+            <span style={{ fontSize: "12px", color: "var(--icon-muted)" }}>
               {t("loading")}
             </span>
           )}
@@ -775,13 +775,13 @@ export default function Places() {
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "14px 16px", borderRadius: "12px",
-            background: orderSettings.is_accepting_orders ? "#f0fdf4" : "#fef2f2",
-            border: `1.5px solid ${orderSettings.is_accepting_orders ? "#86efac" : "#fca5a5"}`,
+            background: orderSettings.is_accepting_orders ? "var(--success-bg)" : "var(--danger-bg)",
+            border: `1.5px solid ${orderSettings.is_accepting_orders ? "var(--success-bg)" : "var(--danger-bg)"}`,
             transition: "all 0.2s",
           }}>
             <div>
-              <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>{t("bs_accepting_orders")}</div>
-              <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>{t("bs_accepting_orders_sub")}</div>
+              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-main)" }}>{t("bs_accepting_orders")}</div>
+              <div style={{ fontSize: "12px", color: "var(--text-sub)", marginTop: "2px" }}>{t("bs_accepting_orders_sub")}</div>
             </div>
             <Toggle
               on={orderSettings.is_accepting_orders}
@@ -794,15 +794,15 @@ export default function Places() {
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "14px 16px", borderRadius: "12px",
-            background: orderSettings.accepts_delivery ? "#f0fdf4" : "#fef2f2",
-            border: `1.5px solid ${orderSettings.accepts_delivery ? "#86efac" : "#fca5a5"}`,
+            background: orderSettings.accepts_delivery ? "var(--success-bg)" : "var(--danger-bg)",
+            border: `1.5px solid ${orderSettings.accepts_delivery ? "var(--success-bg)" : "var(--danger-bg)"}`,
             transition: "all 0.2s",
             opacity: orderSettings.is_accepting_orders ? 1 : 0.5,
             pointerEvents: orderSettings.is_accepting_orders ? "auto" : "none",
           }}>
             <div>
-              <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>🚗 {t("owner_orders") === "الطلبات" ? "ديليفري" : "Delivery"}</div>
-              <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>
+              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-main)" }}>🚗 {t("owner_orders") === "الطلبات" ? "ديليفري" : "Delivery"}</div>
+              <div style={{ fontSize: "12px", color: "var(--text-sub)", marginTop: "2px" }}>
                 {t("bs_delivery_toggle_sub")}
               </div>
 
@@ -817,15 +817,15 @@ export default function Places() {
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "14px 16px", borderRadius: "12px",
-            background: orderSettings.accepts_takeaway ? "#f0fdf4" : "#fef2f2",
-            border: `1.5px solid ${orderSettings.accepts_takeaway ? "#86efac" : "#fca5a5"}`,
+            background: orderSettings.accepts_takeaway ? "var(--success-bg)" : "var(--danger-bg)",
+            border: `1.5px solid ${orderSettings.accepts_takeaway ? "var(--success-bg)" : "var(--danger-bg)"}`,
             transition: "all 0.2s",
             opacity: orderSettings.is_accepting_orders ? 1 : 0.5,
             pointerEvents: orderSettings.is_accepting_orders ? "auto" : "none",
           }}>
             <div>
-              <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>🥡 {t("owner_orders") === "الطلبات" ? "تيك أواي" : "Takeaway"}</div>
-              <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>
+              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-main)" }}>🥡 {t("owner_orders") === "الطلبات" ? "تيك أواي" : "Takeaway"}</div>
+              <div style={{ fontSize: "12px", color: "var(--text-sub)", marginTop: "2px" }}>
                 {t("bs_takeaway_toggle_sub")}
               </div>
             </div>
@@ -858,29 +858,29 @@ export default function Places() {
             onClick={handleToggleOpen}
             style={{
               display: "flex", alignItems: "center", gap: "10px",
-              background: isOpen ? "#f0fdf4" : "#fef2f2",
-              border: `1.5px solid ${isOpen ? "#86efac" : "#fca5a5"}`,
+              background: isOpen ? "var(--success-bg)" : "var(--danger-bg)",
+              border: `1.5px solid ${isOpen ? "var(--success-bg)" : "var(--danger-bg)"}`,
               borderRadius: "12px", padding: "8px 14px",
               cursor: "pointer", transition: "all 0.2s",
             }}
           >
             <div style={{
               width: "40px", height: "22px", borderRadius: "11px",
-              background: isOpen ? "#22c55e" : "#ef4444",
+              background: isOpen ? "var(--success)" : "var(--danger)",
               position: "relative", flexShrink: 0,
             }}>
               <div style={{
-                width: "16px", height: "16px", borderRadius: "50%", background: "#fff",
+                width: "16px", height: "16px", borderRadius: "50%", background: "var(--bg-card)",
                 position: "absolute", top: "3px", left: isOpen ? "21px" : "3px",
                 transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
               }} />
             </div>
             <div>
-              <div style={{ fontSize: "13px", fontWeight: 700, color: isOpen ? "#15803d" : "#b91c1c" }}>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: isOpen ? "var(--success)" : "var(--danger)" }}>
                 {togglingOpen ? t("bs_changing") : isOpen ? t("bs_place_open") : t("bs_place_closed")}
               </div>
 
-              <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+              <div style={{ fontSize: "11px", color: "var(--icon-muted)" }}>
                 {t("bs_tap_to_change")}
               </div>
             </div>
@@ -896,8 +896,8 @@ export default function Places() {
                 <div style={{
                   flex: 1, display: "flex", alignItems: "center",
                   padding: "6px 12px", borderRadius: "8px",
-                  background: "#f0fdf4", border: "1px solid #86efac",
-                  fontSize: "13px", fontWeight: 600, color: "#15803d",
+                  background: "var(--success-bg)", border: "1px solid #86efac",
+                  fontSize: "13px", fontWeight: 600, color: "var(--success)",
                 }}>
                   {t("bs_open_24h")}
                 </div>
@@ -927,10 +927,10 @@ export default function Places() {
                 style={{
                   display: "flex", alignItems: "center", gap: "5px",
                   cursor: "pointer", padding: "5px 10px", borderRadius: "8px",
-                  border: `1px solid ${workingHours[key]?.is24 ? "#86efac" : "#e2e8f0"}`,
-                  background: workingHours[key]?.is24 ? "#f0fdf4" : "transparent",
+                  border: `1px solid ${workingHours[key]?.is24 ? "var(--success-bg)" : "var(--border)"}`,
+                  background: workingHours[key]?.is24 ? "var(--success-bg)" : "transparent",
                   fontSize: "12px", fontWeight: 600,
-                  color: workingHours[key]?.is24 ? "#15803d" : "#94a3b8",
+                  color: workingHours[key]?.is24 ? "var(--success)" : "var(--icon-muted)",
                   whiteSpace: "nowrap", userSelect: "none",
                   transition: "all 0.2s", flexShrink: 0,
                 }}
@@ -1021,13 +1021,13 @@ export default function Places() {
                 style={{
                   border: "2px dashed #e2e8f0", borderRadius: "12px", padding: "24px",
                   textAlign: "center", cursor: "pointer",
-                  background: previewUrl ? "#f8fafc" : "#fafafa",
+                  background: previewUrl ? "var(--bg-surface)" : "var(--bg-surface)",
                   transition: "border-color 0.2s", position: "relative",
                   overflow: "hidden", minHeight: "140px",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.borderColor = "#0f172a"}
-                onMouseLeave={(e) => e.currentTarget.style.borderColor = "#e2e8f0"}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--text-main)"}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--border)"}
               >
                 {previewUrl ? (
                   <img src={previewUrl} alt="preview"
@@ -1035,8 +1035,8 @@ export default function Places() {
                 ) : (
                   <div>
                     <div style={{ fontSize: "32px", marginBottom: "8px" }}>🖼️</div>
-                    <div style={{ fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>{t("bs_click_to_select")}</div>
-                    <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "4px" }}>JPG, PNG, WEBP</div>
+                    <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-main)" }}>{t("bs_click_to_select")}</div>
+                    <div style={{ fontSize: "12px", color: "var(--icon-muted)", marginTop: "4px" }}>JPG, PNG, WEBP</div>
                   </div>
                 )}
                 <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleFileChange} />
@@ -1047,7 +1047,7 @@ export default function Places() {
                   onClick={() => fileInputRef.current?.click()}
                   style={{
                     background: "none", border: "1px solid #e2e8f0", borderRadius: "8px",
-                    padding: "6px 14px", fontSize: "13px", color: "#64748b",
+                    padding: "6px 14px", fontSize: "13px", color: "var(--text-sub)",
                     cursor: "pointer", alignSelf: "flex-start",
                   }}
                 >
@@ -1128,11 +1128,11 @@ export default function Places() {
 
               {/* Location */}
               <div style={{
-                padding: "14px 16px", background: "#f8fafc",
-                border: "1px solid #e4e2dd", borderRadius: "12px",
+                padding: "14px 16px", background: "var(--bg-surface)",
+                border: "1px solid var(--border)", borderRadius: "12px",
                 display: "flex", flexDirection: "column", gap: "12px",
               }}>
-                <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569" }}>📍 {t("bs_location")}</div>
+                <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-sub)" }}>📍 {t("bs_location")}</div>
                 <button
                   type="button"
                   onClick={() => {
@@ -1145,8 +1145,8 @@ export default function Places() {
                   style={{
                     display: "flex", alignItems: "center", gap: "6px",
                     padding: "8px 14px", borderRadius: "8px",
-                    border: "1px solid #2563eb", background: "#eff6ff",
-                    color: "#2563eb", fontSize: "13px", fontWeight: 600,
+                    border: "1px solid #2563eb", background: "var(--info-bg)",
+                    color: "var(--color-primary)", fontSize: "13px", fontWeight: 600,
                     cursor: "pointer", alignSelf: "flex-start",
                     fontFamily: "inherit", transition: "all 0.15s",
                   }}
@@ -1155,13 +1155,13 @@ export default function Places() {
                 </button>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                   <div className="pl-form-row">
-                    <label>Latitude <span style={{ fontWeight: 400, color: "#94a3b8", fontSize: "11px" }}>(22 → 32 لمصر)</span></label>
+                    <label>Latitude <span style={{ fontWeight: 400, color: "var(--icon-muted)", fontSize: "11px" }}>(22 → 32 لمصر)</span></label>
                     <input className="pl-input" type="number" step="any" placeholder="e.g. 30.0444"
                       value={editForm.latitude}
                       onChange={(e) => setEditForm({ ...editForm, latitude: e.target.value })} />
                   </div>
                   <div className="pl-form-row">
-                    <label>Longitude <span style={{ fontWeight: 400, color: "#94a3b8", fontSize: "11px" }}>(24 → 37 لمصر)</span></label>
+                    <label>Longitude <span style={{ fontWeight: 400, color: "var(--icon-muted)", fontSize: "11px" }}>(24 → 37 لمصر)</span></label>
                     <input className="pl-input" type="number" step="any" placeholder="e.g. 31.2357"
                       value={editForm.longitude}
                       onChange={(e) => setEditForm({ ...editForm, longitude: e.target.value })} />
@@ -1179,17 +1179,17 @@ export default function Places() {
                   return (
                     <div>
                       {!validEgypt ? (
-                        <div style={{ marginBottom: "8px", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: "8px", padding: "9px 13px", fontSize: "12px", color: "#92400e", display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                        <div style={{ marginBottom: "8px", background: "var(--warning-bg)", border: "1px solid #fde68a", borderRadius: "8px", padding: "9px 13px", fontSize: "12px", color: "var(--warning)", display: "flex", alignItems: "flex-start", gap: "6px" }}>
                           <span>&#9888;&#65039;</span>
                           <span><strong>تحذير:</strong> الكوردينيتس دي خارج نطاق مصر — تأكد انك مش عكستهم!</span>
                         </div>
                       ) : (
-                        <div style={{ marginBottom: "8px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "9px 13px", fontSize: "12px", color: "#166534", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <div style={{ marginBottom: "8px", background: "var(--success-bg)", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "9px 13px", fontSize: "12px", color: "var(--success)", display: "flex", alignItems: "center", gap: "6px" }}>
                           &#10003;&#65039; الكوردينيتس في النطاق الصح — اتاكد من الموقع على الخريطة تحت
                         </div>
                       )}
-                      <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>&#128506;&#65039; Map Preview</div>
-                      <div style={{ borderRadius: "10px", overflow: "hidden", border: "1px solid #e4e2dd" }}>
+                      <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-sub)", marginBottom: "6px" }}>&#128506;&#65039; Map Preview</div>
+                      <div style={{ borderRadius: "10px", overflow: "hidden", border: "1px solid var(--border)" }}>
                         <iframe
                           title="edit-map-preview"
                           src={embedUrl}
@@ -1201,7 +1201,7 @@ export default function Places() {
                         />
                       </div>
                       <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-                        style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginTop: "7px", fontSize: "12px", color: "#2563eb", fontWeight: 600, textDecoration: "none" }}>
+                        style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginTop: "7px", fontSize: "12px", color: "var(--color-primary)", fontWeight: 600, textDecoration: "none" }}>
                         &#128279; افتح في Google Maps للتاكيد
                       </a>
                     </div>
@@ -1237,7 +1237,7 @@ export default function Places() {
                     }}
                   />
                   {editForm.location_link && !editForm.latitude && (
-                    <div style={{ marginTop: "6px", fontSize: "11px", color: "#94a3b8" }}>
+                    <div style={{ marginTop: "6px", fontSize: "11px", color: "var(--icon-muted)" }}>
                       💡 تأكد إن اللينك فيه كوردينيتس — مثال: maps.google.com/maps?q=30.04,31.23
                     </div>
                   )}

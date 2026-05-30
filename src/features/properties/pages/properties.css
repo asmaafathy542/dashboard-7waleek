@@ -30,7 +30,7 @@
 
 .prop-add-btn {
   padding: 9px 20px;
-  background: var(--text-main);
+  background: var(--color-primary);
   color: var(--text-on-dark);
   border: none;
   border-radius: 10px;
@@ -367,7 +367,7 @@
 .prop-save-btn {
   width: 100%;
   padding: 12px;
-  background: var(--text-main);
+  background: var(--color-primary);
   color: var(--text-on-dark);
   border: none;
   border-radius: 10px;

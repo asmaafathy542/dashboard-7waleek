@@ -549,7 +549,7 @@ export default function OwnerLayout() {
 
       {/* Main */}
       {/* Main */}
-      <div className="owner-main" style={{ background: colors.mainBg, color: colors.text, transition: "background 0.3s ease" }}>
+      <div className="owner-main" style={{ background: "var(--bg-main)", color: "var(--text-main)", transition: "background 0.3s ease" }}>
         <Outlet
           context={{
             selectedPlaceId: selectedPlace?.id ?? null,

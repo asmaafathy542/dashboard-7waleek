@@ -212,14 +212,14 @@ export default function AdminLayout() {
     return (
         <div
             className="admin-layout-wrapper"
-            style={{ display: "flex", minHeight: "100vh", fontFamily: "'Inter', sans-serif", background: colors.mainBg, transition: "background 0.3s ease" }}
+            style={{ display: "flex", minHeight: "100vh", fontFamily: "'Inter', sans-serif", background: "var(--bg-main)", transition: "background 0.3s ease" }}
         >
             {/* ── Sidebar ── */}
             <div
                 className="admin-layout-sidebar"
                 style={{
                     width: collapsed ? "64px" : "240px",
-                    background: colors.sidebarBg,
+                    background: "var(--bg-sidebar)",
                     color: "white",
                     display: "flex",
                     flexDirection: "column",
@@ -363,8 +363,8 @@ export default function AdminLayout() {
                 className="admin-layout-main"
                 style={{
                     flex: 1,
-                    background: colors.mainBg,
-                    color: colors.text,
+                    background: "var(--bg-main)",
+                    color: "var(--text-main)",
                     padding: "32px",
                     overflowY: "auto",
                     transition: "background 0.3s ease",

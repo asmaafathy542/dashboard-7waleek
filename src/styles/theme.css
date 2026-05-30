@@ -16,7 +16,7 @@
   --color-navy:      #0D1D6B;   /* deep navy — للـ sidebar */
 
   /* ── Backgrounds */
-  --bg-main:         #F4F6FB;   /* أبيض مش صافي — أريح للعين */
+  --bg-main:         #EAEFF8;   /* أبيض مش صافي — أريح للعين */
   --bg-card:         #FFFFFF;
   --bg-surface:      #EBF0FA;   /* chips / inputs / hover */
   --bg-sidebar:      #162040;   /* navy داكن هادي مش زرقاء فاقعة */
@@ -140,3 +140,24 @@ body {
 .badge-warning { color: var(--warning); background: var(--warning-bg); }
 .badge-danger  { color: var(--danger);  background: var(--danger-bg);  }
 .badge-info    { color: var(--info);    background: var(--info-bg);    }
+
+/* ── Form Inputs — Dark Mode ───────────────────────────────── */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-sub);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  border-color: var(--color-primary);
+  background-color: var(--bg-card);
+}
