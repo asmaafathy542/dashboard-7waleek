@@ -6,14 +6,11 @@ import { usePagination } from "../../../hooks/usePagination";
 import { useLanguage } from "../../../context/LanguageContext";
 import "./notifications.css";
 
-const statusClass = {
-  PENDING:  "nt-status-pending",
-  APPROVED: "nt-status-approved",
-  REJECTED: "nt-status-rejected",
-};
-
 const EMPTY_FORM = { title: "", message: "", target_type: "ALL_USERS", target_user_id: "" };
 const QUERY_KEY = ["owner-notifications"];
+
+const fmt = (d) =>
+  d ? new Date(d).toLocaleString("en-EG", { dateStyle: "medium", timeStyle: "short" }) : "";
 
 export default function Notifications() {
   const queryClient = useQueryClient();
@@ -31,12 +28,6 @@ export default function Notifications() {
     { value: "SPECIFIC_USER", label: ar ? "👤 مستخدم محدد"   : "👤 Specific User" },
   ];
 
-  const statusLabel = {
-    PENDING:  ar ? "معلق"      : "Pending",
-    APPROVED: ar ? "موافق عليه" : "Approved",
-    REJECTED: ar ? "مرفوض"     : "Rejected",
-  };
-
   const { data: notifications = [], isLoading: loading } = useQuery({
     queryKey: QUERY_KEY,
     queryFn: async () => {
@@ -49,6 +40,10 @@ export default function Notifications() {
   const pagination = usePagination(notifications, pageSize);
   const { paginated, reset: resetPage } = pagination;
   useMemo(() => { resetPage(); }, [notifications.length]);
+
+  // ── stats ──────────────────────────────────────────────────
+  const totalSent = notifications.reduce((s, n) => s + (n.total_sent ?? 0), 0);
+  const totalRead = notifications.reduce((s, n) => s + (n.read_count ?? 0), 0);
 
   const handleSend = async () => {
     if (!form.title.trim())   { setSendError(ar ? "العنوان مطلوب."  : "Title is required.");   return; }
@@ -85,20 +80,50 @@ export default function Notifications() {
 
   return (
     <div className="nt-page">
+
+      {/* ── Header ── */}
       <div className="nt-header">
         <h1 className="nt-title">{ar ? "الإشعارات" : "Notifications"}</h1>
         <p className="nt-subtitle">
           {loading
             ? (ar ? "جاري التحميل..." : "Loading...")
             : ar
-              ? `${notifications.length} إشعار`
-              : `${notifications.length} notification${notifications.length !== 1 ? "s" : ""}`
+              ? `${notifications.length} إشعار مُرسَل`
+              : `${notifications.length} notification${notifications.length !== 1 ? "s" : ""} sent`
           }
         </p>
       </div>
 
+      {/* ── Stats Row ── */}
+      {!loading && notifications.length > 0 && (
+        <div className="nt-stats-row">
+          <div className="nt-stat-card">
+            <span className="nt-stat-icon">📢</span>
+            <div>
+              <div className="nt-stat-value">{notifications.length}</div>
+              <div className="nt-stat-label">{ar ? "إجمالي الإشعارات" : "Total Sent"}</div>
+            </div>
+          </div>
+          <div className="nt-stat-card">
+            <span className="nt-stat-icon">📤</span>
+            <div>
+              <div className="nt-stat-value">{totalSent.toLocaleString()}</div>
+              <div className="nt-stat-label">{ar ? "إجمالي المستلمين" : "Total Delivered"}</div>
+            </div>
+          </div>
+          <div className="nt-stat-card">
+            <span className="nt-stat-icon">👁</span>
+            <div>
+              <div className="nt-stat-value">{totalRead.toLocaleString()}</div>
+              <div className="nt-stat-label">{ar ? "إجمالي القراءات" : "Total Read"}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Send Card ── */}
       <div className="nt-send-card">
-        <h2 className="nt-send-title">📢 {ar ? "إرسال إشعار" : "Send Notification"}</h2>
+        <h2 className="nt-send-title">📢 {ar ? "إرسال إشعار جديد" : "Send New Notification"}</h2>
         <div className="nt-send-grid">
           <div className="nt-form-row">
             <label>{ar ? "العنوان *" : "Title *"}</label>
@@ -122,6 +147,7 @@ export default function Notifications() {
             </select>
           </div>
         </div>
+
         <div className="nt-form-row" style={{ marginTop: "0.75rem" }}>
           <label>{ar ? "الرسالة *" : "Message *"}</label>
           <textarea
@@ -131,6 +157,7 @@ export default function Notifications() {
             onChange={(e) => { setForm({ ...form, message: e.target.value }); setSendError(""); }}
           />
         </div>
+
         {form.target_type === "SPECIFIC_USER" && (
           <div className="nt-form-row" style={{ marginTop: "0.75rem" }}>
             <label>{ar ? "ID المستخدم *" : "User ID *"}</label>
@@ -143,8 +170,15 @@ export default function Notifications() {
             />
           </div>
         )}
+
         {sendError   && <p className="nt-error">⚠️ {sendError}</p>}
-        {sendSuccess && <p className="nt-success">✅ {ar ? "تم إرسال الإشعار بنجاح!" : "Notification sent successfully!"}</p>}
+        {sendSuccess && (
+          <div className="nt-success-banner">
+            <span>✅</span>
+            <span>{ar ? "تم إرسال الإشعار بنجاح!" : "Notification sent successfully!"}</span>
+          </div>
+        )}
+
         <button className="nt-send-btn" onClick={handleSend} disabled={sending}>
           {sending
             ? (ar ? "جاري الإرسال..." : "Sending...")
@@ -153,10 +187,12 @@ export default function Notifications() {
         </button>
       </div>
 
+      {/* ── List Header ── */}
       <div className="nt-list-header">
         <span className="nt-list-label">{ar ? "الإشعارات المُرسَلة" : "Sent Notifications"}</span>
       </div>
 
+      {/* ── List ── */}
       {loading ? (
         <div className="nt-loading">{ar ? "جاري التحميل..." : "Loading..."}</div>
       ) : notifications.length === 0 ? (
@@ -166,26 +202,58 @@ export default function Notifications() {
         </div>
       ) : (
         <div className="nt-list">
-          {paginated.map((notif) => (
-            <div className="nt-card" key={notif.id}>
-              <div className="nt-icon">🔔</div>
-              <div className="nt-content">
-                <div className="nt-top">
-                  <span className="nt-message">{notif.title || (ar ? "إشعار" : "Notification")}</span>
-                  <span className={`nt-status ${statusClass[notif.status] || ""}`}>
-                    {statusLabel[notif.status] || notif.status}
-                  </span>
+          {paginated.map((notif) => {
+            const hasSent = notif.total_sent > 0;
+            const hasRead = notif.read_count > 0;
+            const readRate = hasSent
+              ? Math.round((notif.read_count / notif.total_sent) * 100)
+              : null;
+
+            return (
+              <div className="nt-card" key={notif.id}>
+                <div className="nt-icon">📢</div>
+                <div className="nt-content">
+
+                  {/* Title row */}
+                  <div className="nt-top">
+                    <span className="nt-message">{notif.title || (ar ? "إشعار" : "Notification")}</span>
+                    <span className="nt-target-badge">
+                      {notif.target_type === "ALL_USERS"
+                        ? (ar ? "🌍 الكل" : "🌍 All Users")
+                        : (ar ? "👤 مستخدم محدد" : "👤 Specific User")}
+                    </span>
+                  </div>
+
+                  {/* Message body */}
+                  {notif.message && <p className="nt-body">{notif.message}</p>}
+
+                  {/* Metrics */}
+                  <div className="nt-metrics">
+                    {hasSent && (
+                      <span className="nt-metric">
+                        <span className="nt-metric-icon">📤</span>
+                        <span>{ar ? "أُرسل:" : "Delivered:"} <strong>{notif.total_sent.toLocaleString()}</strong></span>
+                      </span>
+                    )}
+                    {hasRead && (
+                      <span className="nt-metric">
+                        <span className="nt-metric-icon">👁</span>
+                        <span>{ar ? "قُرئ:" : "Read:"} <strong>{notif.read_count.toLocaleString()}</strong></span>
+                      </span>
+                    )}
+                    {readRate !== null && (
+                      <span className="nt-metric nt-metric-rate">
+                        📊 {readRate}%
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Date */}
+                  <div className="nt-date">🕐 {fmt(notif.created_at)}</div>
                 </div>
-                {notif.message && <p className="nt-body">{notif.message}</p>}
-                <div className="nt-meta">
-                  {notif.target_type && <span>🎯 {notif.target_type.replace("_", " ")}</span>}
-                  {notif.total_sent > 0 && <span>· 📤 {ar ? "أُرسل:" : "Sent:"} {notif.total_sent}</span>}
-                  {notif.read_count > 0 && <span>· 👁 {ar ? "قُرئ:" : "Read:"} {notif.read_count}</span>}
-                </div>
-                <div className="nt-date">{new Date(notif.created_at).toLocaleString()}</div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

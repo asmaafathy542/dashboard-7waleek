@@ -16,9 +16,7 @@
 }
 
 /* ── Header ── */
-.nt-header {
-  margin-bottom: 0.25rem;
-}
+.nt-header { margin-bottom: 0.25rem; }
 
 .nt-title {
   font-size: 1.5rem;
@@ -31,6 +29,41 @@
 .nt-subtitle {
   font-size: 0.85rem;
   color: #94a3b8;
+}
+
+/* ── Stats Row ── */
+.nt-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.nt-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #fff;
+  border: 1px solid #e4e2dd;
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+
+.nt-stat-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.nt-stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.nt-stat-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 0.2rem;
 }
 
 /* ── Send Card ── */
@@ -78,11 +111,10 @@
   outline: none;
   font-family: inherit;
   background: #fff;
+  transition: border-color 0.15s;
 }
 
-.nt-input:focus {
-  border-color: #0f172a;
-}
+.nt-input:focus { border-color: #0f172a; }
 
 .nt-textarea {
   min-height: 80px;
@@ -95,10 +127,18 @@
   margin-top: 0.5rem;
 }
 
-.nt-success {
-  font-size: 0.8rem;
+.nt-success-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.83rem;
   color: #16a34a;
-  margin-top: 0.5rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
 }
 
 .nt-send-btn {
@@ -115,14 +155,8 @@
   transition: opacity 0.15s;
 }
 
-.nt-send-btn:hover {
-  opacity: 0.85;
-}
-
-.nt-send-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.nt-send-btn:hover { opacity: 0.85; }
+.nt-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── List Header ── */
 .nt-list-header {
@@ -154,9 +188,7 @@
   border-radius: 12px;
 }
 
-.nt-empty-icon {
-  font-size: 2rem;
-}
+.nt-empty-icon { font-size: 2rem; }
 
 /* ── List ── */
 .nt-list {
@@ -177,9 +209,7 @@
   transition: box-shadow 0.15s;
 }
 
-.nt-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-}
+.nt-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
 
 .nt-icon {
   font-size: 1.25rem;
@@ -187,38 +217,72 @@
   margin-top: 0.1rem;
 }
 
-.nt-content {
-  flex: 1;
-}
+.nt-content { flex: 1; min-width: 0; }
 
 .nt-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 0.3rem;
+  flex-wrap: wrap;
 }
 
 .nt-message {
   font-size: 0.875rem;
   color: #0f172a;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.5;
+}
+
+.nt-target-badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nt-body {
   font-size: 0.82rem;
   color: #475569;
-  margin: 0 0 0.4rem 0;
-  line-height: 1.5;
+  margin: 0 0 0.6rem 0;
+  line-height: 1.55;
 }
 
-.nt-meta {
+/* ── Metrics ── */
+.nt-metrics {
   display: flex;
-  gap: 0.4rem;
-  font-size: 0.75rem;
-  color: #94a3b8;
-  margin-bottom: 0.3rem;
+  align-items: center;
+  gap: 0.6rem;
   flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+
+.nt-metric {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid #e4e2dd;
+  border-radius: 6px;
+  padding: 0.2rem 0.55rem;
+}
+
+.nt-metric strong { color: #0f172a; }
+
+.nt-metric-icon { font-size: 0.8rem; }
+
+.nt-metric-rate {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+  font-weight: 600;
 }
 
 .nt-date {
@@ -226,48 +290,12 @@
   color: #94a3b8;
 }
 
-/* ── Status ── */
-.nt-status {
-  font-size: 0.72rem;
-  font-weight: 500;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
-.nt-status-pending {
-  background: #fef9c3;
-  color: #854d0e;
-}
-
-.nt-status-approved {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.nt-status-rejected {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
 /* ── Mobile ── */
 @media (max-width: 767px) {
-
-  .nt-send-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .nt-card {
-    padding: 1rem;
-  }
-
-  .nt-top {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.4rem;
-  }
-
-  .nt-send-card {
-    padding: 1rem;
-  }
+  .nt-send-grid { grid-template-columns: 1fr; }
+  .nt-stats-row { grid-template-columns: 1fr 1fr; }
+  .nt-stats-row .nt-stat-card:last-child { grid-column: span 2; }
+  .nt-card { padding: 1rem; }
+  .nt-top { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+  .nt-send-card { padding: 1rem; }
 }

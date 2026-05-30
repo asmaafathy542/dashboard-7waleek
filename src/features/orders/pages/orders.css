@@ -519,3 +519,43 @@
   cursor: not-allowed;
 }
 
+
+
+
+/* ── New Status Colors (updated flow) ── */
+.or-status.status-confirmed {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
+
+.or-status.status-preparing {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fcd34d;
+}
+
+.or-status.status-ready {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+.or-status.status-delivery {
+  background: #ede9fe;
+  color: #6d28d9;
+  border-color: #c4b5fd;
+}
+
+.or-status.status-completed {
+  background: #dcfce7;
+  color: #16a34a;
+  border-color: #86efac;
+}
+
+.or-status.status-cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+

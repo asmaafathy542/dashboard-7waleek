@@ -13,20 +13,35 @@ import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
 import "./orders.css";
 
-const STATUS_OPTIONS = ["PENDING", "ACCEPTED", "REJECTED", "CANCELLED"];
+const STATUS_OPTIONS = [
+  "PENDING",
+  "CONFIRMED",
+  "PREPARING",
+  "READY_FOR_PICKUP",
+  "OUT_FOR_DELIVERY",
+  "COMPLETED",
+  "CANCELLED",
+];
 
+// الـ flow الجديد — كل status ممكن يروح فين
 const ALLOWED_TRANSITIONS = {
-  PENDING:   ["ACCEPTED", "REJECTED"],
-  ACCEPTED:  [],
-  REJECTED:  [],
-  CANCELLED: [],
+  PENDING:           ["CONFIRMED", "CANCELLED"],
+  CONFIRMED:         ["PREPARING", "CANCELLED"],
+  PREPARING:         ["READY_FOR_PICKUP", "OUT_FOR_DELIVERY", "CANCELLED"],
+  READY_FOR_PICKUP:  ["COMPLETED"],
+  OUT_FOR_DELIVERY:  ["COMPLETED"],
+  COMPLETED:         [],
+  CANCELLED:         [],
 };
 
 const statusClass = {
-  PENDING:   "status-pending",
-  ACCEPTED:  "status-accepted",
-  REJECTED:  "status-rejected",
-  CANCELLED: "status-rejected",
+  PENDING:           "status-pending",
+  CONFIRMED:         "status-confirmed",
+  PREPARING:         "status-preparing",
+  READY_FOR_PICKUP:  "status-ready",
+  OUT_FOR_DELIVERY:  "status-delivery",
+  COMPLETED:         "status-completed",
+  CANCELLED:         "status-cancelled",
 };
 
 function playBeep() {
@@ -51,10 +66,13 @@ export default function Orders() {
   const { t } = useLanguage();
 
   const statusLabel = {
-    PENDING:   t("or_status_pending"),
-    ACCEPTED:  t("or_status_accepted"),
-    REJECTED:  t("or_status_rejected"),
-    CANCELLED: t("or_status_cancelled"),
+    PENDING:           t("or_status_pending"),
+    CONFIRMED:         t("or_status_confirmed"),
+    PREPARING:         t("or_status_preparing"),
+    READY_FOR_PICKUP:  t("or_status_ready_for_pickup"),
+    OUT_FOR_DELIVERY:  t("or_status_out_for_delivery"),
+    COMPLETED:         t("or_status_completed"),
+    CANCELLED:         t("or_status_cancelled"),
   };
 
   const [selected, setSelected] = useState(null);
@@ -178,7 +196,7 @@ export default function Orders() {
   };
 
   const totalRevenue = orders
-    .filter((o) => o.status === "ACCEPTED")
+    .filter((o) => o.status === "COMPLETED")
     .reduce((sum, o) => sum + (o.total_price || 0), 0);
   const pendingCount = orders.filter((o) => o.status === "PENDING").length;
 
@@ -306,7 +324,7 @@ export default function Orders() {
             <div className="or-modal-header">
               <h2>{t("or_order_hash")}{selected.id}</h2>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                {["COMPLETED", "CANCELLED", "REJECTED"].includes(selected.status) && (
+                {["COMPLETED", "CANCELLED"].includes(selected.status) && (
                   <button className="or-delete-btn or-delete-btn--modal" onClick={() => setConfirmDelete(selected)}>
                     🗑 {t("it_delete")}
                   </button>
