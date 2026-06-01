@@ -17,6 +17,10 @@ import {
     createSubCategory,
     updateSubCategory,
     deleteSubCategory,
+    createSubItem,
+    updateSubItem,
+    deleteSubItem,
+    toggleSubItemAvailability,
 } from "../services/itemsService";
 import "./Items.css";
 
@@ -295,7 +299,131 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
     );
 }
 
-// ─── SubCategory Modal ───────────────────────────────────────────────────────
+// ─── SubItems Modal ───────────────────────────────────────────────────────────
+function SubItemsModal({ item, onClose, onDone, t }) {
+    const [subItems, setSubItems] = useState(item.sub_items ?? []);
+    const [showForm, setShowForm] = useState(false);
+    const [editSub, setEditSub] = useState(null);
+    const [form, setForm] = useState({ name: "", description: "", price: "", is_available: true });
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
+
+    const openAdd = () => { setEditSub(null); setForm({ name: "", description: "", price: "", is_available: true }); setError(""); setShowForm(true); };
+    const openEdit = (sub) => { setEditSub(sub); setForm({ name: sub.name, description: sub.description ?? "", price: sub.price, is_available: sub.is_available }); setError(""); setShowForm(true); };
+
+    const handleSave = async () => {
+        if (!form.name.trim()) return setError(t("it_name_required"));
+        if (!form.price || isNaN(Number(form.price)) || Number(form.price) <= 0) return setError(t("it_err_bad_price"));
+        setSaving(true); setError("");
+        try {
+            const payload = { name: form.name.trim(), description: form.description || undefined, price: Number(form.price), is_available: form.is_available };
+            let result;
+            if (editSub) result = await updateSubItem(editSub.id, payload);
+            else result = await createSubItem(item.id, payload);
+            const updated = editSub
+                ? subItems.map((s) => s.id === editSub.id ? result : s)
+                : [...subItems, result];
+            setSubItems(updated);
+            setShowForm(false);
+            onDone();
+        } catch (err) {
+            setError(err?.response?.data?.error?.message || err?.response?.data?.message || t("it_something_wrong"));
+        } finally { setSaving(false); }
+    };
+
+    const handleDelete = async (subId) => {
+        if (!window.confirm(t("it_confirm_delete"))) return;
+        await deleteSubItem(subId);
+        setSubItems((prev) => prev.filter((s) => s.id !== subId));
+        onDone();
+    };
+
+    const handleToggle = async (sub) => {
+        const result = await toggleSubItemAvailability(sub.id);
+        setSubItems((prev) => prev.map((s) => s.id === sub.id ? result : s));
+        onDone();
+    };
+
+    return (
+        <div className="it-overlay" onClick={onClose}>
+            <div className="it-modal" style={{ maxWidth: 520 }} onClick={(e) => e.stopPropagation()}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                    <h2 className="it-modal-title" style={{ margin: 0 }}>🧩 {t("it_variants")} — {item.name}</h2>
+                    <button onClick={openAdd} className="it-save-btn" style={{ padding: "6px 14px", fontSize: 13 }}>+ {t("it_add_variant")}</button>
+                </div>
+
+                {subItems.length === 0 && !showForm && (
+                    <div className="it-empty" style={{ padding: "24px 0" }}>
+                        <div className="it-empty-icon">🧩</div>
+                        <p>{t("it_no_variants")}</p>
+                    </div>
+                )}
+
+                {subItems.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+                        {subItems.map((sub) => (
+                            <div key={sub.id} style={{
+                                display: "flex", alignItems: "center", gap: 10,
+                                padding: "10px 14px", borderRadius: 10,
+                                background: sub.is_available ? "var(--bg-card, #f8fafc)" : "#f1f5f9",
+                                border: "1.5px solid var(--border-color, #e2e8f0)",
+                                opacity: sub.is_available ? 1 : 0.6,
+                            }}>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: 600, fontSize: 14, color: "var(--text-main, #0f172a)" }}>{sub.name}</div>
+                                    {sub.description && <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>{sub.description}</div>}
+                                </div>
+                                <span style={{ fontWeight: 700, fontSize: 14, color: "#2563eb", whiteSpace: "nowrap" }}>{sub.price} {t("it_egp")}</span>
+                                <button
+                                    onClick={() => handleToggle(sub)}
+                                    title={sub.is_available ? t("it_hide") : t("it_show")}
+                                    style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, padding: "2px 4px" }}
+                                >{sub.is_available ? "👁️" : "🙈"}</button>
+                                <button onClick={() => openEdit(sub)} className="it-edit-btn" style={{ padding: "4px 10px", fontSize: 12 }}>{t("it_edit")}</button>
+                                <button onClick={() => handleDelete(sub.id)} className="it-del-btn" style={{ padding: "4px 10px", fontSize: 12 }}>{t("it_delete")}</button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {showForm && (
+                    <div style={{ background: "var(--bg-card, #f8fafc)", border: "1.5px solid #bfdbfe", borderRadius: 12, padding: 16, marginBottom: 8 }}>
+                        <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 12, color: "#1e40af" }}>
+                            {editSub ? `✏️ ${t("it_edit_variant")}` : `➕ ${t("it_new_variant")}`}
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                            <div>
+                                <label className="it-label">{t("it_name")} *</label>
+                                <input className="it-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="مثال: Large" />
+                            </div>
+                            <div>
+                                <label className="it-label">{t("it_price")} ({t("it_egp")}) *</label>
+                                <input className="it-input" type="number" min="0.01" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="0.00" />
+                            </div>
+                        </div>
+                        <label className="it-label" style={{ marginTop: 8 }}>{t("it_description")}</label>
+                        <input className="it-input" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder={t("it_optional")} />
+                        <label className="it-label it-avail-label" style={{ marginTop: 8 }}>
+                            <input type="checkbox" checked={form.is_available} onChange={(e) => setForm({ ...form, is_available: e.target.checked })} />
+                            {t("it_available")}
+                        </label>
+                        {error && <div className="it-error">⚠️ {error}</div>}
+                        <div className="it-modal-actions" style={{ marginTop: 12 }}>
+                            <button className="it-cancel-btn" onClick={() => setShowForm(false)}>{t("it_cancel")}</button>
+                            <button className="it-save-btn" onClick={handleSave} disabled={saving}>{saving ? t("it_saving") : t("it_save")}</button>
+                        </div>
+                    </div>
+                )}
+
+                <div className="it-modal-actions">
+                    <button className="it-cancel-btn" onClick={onClose}>{t("it_done")} ✓</button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+
 function SubCatModal({ onClose, onDone, editSc, selectedPlaceId, t }) {
     const [form, setForm] = useState({ name: editSc?.name ?? "", description: editSc?.description ?? "" });
     const [saving, setSaving] = useState(false);
@@ -347,6 +475,7 @@ export default function Items() {
     const [showSubCatModal, setShowSubCatModal] = useState(false);
     const [editSubCat, setEditSubCat] = useState(null);
     const [editItem, setEditItem] = useState(null);
+    const [subItemsTarget, setSubItemsTarget] = useState(null);
     const [form, setForm] = useState({ name: "", description: "", price: "", sub_category_id: "", is_available: true });
     const [imageFile, setImageFile] = useState(null);
     const [saving, setSaving] = useState(false);
@@ -536,11 +665,40 @@ export default function Items() {
                                         {item.subcategory_name && <span className="it-category">{item.subcategory_name}</span>}
                                     </div>
                                     {item.description && <p className="it-desc">{item.description}</p>}
+
+                                    {/* Sub-items preview */}
+                                    {item.sub_items?.length > 0 && (
+                                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, margin: "6px 0" }}>
+                                            {item.sub_items.slice(0, 3).map((s) => (
+                                                <span key={s.id} style={{
+                                                    fontSize: 11, fontWeight: 600,
+                                                    padding: "2px 8px", borderRadius: 999,
+                                                    background: s.is_available ? "#eff6ff" : "#f1f5f9",
+                                                    color: s.is_available ? "#1d4ed8" : "#94a3b8",
+                                                    border: `1px solid ${s.is_available ? "#bfdbfe" : "#e2e8f0"}`,
+                                                }}>
+                                                    {s.name} · {s.price} {t("it_egp")}
+                                                </span>
+                                            ))}
+                                            {item.sub_items.length > 3 && (
+                                                <span style={{ fontSize: 11, color: "#64748b", padding: "2px 4px" }}>+{item.sub_items.length - 3}</span>
+                                            )}
+                                        </div>
+                                    )}
+
                                     <div className="it-card-footer">
                                         <span className="it-price">{item.price} {t("it_egp")}</span>
                                         <div className="it-actions">
                                             <button className={`it-toggle ${item.is_available ? "it-toggle-on" : "it-toggle-off"}`} onClick={() => handleToggle(item)}>
                                                 {item.is_available ? "👁️" : "🙈"}
+                                            </button>
+                                            <button
+                                                className="it-edit-btn"
+                                                onClick={() => setSubItemsTarget(item)}
+                                                title={t("it_variants")}
+                                                style={{ fontSize: 13 }}
+                                            >
+                                                🧩 {item.sub_items?.length > 0 ? item.sub_items.length : ""}
                                             </button>
                                             <button className="it-edit-btn" onClick={() => openEdit(item)}>{t("it_edit")}</button>
                                             <button className="it-del-btn" onClick={() => handleDelete(item.id)}><span className="it-del-text">{t("it_delete")}</span></button>
@@ -601,6 +759,16 @@ export default function Items() {
                     onDone={invalidateSubCats}
                     editSc={editSubCat}
                     selectedPlaceId={selectedPlaceId}
+                    t={t}
+                />
+            )}
+
+            {/* ── SubItems Modal ── */}
+            {subItemsTarget && (
+                <SubItemsModal
+                    item={subItemsTarget}
+                    onClose={() => setSubItemsTarget(null)}
+                    onDone={invalidateItems}
                     t={t}
                 />
             )}

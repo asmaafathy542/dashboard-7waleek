@@ -102,7 +102,7 @@ export const getLocationHeatmap = async (
 
 export const getTopItems = async (placeId, limit = 3) => {
   const res = await api.get(
-    `/mobile/items/place/${placeId}/top?limit=${limit}`,
+    `/dashboard/items/place/${placeId}/top?limit=${limit}`,
     { headers: authHeader() }
   );
   return res.data;

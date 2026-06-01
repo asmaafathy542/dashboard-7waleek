@@ -207,7 +207,7 @@ function MobileBottomNav({ navItems,
 
 export default function OwnerLayout() {
   const { isDark, colors, toggleTheme } = useTheme();
-  const { t, toggleLang, lang } = useLanguage();
+  const { t, toggleLang, lang, isRTL } = useLanguage();
   const location = useLocation();
   const [places, setPlaces] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -367,7 +367,10 @@ export default function OwnerLayout() {
           className="sidebar-toggle-btn"
           onClick={() => setCollapsed((prev) => !prev)}
         >
-          {collapsed ? "▶" : "◀"}
+          {collapsed
+            ? (isRTL ? "◀" : "▶")
+            : (isRTL ? "▶" : "◀")
+          }
         </button>
 
         <nav className="owner-nav">

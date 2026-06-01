@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import en from "../locales/en.json";
 import ar from "../locales/ar.json";
 
@@ -38,11 +38,14 @@ export function LanguageProvider({ children }) {
 
   const isRTL = lang === "ar";
 
+  useEffect(() => {
+    document.documentElement.dir = isRTL ? "rtl" : "ltr";
+    document.documentElement.lang = lang;
+  }, [lang, isRTL]);
+
   return (
     <LanguageContext.Provider value={{ lang, t, toggleLang, isRTL }}>
-      <div dir={isRTL ? "rtl" : "ltr"}>
-        {children}
-      </div>
+      {children}
     </LanguageContext.Provider>
   );
 }

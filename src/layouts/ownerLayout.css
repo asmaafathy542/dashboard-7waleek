@@ -38,9 +38,9 @@
   flex-direction: column;
   flex-shrink: 0;
   position: fixed;
-top: 0;
-left: 0;
-height: 100vh;
+  top: 0;
+  inset-inline-start: 0;
+  height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 10;
@@ -136,7 +136,7 @@ height: 100vh;
 }
 
 .owner-nav-badge {
-  margin-left: auto;
+  margin-inline-start: auto;
   background: #ef4444;
   color: var(--text-on-dark);
   font-size: 0.65rem;
@@ -151,8 +151,8 @@ height: 100vh;
 .owner-sidebar.collapsed .owner-nav-badge {
   position: absolute;
   top: 4px;
-  right: 4px;
-  margin-left: 0;
+  inset-inline-end: 4px;
+  margin-inline-start: 0;
   padding: 1px 4px;
   font-size: 0.6rem;
 }
@@ -208,11 +208,11 @@ height: 100vh;
   overflow-y: auto;
   transition: background 0.3s ease;
 
-  margin-left: 220px;
+  margin-inline-start: 220px;
 }
 
 .owner-sidebar.collapsed + .owner-main {
-  margin-left: 60px;
+  margin-inline-start: 60px;
 }
 
 /* ── Branch Dropdown items ── */
@@ -226,7 +226,7 @@ height: 100vh;
   border: none;
   color: #cbd5e1;
   cursor: pointer;
-  text-align: left;
+  text-align: start;
   transition: background 0.15s;
   font-size: 12px;
 }
@@ -265,7 +265,7 @@ height: 100vh;
    ============================================================ */
 @media (max-width: 1024px) {
   .owner-main {
-  margin-left: 60px;
+  margin-inline-start: 60px;
 }
   .owner-sidebar {
     width: 60px;
@@ -299,7 +299,7 @@ height: 100vh;
    ============================================================ */
 @media (max-width: 767px) {
 .owner-main {
-  margin-left: 0;
+  margin-inline-start: 0;
 }
   .owner-layout {
     flex-direction: column;
@@ -441,4 +441,3 @@ height: 100vh;
   background: #1A2639;
   border-top-color: #2C4268;
 }
-

@@ -392,5 +392,12 @@
   "notif_no_logs": "لا توجد سجلات إشعارات بعد.",
   "notif_recipients": "مستقبل",
   "notif_read": "✓ مقروء",
-  "notif_unread": "● غير مقروء"
+  "notif_unread": "● غير مقروء",
+  "it_variants": "الأحجام والخيارات",
+  "it_add_variant": "إضافة خيار",
+  "it_edit_variant": "تعديل الخيار",
+  "it_new_variant": "خيار جديد",
+  "it_no_variants": "لا توجد خيارات بعد. أضف أحجام أو إضافات.",
+  "it_hide": "إخفاء",
+  "it_show": "إظهار"
 }

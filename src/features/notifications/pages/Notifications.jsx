@@ -24,8 +24,8 @@ export default function Notifications() {
   const [pageSize, setPageSize]       = useState(10);
 
   const TARGET_OPTIONS = [
-    { value: "ALL_USERS",     label: ar ? "🌍 كل المستخدمين" : "🌍 All Users" },
-    { value: "SPECIFIC_USER", label: ar ? "👤 مستخدم محدد"   : "👤 Specific User" },
+    { value: "ALL_USERS",     label: ar ? "كل المستخدمين" : "All Users" },
+    { value: "SPECIFIC_USER", label: ar ? "مستخدم محدد"   : "Specific User" },
   ];
 
   const { data: notifications = [], isLoading: loading } = useQuery({
@@ -41,9 +41,18 @@ export default function Notifications() {
   const { paginated, reset: resetPage } = pagination;
   useMemo(() => { resetPage(); }, [notifications.length]);
 
-  // ── stats ──────────────────────────────────────────────────
+  // stats
   const totalSent = notifications.reduce((s, n) => s + (n.total_sent ?? 0), 0);
   const totalRead = notifications.reduce((s, n) => s + (n.read_count ?? 0), 0);
+
+  // Daily limit
+  const DAILY_LIMIT = 5;
+  const todayStr = new Date().toDateString();
+  const sentToday = notifications.filter((n) => {
+    if (!n.created_at) return false;
+    return new Date(n.created_at).toDateString() === todayStr;
+  }).length;
+  const remainingToday = Math.max(0, DAILY_LIMIT - sentToday);
 
   const handleSend = async () => {
     if (!form.title.trim())   { setSendError(ar ? "العنوان مطلوب."  : "Title is required.");   return; }
@@ -81,7 +90,7 @@ export default function Notifications() {
   return (
     <div className="nt-page">
 
-      {/* ── Header ── */}
+      {/* Header */}
       <div className="nt-header">
         <h1 className="nt-title">{ar ? "الإشعارات" : "Notifications"}</h1>
         <p className="nt-subtitle">
@@ -94,34 +103,48 @@ export default function Notifications() {
         </p>
       </div>
 
-      {/* ── Stats Row ── */}
-      {!loading && notifications.length > 0 && (
-        <div className="nt-stats-row">
-          <div className="nt-stat-card">
-            <span className="nt-stat-icon">📢</span>
-            <div>
-              <div className="nt-stat-value">{notifications.length}</div>
-              <div className="nt-stat-label">{ar ? "إجمالي الإشعارات" : "Total Sent"}</div>
+      {/* Daily Limit Cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+        {/* Sent Today */}
+        <div style={{
+          borderRadius: "12px", padding: "1.1rem 1.25rem",
+          border: "1px solid var(--border)", background: "var(--bg-card)",
+          display: "flex", alignItems: "center", gap: "12px",
+        }}>
+          <span style={{ fontSize: "1.6rem" }}>📅</span>
+          <div>
+            <div style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--color-primary)", lineHeight: 1 }}>
+              {sentToday} <span style={{ fontSize: "0.9rem", fontWeight: 400, color: "var(--icon-muted)" }}>/ {DAILY_LIMIT}</span>
             </div>
-          </div>
-          <div className="nt-stat-card">
-            <span className="nt-stat-icon">📤</span>
-            <div>
-              <div className="nt-stat-value">{totalSent.toLocaleString()}</div>
-              <div className="nt-stat-label">{ar ? "إجمالي المستلمين" : "Total Delivered"}</div>
-            </div>
-          </div>
-          <div className="nt-stat-card">
-            <span className="nt-stat-icon">👁</span>
-            <div>
-              <div className="nt-stat-value">{totalRead.toLocaleString()}</div>
-              <div className="nt-stat-label">{ar ? "إجمالي القراءات" : "Total Read"}</div>
+            <div style={{ fontSize: "0.72rem", color: "var(--icon-muted)", marginTop: "4px" }}>
+              {ar ? "مُرسَل اليوم" : "Sent Today"}
             </div>
           </div>
         </div>
-      )}
 
-      {/* ── Send Card ── */}
+        {/* Remaining Today */}
+        <div style={{
+          borderRadius: "12px", padding: "1.1rem 1.25rem",
+          border: `1px solid ${remainingToday === 0 ? "var(--danger)" : "var(--border)"}`,
+          background: remainingToday === 0 ? "var(--danger-bg)" : "var(--bg-card)",
+          display: "flex", alignItems: "center", gap: "12px",
+        }}>
+          <span style={{ fontSize: "1.6rem" }}>{remainingToday === 0 ? "🚫" : "🟢"}</span>
+          <div>
+            <div style={{
+              fontSize: "1.4rem", fontWeight: 700, lineHeight: 1,
+              color: remainingToday === 0 ? "var(--danger)" : "var(--success)",
+            }}>
+              {remainingToday}
+            </div>
+            <div style={{ fontSize: "0.72rem", color: "var(--icon-muted)", marginTop: "4px" }}>
+              {ar ? "متبقي اليوم" : "Remaining Today"}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Send Card */}
       <div className="nt-send-card">
         <h2 className="nt-send-title">📢 {ar ? "إرسال إشعار جديد" : "Send New Notification"}</h2>
         <div className="nt-send-grid">
@@ -187,12 +210,12 @@ export default function Notifications() {
         </button>
       </div>
 
-      {/* ── List Header ── */}
+      {/* List Header */}
       <div className="nt-list-header">
         <span className="nt-list-label">{ar ? "الإشعارات المُرسَلة" : "Sent Notifications"}</span>
       </div>
 
-      {/* ── List ── */}
+      {/* List */}
       {loading ? (
         <div className="nt-loading">{ar ? "جاري التحميل..." : "Loading..."}</div>
       ) : notifications.length === 0 ? (
@@ -213,8 +236,6 @@ export default function Notifications() {
               <div className="nt-card" key={notif.id}>
                 <div className="nt-icon">📢</div>
                 <div className="nt-content">
-
-                  {/* Title row */}
                   <div className="nt-top">
                     <span className="nt-message">{notif.title || (ar ? "إشعار" : "Notification")}</span>
                     <span className="nt-target-badge">
@@ -223,11 +244,7 @@ export default function Notifications() {
                         : (ar ? "👤 مستخدم محدد" : "👤 Specific User")}
                     </span>
                   </div>
-
-                  {/* Message body */}
                   {notif.message && <p className="nt-body">{notif.message}</p>}
-
-                  {/* Metrics */}
                   <div className="nt-metrics">
                     {hasSent && (
                       <span className="nt-metric">
@@ -247,8 +264,6 @@ export default function Notifications() {
                       </span>
                     )}
                   </div>
-
-                  {/* Date */}
                   <div className="nt-date">🕐 {fmt(notif.created_at)}</div>
                 </div>
               </div>

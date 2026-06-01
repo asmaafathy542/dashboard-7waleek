@@ -392,5 +392,12 @@
   "notif_no_logs": "No notification logs yet.",
   "notif_recipients": "recipients",
   "notif_read": "✓ Read",
-  "notif_unread": "● Unread"
+  "notif_unread": "● Unread",
+  "it_variants": "Variants",
+  "it_add_variant": "Add Variant",
+  "it_edit_variant": "Edit Variant",
+  "it_new_variant": "New Variant",
+  "it_no_variants": "No variants yet. Add sizes, options, or extras.",
+  "it_hide": "Hide",
+  "it_show": "Show"
 }

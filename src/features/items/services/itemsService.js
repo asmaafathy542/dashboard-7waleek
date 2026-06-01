@@ -78,3 +78,33 @@ export const getItemsBySubCategory = async (subCategoryId) => {
 export const deleteItemsBulk = async (itemIds) => {
   await Promise.all(itemIds.map((id) => deleteItem(id)));
 };
+
+// ── Sub-Items ────────────────────────────────────────────────────────────────
+
+export const createSubItem = async (itemId, data) => {
+  const res = await api.post(`/v1/items/${itemId}/sub-items`, data, {
+    headers: authHeader(),
+  });
+  return res.data;
+};
+
+export const updateSubItem = async (subItemId, data) => {
+  const res = await api.put(`/v1/items/sub-items/${subItemId}`, data, {
+    headers: authHeader(),
+  });
+  return res.data;
+};
+
+export const deleteSubItem = async (subItemId) => {
+  const res = await api.delete(`/v1/items/sub-items/${subItemId}`, {
+    headers: authHeader(),
+  });
+  return res.data;
+};
+
+export const toggleSubItemAvailability = async (subItemId) => {
+  const res = await api.patch(`/v1/items/sub-items/${subItemId}/availability`, {}, {
+    headers: authHeader(),
+  });
+  return res.data;
+};
