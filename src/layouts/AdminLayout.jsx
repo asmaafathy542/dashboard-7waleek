@@ -169,7 +169,6 @@ export default function AdminLayout() {
         { label: t("owners"), path: "owners", icon: "🏪" },
         { label: t("places"), path: "places", icon: "📍" },
         { label: t("users"), path: "users", icon: "👥" },
-        { label: t("reports"), path: "reports", icon: "🚩" },
         { label: t("notifications"), path: "notifications", icon: "🔔" },
     ];
 

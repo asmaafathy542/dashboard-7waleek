@@ -22,7 +22,6 @@ const AdminDashboard      = lazy(() => import("../features/admin/pages/AdminDash
 const Users               = lazy(() => import("../features/admin/pages/Users"));
 const Owners              = lazy(() => import("../features/admin/pages/Owners"));
 const AdminPlaces         = lazy(() => import("../features/admin/pages/Places"));
-const Reports             = lazy(() => import("../features/admin/pages/Reports"));
 const AdminNotifications  = lazy(() => import("../features/admin/pages/Notifications"));
 const Items2              = lazy(() => import("../features/items/pages/Items"));
 
@@ -84,7 +83,6 @@ export default function AppRoutes() {
         <Route path="users"         element={<Suspense fallback={<PageLoader />}><Users /></Suspense>} />
         <Route path="owners"        element={<Suspense fallback={<PageLoader />}><Owners /></Suspense>} />
         <Route path="places"        element={<Suspense fallback={<PageLoader />}><AdminPlaces /></Suspense>} />
-        <Route path="reports"       element={<Suspense fallback={<PageLoader />}><Reports /></Suspense>} />
         <Route path="notifications" element={<Suspense fallback={<PageLoader />}><AdminNotifications /></Suspense>} />
       </Route>
 
