@@ -371,7 +371,7 @@ export default function OwnerDashboard() {
             {/* Header */}
             <div className="od-header">
                 <div>
-                    <h1 className="od-title">{t("welcome")} {placeName} </h1>
+                    <h1 className="od-title"> {placeName} </h1>
                     <p className="od-subtitle">{t("place_subtitle")}</p>
                 </div>
 
