@@ -400,5 +400,7 @@
   "it_no_variants": "لا توجد خيارات بعد. أضف أحجام أو إضافات.",
   "it_hide": "إخفاء",
   "it_show": "إظهار",
-  "owner_places":"فرعي"
+  "owner_places":"فرعي",
+  "or_type_CASH_ON_DELIVERY": "كاش عند الاستلام",
+"or_type_TAKE_AWAY": "تيك أواي"
 }

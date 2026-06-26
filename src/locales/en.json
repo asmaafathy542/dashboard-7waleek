@@ -400,5 +400,7 @@
   "it_no_variants": "No variants yet. Add sizes, options, or extras.",
   "it_hide": "Hide",
   "it_show": "Show",
-  "owner_places": "My Branch"
+  "owner_places": "My Branch",
+  "or_type_CASH_ON_DELIVERY": "Cash on Delivery",
+"or_type_TAKE_AWAY": "Take Away"
 }

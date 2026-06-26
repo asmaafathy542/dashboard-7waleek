@@ -274,7 +274,7 @@ export default function Orders() {
                   <td>{order.full_name}</td>
                   <td>{order.phone_number}</td>
                   <td>{order.address}</td>
-                  <td className="or-type">{order.order_type?.replace("_", " ")}</td>
+                  <td className="or-type">{t(`or_type_${order.order_type}`) || order.order_type?.replace(/_/g, " ")}</td>
                   <td className="or-price">{order.total_price} {t("it_egp")}</td>
                   <td className="or-date">{new Date(order.created_at).toLocaleDateString()}</td>
                   <td onClick={(e) => e.stopPropagation()}>
@@ -345,7 +345,7 @@ export default function Orders() {
               <div className="or-modal-section">
                 <h3>{t("or_order_info")}</h3>
                 <div className="or-modal-row"><span>{t("or_field_order_id")}</span><span>#{selected.id}</span></div>
-                <div className="or-modal-row"><span>{t("or_col_type")}</span><span>{selected.order_type?.replace("_", " ")}</span></div>
+                <div className="or-modal-row"><span>{t("or_col_type")}</span><span>{t(`or_type_${selected.order_type}`)}</span></div>
                 <div className="or-modal-row"><span>{t("or_col_total")}</span><span className="or-modal-price">{selected.total_price} {t("it_egp")}</span></div>
                 <div className="or-modal-row"><span>{t("or_col_date")}</span><span>{new Date(selected.created_at).toLocaleString()}</span></div>
                 <div className="or-modal-row">
