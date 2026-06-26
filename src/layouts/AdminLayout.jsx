@@ -8,7 +8,7 @@ import { useTheme } from "../context/ThemeContext";
 // ─────────────────────────────────────────────
 // Settings Menu — جوه الـ Sidebar
 // ─────────────────────────────────────────────
-function SidebarSettings({ isDark, toggleTheme, lang, toggleLang, collapsed }) {
+function SidebarSettings({ isDark, toggleTheme, lang, toggleLang, collapsed, t }) {
     const [open, setOpen] = useState(false);
     return (
         <div style={{ position: "relative" }}>
@@ -34,7 +34,7 @@ function SidebarSettings({ isDark, toggleTheme, lang, toggleLang, collapsed }) {
                 onMouseLeave={e => { e.currentTarget.style.background = open ? "rgba(255,255,255,0.1)" : "transparent"; e.currentTarget.style.color = "#94a3b8"; }}
             >
                 <span>⚙️</span>
-                {!collapsed && <span>Settings</span>}
+                {!collapsed && <span>{t("settings")}</span>}
             </button>
 
             {open && (
@@ -329,6 +329,7 @@ export default function AdminLayout() {
                         lang={lang}
                         toggleLang={toggleLang}
                         collapsed={collapsed}
+                        t={t}
                     />
 
                     {/* Logout */}

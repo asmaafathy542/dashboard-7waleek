@@ -25,11 +25,11 @@ const fmtDate = (d) =>
 // ── KPI Card ────────────────────────────────────────────────────────────────
 const KPI_COLORS = {
     purple: { accent: "#7F77DD", iconBg: "#EEEDFE", iconColor: "#534AB7" },
-    teal:   { accent: "#1D9E75", iconBg: "#E1F5EE", iconColor: "#0F6E56" },
-    blue:   { accent: "#378ADD", iconBg: "#E6F1FB", iconColor: "#185FA5" },
-    amber:  { accent: "#BA7517", iconBg: "#FAEEDA", iconColor: "#854F0B" },
-    pink:   { accent: "#D4537E", iconBg: "#FBEAF0", iconColor: "#993556" },
-    coral:  { accent: "#D85A30", iconBg: "#FAECE7", iconColor: "#993C1D" },
+    teal: { accent: "#1D9E75", iconBg: "#E1F5EE", iconColor: "#0F6E56" },
+    blue: { accent: "#378ADD", iconBg: "#E6F1FB", iconColor: "#185FA5" },
+    amber: { accent: "#BA7517", iconBg: "#FAEEDA", iconColor: "#854F0B" },
+    pink: { accent: "#D4537E", iconBg: "#FBEAF0", iconColor: "#993556" },
+    coral: { accent: "#D85A30", iconBg: "#FAECE7", iconColor: "#993C1D" },
 };
 
 function KpiCard({ icon, label, value, linkTo, colorKey = "blue", delta }) {
@@ -156,11 +156,11 @@ export default function AdminDashboard() {
     const { refetchOverview, overview, overviewLoading, refetchRequests } = useOutletContext() ?? {};
     const { t } = useLanguage();
 
-    const [recentNotifs, setRecentNotifs]   = useState([]);
+    const [recentNotifs, setRecentNotifs] = useState([]);
     const [notifsLoading, setNotifsLoading] = useState(true);
-    const [trendData, setTrendData]         = useState([]);
-    const [trendLoading, setTrendLoading]   = useState(true);
-    const [activeLine, setActiveLine]       = useState(null);
+    const [trendData, setTrendData] = useState([]);
+    const [trendLoading, setTrendLoading] = useState(true);
+    const [activeLine, setActiveLine] = useState(null);
 
     useEffect(() => {
         const load = async () => {
@@ -201,10 +201,10 @@ export default function AdminDashboard() {
     const handleRefresh = () => { refetchOverview?.(); refetchRequests?.(); };
 
     const LINES = [
-        { key: "visits",    name: "Visits",    color: "var(--color-primary)" },
-        { key: "new_users", name: "New Users", color: "var(--success)" },
-        { key: "reviews",   name: "Reviews",   color: "var(--accent)" },
-        { key: "calls",     name: "Calls",     color: "var(--color-secondary)" },
+        { key: "visits", name: t("visits"), color: "var(--color-primary)" },
+        { key: "new_users", name: t("new_users"), color: "var(--success)" },
+        { key: "reviews", name: t("reviews"), color: "var(--accent)" },
+        { key: "calls", name: t("calls"), color: "var(--color-secondary)" },
     ];
 
     if (overviewLoading) {
@@ -233,20 +233,20 @@ export default function AdminDashboard() {
 
             {/* ── KPI Cards ── */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
-                <KpiCard icon="👥" label={t("new_users")}     value={overview?.new_users}     linkTo="users"  colorKey="purple" delta={overview?.users_delta} />
-                <KpiCard icon="🏪" label={t("new_owners")}    value={overview?.new_owners}    linkTo="owners" colorKey="teal"   delta={overview?.owners_delta} />
+                <KpiCard icon="👥" label={t("new_users")} value={overview?.new_users} linkTo="users" colorKey="purple" delta={overview?.users_delta} />
+                <KpiCard icon="🏪" label={t("new_owners")} value={overview?.new_owners} linkTo="owners" colorKey="teal" delta={overview?.owners_delta} />
                 <KpiCard icon="📍" label={t("active_places")} value={overview?.active_places} linkTo="places" colorKey="blue" />
-                <KpiCard icon="👁️" label={t("visits")}        value={overview?.visits}                        colorKey="amber" delta={overview?.visits_delta} />
-                <KpiCard icon="⭐" label={t("reviews")}       value={overview?.reviews}                       colorKey="pink"  delta={overview?.reviews_delta} />
-                <KpiCard icon="📞" label={t("calls")}         value={overview?.calls}                         colorKey="coral" delta={overview?.calls_delta} />
+                <KpiCard icon="👁️" label={t("visits")} value={overview?.visits} colorKey="amber" delta={overview?.visits_delta} />
+                <KpiCard icon="⭐" label={t("reviews")} value={overview?.reviews} colorKey="pink" delta={overview?.reviews_delta} />
+                <KpiCard icon="📞" label={t("calls")} value={overview?.calls} colorKey="coral" delta={overview?.calls_delta} />
             </div>
 
             {/* ── Platform Trends Chart ── */}
             <div style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "1.5rem", marginBottom: "1.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", paddingBottom: "0.75rem", borderBottom: "1px solid #e4e2dd" }}>
                     <div>
-                        <h2 style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-main)", margin: 0 }}>📈 Platform Trends</h2>
-                        <p style={{ fontSize: "0.75rem", color: "var(--icon-muted)", marginTop: "3px" }}>Last 7 days activity</p>
+                        <h2 style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-main)", margin: 0 }}>📈 {t("platform_trends")} </h2>
+                        <p style={{ fontSize: "0.75rem", color: "var(--icon-muted)", marginTop: "3px" }}>{t("last_7_days")}</p>
                     </div>
                     <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                         {LINES.map((l) => (
@@ -307,10 +307,10 @@ export default function AdminDashboard() {
             <div style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "1.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", paddingBottom: "0.75rem", borderBottom: "1px solid #e4e2dd" }}>
                     <h2 style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-main)", margin: 0 }}>
-                        🔔 Latest Notifications
+                        🔔 {t("latest_notifications")}
                     </h2>
                     <Link to="notifications" style={{ fontSize: "0.78rem", color: "var(--color-primary)", fontWeight: 500, textDecoration: "none" }}>
-                        View all →
+                        {t("view_all")} →
                     </Link>
                 </div>
 
@@ -345,7 +345,7 @@ export default function AdminDashboard() {
                                                 border: `1px solid ${notif.target_type === "ALL_USERS" ? "var(--border)" : "var(--info-bg)"}`,
                                                 flexShrink: 0,
                                             }}>
-                                                {notif.target_type === "ALL_USERS" ? "🌍 All Users" : `👤 ID: ${notif.target_user_id ?? "?"}`}
+                                                {notif.target_type === "ALL_USERS" ? `🌍 ${t("notif_all_users_label")}` : `👤 ID: ${notif.target_user_id ?? "?"}`}
                                             </span>
                                         </div>
                                         <div style={{ display: "flex", gap: "10px", marginTop: "4px", flexWrap: "wrap", alignItems: "center" }}>

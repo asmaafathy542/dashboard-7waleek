@@ -354,7 +354,7 @@ function PlaceModal({ place, onClose, onToggleStatus }) {
                         </div>
                         <div style={{ flex: 1 }}>
                             <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-main)", margin: 0 }}>{name}</h2>
-                            <p style={{ fontSize: "12px", color: "var(--icon-muted)", margin: "2px 0 0" }}>Place Details</p>
+                            <p style={{ fontSize: "12px", color: "var(--icon-muted)", margin: "2px 0 0" }}>t("placeDetails")</p>
                         </div>
                         <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "var(--icon-muted)", lineHeight: 1 }}>✕</button>
                     </div>

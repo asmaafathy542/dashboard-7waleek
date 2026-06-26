@@ -509,7 +509,7 @@ export default function Places() {
           </span>
         </div>
         <div className="pl-header-right">
-          <div className="pl-meta">⭐ {place.rating} &nbsp;·&nbsp; {place.review_count} reviews</div>
+          <div className="pl-meta">⭐ {place.rating} &nbsp;·&nbsp; {place.review_count} {t("reviews")}</div>
           <button className="pl-edit-btn" onClick={openEdit}>✏️ {t("bs_edit_info")}</button>
           <button
             onClick={handleToggleBranch}

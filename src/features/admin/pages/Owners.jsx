@@ -334,11 +334,11 @@ export default function Owners() {
             { label: t("commercial"), value: stats.commercial, icon: "🏬", bg: "#E6F1FB", color: "#0C447C", trend: `${Math.round(stats.commercial / stats.total * 100) || 0}%` },
             { label: t("residential"), value: stats.residential, icon: "🏠", bg: "#EEEDFE", color: "#3C3489", trend: `${Math.round(stats.residential / stats.total * 100) || 0}%` },
             { label: t("banned"), value: stats.banned, icon: "🚫", bg: "#FCEBEB", color: "#791F1F", trend: `${Math.round(stats.banned / stats.total * 100) || 0}%` },
-            
+
           ].map((s) => (
             <div key={s.label} style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
               <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <span style={{ fontSize: "18px" }}>{s.icon}</span>
+                <span style={{ fontSize: "18px" }}>{s.icon}</span>
               </div>
               <div>
                 <div style={{ fontSize: "26px", fontWeight: 600, color: s.color, lineHeight: 1 }}>{s.value}</div>
@@ -506,8 +506,8 @@ export default function Owners() {
           <div style={{ background: "var(--bg-card)", borderRadius: "16px", width: "100%", maxWidth: "440px", boxShadow: "0 20px 60px rgba(0,0,0,0.15)", overflow: "hidden" }}>
             <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid #f1f0ec", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-main)", margin: 0 }}>Create New Owner</h2>
-                <p style={{ fontSize: "12px", color: "var(--icon-muted)", margin: "4px 0 0" }}>Add a new owner account to the platform</p>
+                <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-main)", margin: 0 }}> {t("create_new_owner")} </h2>
+                <p style={{ fontSize: "12px", color: "var(--icon-muted)", margin: "4px 0 0" }}>{t("create_owner_subtitle")}</p>
               </div>
               <button onClick={() => setShowModal(false)} style={{ background: "var(--bg-surface)", border: "none", borderRadius: "8px", width: "32px", height: "32px", cursor: "pointer", fontSize: "16px", color: "var(--text-sub)", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
             </div>
@@ -516,17 +516,17 @@ export default function Owners() {
                 <div style={{ background: "var(--danger-bg)", border: "1px solid #fecaca", borderRadius: "8px", padding: "10px 14px", fontSize: "12px", color: "var(--danger)" }}>⚠️ {formError}</div>
               )}
               <div>
-                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: "6px" }}>Full Name *</label>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: "6px" }}> {t("full_name")}</label>
                 <input type="text" placeholder="Owner of ..." value={form.full_name} onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))}
                   style={{ width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #e4e2dd", fontSize: "13px", color: "var(--text-main)", outline: "none", boxSizing: "border-box", background: "var(--bg-card)" }} />
               </div>
               <div>
-                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: "6px" }}>Email *</label>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: "6px" }}>t("email")</label>
                 <input type="email" placeholder="owner@example.com" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                   style={{ width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #e4e2dd", fontSize: "13px", color: "var(--text-main)", outline: "none", boxSizing: "border-box", background: "var(--bg-card)" }} />
               </div>
               <div>
-                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: "6px" }}>Password *</label>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: "6px" }}>{t("password")}</label>
                 <div style={{ position: "relative" }}>
                   <input type={showPassword ? "text" : "password"} placeholder="••••••••" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
                     style={{ width: "100%", padding: "9px 40px 9px 12px", borderRadius: "8px", border: "1px solid #e4e2dd", fontSize: "13px", color: "var(--text-main)", outline: "none", boxSizing: "border-box", background: "var(--bg-card)" }} />
@@ -537,7 +537,7 @@ export default function Owners() {
                 </div>
               </div>
               <div>
-                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: "6px" }}>Owner Type</label>
+                <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: "6px" }}> {t("owner_type_label")}</label>
                 <div style={{ display: "flex", gap: "8px" }}>
                   {["COMMERCIAL", "RESIDENTIAL"].map((type) => (
                     <button key={type} onClick={() => setForm((f) => ({ ...f, owner_type: type }))}
@@ -549,10 +549,10 @@ export default function Owners() {
               </div>
             </div>
             <div style={{ padding: "16px 24px", borderTop: "1px solid #f1f0ec", display: "flex", gap: "8px", justifyContent: "flex-end" }}>
-              <button onClick={() => setShowModal(false)} style={{ padding: "9px 18px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", fontWeight: 500, cursor: "pointer", color: "var(--text-sub)" }}>Cancel</button>
+              <button onClick={() => setShowModal(false)} style={{ padding: "9px 18px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", fontWeight: 500, cursor: "pointer", color: "var(--text-sub)" }}>{t("cancel")}</button>
               <button onClick={handleCreateOwner} disabled={creating}
                 style={{ padding: "9px 20px", borderRadius: "8px", border: "none", background: creating ? "var(--icon-muted)" : "var(--text-main)", fontSize: "13px", fontWeight: 600, cursor: creating ? "not-allowed" : "pointer", color: "var(--bg-card)" }}>
-                {creating ? "Creating..." : "Create Owner"}
+                {creating ? t("creating") : t("create_owner")}
               </button>
             </div>
           </div>
@@ -573,7 +573,7 @@ export default function Owners() {
                 </div>
                 <div>
                   <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-main)", margin: 0 }}>{viewOwner.full_name}</h2>
-                  <p style={{ fontSize: "12px", color: "var(--icon-muted)", margin: "2px 0 0" }}>Owner Details</p>
+                  <p style={{ fontSize: "12px", color: "var(--icon-muted)", margin: "2px 0 0" }}>{t("owner_details")}</p>
                 </div>
               </div>
               <button onClick={() => setViewOwner(null)} style={{ background: "var(--bg-surface)", border: "none", borderRadius: "8px", width: "32px", height: "32px", cursor: "pointer", fontSize: "16px", color: "var(--text-sub)", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
@@ -581,27 +581,33 @@ export default function Owners() {
             <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: "12px" }}>
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                 <span style={{ fontSize: "11px", fontWeight: 600, padding: "4px 12px", borderRadius: "999px", background: viewOwner.is_verified ? "var(--success-bg)" : "var(--warning-bg)", color: viewOwner.is_verified ? "var(--success)" : "var(--warning)", border: `1px solid ${viewOwner.is_verified ? "var(--success-bg)" : "var(--warning-bg)"}` }}>
-                  {viewOwner.is_verified ? "✓ Verified" : "⏳ Pending Verification"}
+                  {
+                    viewOwner.is_verified
+                      ? `✓ ${t("verified")}`
+                      : `⏳ ${t("pendingVerification")}`
+                  }
                 </span>
                 <span style={{ fontSize: "11px", fontWeight: 600, padding: "4px 12px", borderRadius: "999px", background: viewOwner.is_active ? "var(--success-bg)" : "var(--danger-bg)", color: viewOwner.is_active ? "var(--success)" : "var(--danger)", border: `1px solid ${viewOwner.is_active ? "var(--success-bg)" : "var(--danger-bg)"}` }}>
-                  {viewOwner.is_active ? "Active" : "Deactivated"}
+                  {viewOwner.is_active ? t("active") : t("inactive")}
                 </span>
                 {viewOwner.owner_type && (() => {
                   const ts = ownerTypeStyle(viewOwner.owner_type);
                   return (
                     <span style={{ fontSize: "11px", fontWeight: 600, padding: "4px 12px", borderRadius: "999px", background: ts.bg, color: ts.color, border: `1px solid ${ts.border}` }}>
-                      {viewOwner.owner_type === "COMMERCIAL" ? "🏬 Commercial" : "🏠 Residential"}
+                      {viewOwner.owner_type === "COMMERCIAL"
+                        ? `🏬 ${t("commercial")}`
+                        : `🏠 ${t("residential")}`}
                     </span>
                   );
                 })()}
               </div>
 
               {[
-                { label: "ID", value: viewOwner.id },
-                { label: "Email", value: viewOwner.email },
-                { label: "Provider", value: viewOwner.provider ?? "local" },
-                { label: "Joined", value: viewOwner.created_at ? new Date(viewOwner.created_at).toLocaleString() : "—" },
-                { label: "Updated", value: viewOwner.updated_at ? new Date(viewOwner.updated_at).toLocaleString() : "—" },
+                { label: t("id"), value: viewOwner.id },
+                { label: t("email"), value: viewOwner.email },
+                { label: t("provider"), value: viewOwner.provider ?? "local" },
+                { label: t("joined"), value: viewOwner.created_at ? new Date(viewOwner.created_at).toLocaleString() : "—" },
+                { label: t("updated"), value: viewOwner.updated_at ? new Date(viewOwner.updated_at).toLocaleString() : "—" },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "var(--bg-surface)", borderRadius: "8px", border: "1px solid #f1f0ec" }}>
                   <span style={{ fontSize: "12px", color: "var(--text-sub)", fontWeight: 600 }}>{label}</span>
@@ -615,9 +621,9 @@ export default function Owners() {
                 <>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
                     {[
-                      { icon: "📦", label: "Items", value: ownerDetails.itemsCount },
-                      { icon: "🛒", label: "Orders", value: ownerDetails.ordersCount },
-                      { icon: "🏪", label: "Places", value: ownerDetails.places.length },
+                      { icon: "📦", label: t("items"), value: ownerDetails.itemsCount },
+                      { icon: "🛒", label: t("orders"), value: ownerDetails.ordersCount },
+                      { icon: "🏪", label: t("places"), value: ownerDetails.places.length },
                     ].map((s) => (
                       <div key={s.label} style={{ padding: "12px 10px", borderRadius: "10px", background: "var(--bg-surface)", border: "1px solid #f1f0ec", textAlign: "center" }}>
                         <div style={{ fontSize: "18px", marginBottom: "4px" }}>{s.icon}</div>
@@ -632,14 +638,14 @@ export default function Owners() {
                       {ownerDetails.places.map((place, idx) => (
                         <div key={place.id ?? idx} style={{ padding: "12px 14px", borderRadius: "8px", background: "var(--success-bg)", border: "1px solid #bbf7d0" }}>
                           <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--success)", margin: "0 0 6px" }}>
-                            🏪 BRANCH {ownerDetails.places.length > 1 ? idx + 1 : ""}
+                            🏪 {t("branch")} {ownerDetails.places.length > 1 ? idx + 1 : ""}
                           </p>
                           {[
-                            { label: "Name", value: place.name },
-                            { label: "Category", value: place.category ?? place.category_id ?? "—" },
-                            { label: "Status", value: place.is_active ? "Active" : "Inactive" },
-                            { label: "Address", value: place.address ?? place.location ?? "—" },
-                            { label: "Orders", value: ownerDetails.ordersPerBranch?.[place.id] ?? 0 },
+                            { label: t("name"), value: place.name },
+                            { label: t("category"), value: place.category ?? place.category_id ?? "—" },
+                            { label: t("status"), value: place.is_active ? t("active") : t("inactive") },
+                            { label: t("address"), value: place.address ?? place.location ?? "—" },
+                            { label: t("orders"), value: ownerDetails.ordersPerBranch?.[place.id] ?? 0 },
                           ].map(({ label, value }) => (
                             <div key={label} style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
                               <span style={{ fontSize: "11px", color: "var(--text-sub)", fontWeight: 600 }}>{label}</span>
@@ -651,12 +657,12 @@ export default function Owners() {
                     </div>
                   ) : (
                     <div style={{ padding: "12px 14px", borderRadius: "8px", background: "var(--warning-bg)", border: "1px solid #fde68a", fontSize: "12px", color: "var(--warning)", textAlign: "center" }}>
-                      ⚠️ No places linked to this owner yet
+                      ⚠️ {t("no_places_linked")}
                     </div>
                   )}
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "var(--bg-surface)", borderRadius: "8px", border: "1px solid #f1f0ec" }}>
-                    <span style={{ fontSize: "12px", color: "var(--text-sub)", fontWeight: 600 }}>🕐 Last Activity</span>
+                    <span style={{ fontSize: "12px", color: "var(--text-sub)", fontWeight: 600 }}>🕐 {t("last_activity")}</span>
                     <span style={{ fontSize: "12px", color: "var(--text-main)" }}>
                       {ownerDetails.lastActivity ? new Date(ownerDetails.lastActivity).toLocaleString() : "No recent activity"}
                     </span>
@@ -665,7 +671,7 @@ export default function Owners() {
               ) : null}
             </div>
             <div style={{ padding: "14px 24px", borderTop: "1px solid #f1f0ec", display: "flex", justifyContent: "flex-end" }}>
-              <button onClick={() => setViewOwner(null)} style={{ padding: "9px 20px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", fontWeight: 500, cursor: "pointer", color: "var(--text-sub)" }}>Close</button>
+              <button onClick={() => setViewOwner(null)} style={{ padding: "9px 20px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", fontWeight: 500, cursor: "pointer", color: "var(--text-sub)" }}>{t("close")}</button>
             </div>
           </div>
         </div>
