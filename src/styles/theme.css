@@ -9,6 +9,9 @@
 :root,
 [data-theme="light"] {
 
+  /* ── Font */
+  --font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+
   /* ── Brand */
   --color-primary:      #2148B0;
   --color-primary-hover:#1A3DA8;
@@ -103,6 +106,7 @@
 body {
   background-color: var(--bg-main);
   color: var(--text-main);
+  font-family: var(--font-family);
 }
 
 *, *::before, *::after {

@@ -134,7 +134,7 @@
     color: var(--icon-muted) !important;
     text-decoration: none !important;
     font-size: 9px !important;
-    font-family: 'Inter', sans-serif !important;
+    font-family: 'Cairo', sans-serif !important;
     background: transparent !important;
     border: none !important;
     cursor: pointer !important;
@@ -477,7 +477,7 @@
     cursor: pointer;
     text-align: left;
     transition: background 0.15s;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Cairo', sans-serif;
   }
 
   .admin-settings-fab-item:hover {

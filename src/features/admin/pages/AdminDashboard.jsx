@@ -1,5 +1,6 @@
 // AdminDashboard.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useOutletContext } from "react-router-dom";
 import { useLanguage } from "../../../context/LanguageContext";
 import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
@@ -157,47 +158,45 @@ export default function AdminDashboard() {
     const { refetchOverview, overview, overviewLoading, refetchRequests } = useOutletContext() ?? {};
     const { t } = useLanguage();
 
-    const [recentNotifs, setRecentNotifs] = useState([]);
-    const [notifsLoading, setNotifsLoading] = useState(true);
-    const [trendData, setTrendData] = useState([]);
-    const [trendLoading, setTrendLoading] = useState(true);
     const [activeLine, setActiveLine] = useState(null);
 
-    useEffect(() => {
-        const load = async () => {
-            setNotifsLoading(true);
-            try {
-                const data = await apiFetch("/dashboard/admin/notifications/requests?skip=0&limit=5");
-                const arr = Array.isArray(data) ? data : data?.items ?? data?.requests ?? [];
-                setRecentNotifs(arr.slice(0, 5));
-            } catch {
-                setRecentNotifs([]);
-            } finally {
-                setNotifsLoading(false);
-            }
-        };
-        load();
-    }, []);
+    // ── Notifications (cached 5 دقايق) ──────────────────────────────────────
+    const { data: notifsData, isLoading: notifsLoading } = useQuery({
+        queryKey: ["admin-dashboard-notifs"],
+        queryFn: async () => {
+            const data = await apiFetch("/dashboard/admin/notifications/requests?skip=0&limit=5");
+            const arr = Array.isArray(data) ? data : data?.items ?? data?.requests ?? [];
+            return arr.slice(0, 5);
+        },
+        staleTime: 5 * 60 * 1000,   // 5 دقايق
+        gcTime: 10 * 60 * 1000,      // يفضل في الميموري 10 دقايق
+    });
+    const recentNotifs = notifsData ?? [];
 
-    useEffect(() => {
-        const load = async () => {
-            setTrendLoading(true);
-            try {
-                const end = new Date();
-                const start = new Date();
-                start.setDate(start.getDate() - 6);
-                const fmt2 = (d) => d.toISOString().split("T")[0];
-                const data = await apiFetch(`/dashboard/admin/stats/trending?start_date=${fmt2(start)}&end_date=${fmt2(end)}`);
-                const arr = Array.isArray(data) ? data : [];
-                setTrendData(arr.map((d) => ({ ...d, displayDate: fmtDate(d.date) })));
-            } catch {
-                setTrendData([]);
-            } finally {
-                setTrendLoading(false);
-            }
-        };
-        load();
-    }, []);
+    // ── Trend Data (cached 5 دقايق) ─────────────────────────────────────────
+    const trendQueryKey = (() => {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - 6);
+        const fmt2 = (d) => d.toISOString().split("T")[0];
+        return ["admin-dashboard-trend", fmt2(start), fmt2(end)];
+    })();
+
+    const { data: trendRaw, isLoading: trendLoading } = useQuery({
+        queryKey: trendQueryKey,
+        queryFn: async () => {
+            const end = new Date();
+            const start = new Date();
+            start.setDate(start.getDate() - 6);
+            const fmt2 = (d) => d.toISOString().split("T")[0];
+            const data = await apiFetch(`/dashboard/admin/stats/trending?start_date=${fmt2(start)}&end_date=${fmt2(end)}`);
+            const arr = Array.isArray(data) ? data : [];
+            return arr.map((d) => ({ ...d, displayDate: fmtDate(d.date) }));
+        },
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+    });
+    const trendData = trendRaw ?? [];
 
     const handleRefresh = () => { refetchOverview?.(); refetchRequests?.(); };
 

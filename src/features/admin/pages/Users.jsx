@@ -111,7 +111,7 @@ export default function Users() {
                             width: "100%", padding: "9px 12px 9px 36px",
                             borderRadius: "8px", border: "1px solid #e4e2dd",
                             fontSize: "13px", color: "var(--text-main)", outline: "none",
-                            fontFamily: "'Inter', sans-serif", boxSizing: "border-box",
+                            fontFamily: "'Cairo', sans-serif", boxSizing: "border-box",
                             background: "var(--bg-card)",
                         }}
                     />

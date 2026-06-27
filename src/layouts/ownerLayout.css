@@ -1,5 +1,4 @@
 /*ownerlayout.css*/
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
 /* ── Theme Variables ── */
 :root {
@@ -26,7 +25,7 @@
 .owner-layout {
   display: flex;
   min-height: 100vh;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cairo', sans-serif;
 }
 
 /* ── Sidebar ── */
@@ -171,7 +170,7 @@
   border: 2px solid rgba(239, 68, 68, 0.6);
   border-radius: 10px;
   color: #f87171;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cairo', sans-serif;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -348,7 +347,7 @@
     text-decoration: none;
     font-size: 10px;
     font-weight: 500;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Cairo', sans-serif;
     background: transparent;
     border: none;
     cursor: pointer;

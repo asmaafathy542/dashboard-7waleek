@@ -691,16 +691,22 @@ export default function Items() {
                                     <div className="it-card-footer">
                                         <span className="it-price">{item.price} {t("it_egp")}</span>
                                         <div className="it-actions">
-                                            <button className={`it-toggle ${item.is_available ? "it-toggle-on" : "it-toggle-off"}`} onClick={() => handleToggle(item)}>
-                                                {item.is_available ? "👁️" : "🙈"}
+                                            <button
+                                                className={`it-toggle ${item.is_available ? "it-toggle-on" : "it-toggle-off"}`}
+                                                onClick={() => handleToggle(item)}
+                                                title={item.is_available ? t("it_hide") : t("it_show")}
+                                            >
+                                                {item.is_available ? "✓" : "✗"}
                                             </button>
                                             <button
-                                                className="it-edit-btn"
+                                                className="it-variants-btn"
                                                 onClick={() => setSubItemsTarget(item)}
                                                 title={t("it_variants")}
-                                                style={{ fontSize: 13 }}
                                             >
-                                                🧩 {item.sub_items?.length > 0 ? item.sub_items.length : ""}
+                                                <span className="it-variants-icon">⚙️</span>
+                                                {item.sub_items?.length > 0 && (
+                                                    <span className="it-variants-count">{item.sub_items.length}</span>
+                                                )}
                                             </button>
                                             <button className="it-edit-btn" onClick={() => openEdit(item)}>{t("it_edit")}</button>
                                             <button className="it-del-btn" onClick={() => handleDelete(item.id)}><span className="it-del-text">{t("it_delete")}</span></button>

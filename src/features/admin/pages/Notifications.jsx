@@ -195,21 +195,21 @@ export default function AdminNotifications() {
           <span style={st.statIcon}>📢</span>
           <div>
             <div style={st.statVal}>{requests.length}</div>
-            <div style={st.statLabel}>{t("total") ?? "Total Sent"}</div>
+            <div style={st.statLabel}>{t("notif_total_sent")}</div>
           </div>
         </div>
         <div style={st.statCard}>
           <span style={st.statIcon}>📤</span>
           <div>
             <div style={st.statVal}>{totalDelivered.toLocaleString()}</div>
-            <div style={st.statLabel}>{"Total Delivered"}</div>
+            <div style={st.statLabel}>{t("notif_total_delivered")}</div>
           </div>
         </div>
         <div style={st.statCard}>
           <span style={st.statIcon}>👁</span>
           <div>
             <div style={st.statVal}>{totalRead.toLocaleString()}</div>
-            <div style={st.statLabel}>{"Total Read"}</div>
+            <div style={st.statLabel}>{t("notif_total_read")}</div>
           </div>
         </div>
       </div>

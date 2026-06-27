@@ -211,7 +211,7 @@ export default function AdminLayout() {
     return (
         <div
             className="admin-layout-wrapper"
-            style={{ display: "flex", minHeight: "100vh", fontFamily: "'Inter', sans-serif", background: "var(--bg-main)", transition: "background 0.3s ease" }}
+            style={{ display: "flex", minHeight: "100vh", fontFamily: "'Cairo', sans-serif", background: "var(--bg-main)", transition: "background 0.3s ease" }}
         >
             {/* ── Sidebar ── */}
             <div
@@ -344,7 +344,7 @@ export default function AdminLayout() {
         border: "2px solid rgba(239, 68, 68, 0.6)",
         borderRadius: "10px",
         color: "#f87171",
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Cairo', sans-serif",
         fontSize: "14px",
         fontWeight: 500,
         cursor: "pointer",

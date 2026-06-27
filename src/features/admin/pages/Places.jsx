@@ -5,6 +5,7 @@ import Pagination from "../../../shared/components/ui/Pagination";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "../../../context/LanguageContext";
 import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
+import StatCard from "../../../shared/components/ui/StatCard";
 
 const BASE = "https://aroundubackend-production.up.railway.app/api";
 
@@ -299,6 +300,7 @@ function CreatePlaceModal({ onClose, onCreated }) {
 
 /* ─────────────── VIEW MODAL ─────────────── */
 function PlaceModal({ place, onClose, onToggleStatus }) {
+    const { t } = useLanguage();
     const [toggling, setToggling] = useState(false);
     const [confirmToggle, setConfirmToggle] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
@@ -355,7 +357,7 @@ function PlaceModal({ place, onClose, onToggleStatus }) {
                         </div>
                         <div style={{ flex: 1 }}>
                             <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-main)", margin: 0 }}>{name}</h2>
-                            <p style={{ fontSize: "12px", color: "var(--icon-muted)", margin: "2px 0 0" }}>t("placeDetails")</p>
+                            <p style={{ fontSize: "12px", color: "var(--icon-muted)", margin: "2px 0 0" }}>{t("placeDetails")}</p>
                         </div>
                         <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "var(--icon-muted)", lineHeight: 1 }}>✕</button>
                     </div>
@@ -364,7 +366,7 @@ function PlaceModal({ place, onClose, onToggleStatus }) {
                         <span style={{ fontSize: "11px", fontWeight: 600, padding: "4px 12px", borderRadius: "999px", background: "var(--bg-surface)", color: "var(--text-sub)", border: "1px solid #e2e8f0" }}>📂 {category}</span>
                     </div>
                     <div style={{ padding: "16px 24px" }}>
-                        {[["ID", id], ["District", district], ["Added", added]].map(([label, val]) => (
+                        {[[t("place_field_id"), id], [t("place_field_district"), district], [t("place_field_added"), added]].map(([label, val]) => (
                             <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #f8fafc", gap: "12px" }}>
                                 <span style={{ fontSize: "13px", color: "var(--text-sub)" }}>{label}</span>
                                 <span style={{ fontSize: "13px", color: "var(--text-main)", fontWeight: 500 }}>{val}</span>
@@ -372,7 +374,7 @@ function PlaceModal({ place, onClose, onToggleStatus }) {
                         ))}
                     </div>
                     <div style={{ padding: "0 24px 16px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "10px" }}>
-                        {[["⭐", typeof rating === "number" ? rating.toFixed(1) : rating, "Rating"], ["💬", reviews, "Reviews"], ["❤️", saves, "Saves"], ["👁", visits, "Visits"]].map(([icon, val, lbl]) => (
+                        {[["⭐", typeof rating === "number" ? rating.toFixed(1) : rating, t("place_stat_rating")], ["💬", reviews, t("place_stat_reviews")], ["❤️", saves, t("place_stat_saves")], ["👁", visits, t("place_stat_visits")]].map(([icon, val, lbl]) => (
                             <div key={lbl} style={{ background: "var(--bg-surface)", borderRadius: "10px", padding: "12px 8px", textAlign: "center", border: "1px solid #f1f0ec" }}>
                                 <div style={{ fontSize: "18px" }}>{icon}</div>
                                 <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-main)", marginTop: "4px" }}>{val}</div>
@@ -381,19 +383,19 @@ function PlaceModal({ place, onClose, onToggleStatus }) {
                         ))}
                     </div>
                     <div style={{ padding: "14px 24px", borderTop: "1px solid #f1f0ec", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-                        <button onClick={() => setConfirmDelete(true)} style={{ padding: "8px 18px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, cursor: "pointer", border: "none", background: "var(--danger-bg)", color: "var(--danger)", marginRight: "auto" }}>🗑 Delete</button>
+                        <button onClick={() => setConfirmDelete(true)} style={{ padding: "8px 18px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, cursor: "pointer", border: "none", background: "var(--danger-bg)", color: "var(--danger)", marginRight: "auto" }}>🗑 {t("delete")}</button>
                         <button onClick={() => setConfirmToggle(true)} disabled={toggling} style={{ padding: "8px 18px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, cursor: toggling ? "not-allowed" : "pointer", border: "none", background: isActive ? "var(--danger-bg)" : "var(--success-bg)", color: isActive ? "var(--danger)" : "var(--success)" }}>
-                            {toggling ? "..." : isActive ? "🔴 Deactivate" : "🟢 Activate"}
+                            {toggling ? "..." : isActive ? `🔴 ${t("deactivate")}` : `🟢 ${t("activate")}`}
                         </button>
-                        <button onClick={onClose} style={{ padding: "8px 20px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", fontWeight: 500, cursor: "pointer", color: "var(--text-sub)" }}>Close</button>
+                        <button onClick={onClose} style={{ padding: "8px 20px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", fontWeight: 500, cursor: "pointer", color: "var(--text-sub)" }}>{t("close")}</button>
                     </div>
                 </div>
             </div>
             {confirmToggle && (
                 <ConfirmPopup
-                    message={`${isActive ? "Deactivate" : "Activate"} "${name}"?`}
-                    subMessage={isActive ? "The place will be hidden from the app." : "The place will be visible in the app again."}
-                    confirmLabel={isActive ? "Deactivate" : "Activate"}
+                    message={`${isActive ? t("deactivate") : t("activate")} "${name}"?`}
+                    subMessage={isActive ? t("place_deactivate_sub") : t("place_activate_sub")}
+                    confirmLabel={isActive ? t("deactivate") : t("activate")}
                     danger={isActive}
                     onConfirm={handleToggle}
                     onCancel={() => setConfirmToggle(false)}
@@ -401,9 +403,9 @@ function PlaceModal({ place, onClose, onToggleStatus }) {
             )}
             {confirmDelete && (
                 <ConfirmPopup
-                    message={`Delete "${name}" permanently?`}
+                    message={`${t("place_delete_confirm")} "${name}"?`}
                     danger={true}
-                    confirmLabel="Delete"
+                    confirmLabel={t("delete")}
                     onConfirm={handleDelete}
                     onCancel={() => setConfirmDelete(false)}
                 />
@@ -540,27 +542,11 @@ export default function AdminPlaces() {
             </div>
 
             {/* Stats */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "1.5rem" }}>
-                {[
-                    { icon: "🏪", label: t("total"), value: total, bg: "#E6F1FB", color: "#0C447C", trend: "All time" },
-                    { icon: "✅", label: t("active"), value: active, bg: "#EAF3DE", color: "#27500A", trend: `${Math.round(active / total * 100) || 0}%` },
-                    { icon: "❌", label: t("inactive"), value: inactive, bg: "#FCEBEB", color: "#791F1F", trend: `${Math.round(inactive / total * 100) || 0}%` },
-                    { icon: "⏸️", label: t("suspended"), value: suspended, bg: "#FAEEDA", color: "#633806", trend: `${Math.round(suspended / total * 100) || 0}%` },
-                ].map((s) => (
-                    <div key={s.label} style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                        <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            <span style={{ fontSize: "18px" }}>{s.icon}</span>
-                        </div>
-                        <div>
-                            <div style={{ fontSize: "26px", fontWeight: 600, color: s.color, lineHeight: 1 }}>{s.value}</div>
-                            <div style={{ fontSize: "12px", color: "var(--icon-muted)", marginTop: "4px" }}>{s.label}</div>
-                        </div>
-                        <div style={{ width: "100%", height: "1px", background: "#e4e2dd" }} />
-                        <div style={{ fontSize: "11px", fontWeight: 500, color: s.color }}>
-                            % {s.trend}
-                        </div>
-                    </div>
-                ))}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
+                <StatCard icon="🏪" label={t("total")} value={total} colorKey="blue" percent={t("all_time")} />
+                <StatCard icon="✅" label={t("active")} value={active} colorKey="teal" percent={`${Math.round(active / total * 100) || 0}%`} />
+                <StatCard icon="❌" label={t("inactive")} value={inactive} colorKey="coral" percent={`${Math.round(inactive / total * 100) || 0}%`} />
+                <StatCard icon="⏸️" label={t("suspended")} value={suspended} colorKey="amber" percent={`${Math.round(suspended / total * 100) || 0}%`} />
             </div>
 
             {/* Search + Filters */}

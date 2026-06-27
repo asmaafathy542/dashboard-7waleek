@@ -5,6 +5,7 @@ import Pagination from "../../../shared/components/ui/Pagination";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "../../../context/LanguageContext";
 import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
+import StatCard from "../../../shared/components/ui/StatCard";
 
 const BASE = "https://aroundubackend-production.up.railway.app/api";
 
@@ -329,30 +330,12 @@ export default function Owners() {
 
       {/* Stats */}
       {!loading && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px", marginBottom: "1.5rem" }}>
-          {[
-            { label: t("total"), value: stats.total, icon: "🏪", bg: "#E6F1FB", color: "#0C447C", trend: "All time" },
-            { label: t("verified"), value: stats.verified, icon: "✅", bg: "#EAF3DE", color: "#27500A", trend: `${Math.round(stats.verified / stats.total * 100) || 0}%` },
-            { label: t("commercial"), value: stats.commercial, icon: "🏬", bg: "#E6F1FB", color: "#0C447C", trend: `${Math.round(stats.commercial / stats.total * 100) || 0}%` },
-            { label: t("residential"), value: stats.residential, icon: "🏠", bg: "#EEEDFE", color: "#3C3489", trend: `${Math.round(stats.residential / stats.total * 100) || 0}%` },
-            { label: t("banned"), value: stats.banned, icon: "🚫", bg: "#FCEBEB", color: "#791F1F", trend: `${Math.round(stats.banned / stats.total * 100) || 0}%` },
-
-          ].map((s) => (
-            <div key={s.label} style={{ background: "var(--bg-card)", border: "1px solid #e4e2dd", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
-              <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span style={{ fontSize: "18px" }}>{s.icon}</span>
-              </div>
-              <div>
-                <div style={{ fontSize: "26px", fontWeight: 600, color: s.color, lineHeight: 1 }}>{s.value}</div>
-                <div style={{ fontSize: "12px", color: "var(--icon-muted)", marginTop: "4px" }}>{s.label}</div>
-              </div>
-              <div style={{ width: "100%", height: "1px", background: "#e4e2dd" }} />
-              <div style={{ fontSize: "11px", fontWeight: 500, color: s.color, display: "flex", alignItems: "center", gap: "4px" }}>
-                <i className="ti ti-percentage" style={{ fontSize: "12px" }} aria-hidden="true" />
-                {s.trend}
-              </div>
-            </div>
-          ))}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+          <StatCard icon="🏪" label={t("total")} value={stats.total} colorKey="blue" percent={t("all_time")} />
+          <StatCard icon="✅" label={t("verified")} value={stats.verified} colorKey="teal" percent={`${Math.round(stats.verified / stats.total * 100) || 0}%`} />
+          <StatCard icon="🏬" label={t("commercial")} value={stats.commercial} colorKey="purple" percent={`${Math.round(stats.commercial / stats.total * 100) || 0}%`} />
+          <StatCard icon="🏠" label={t("residential")} value={stats.residential} colorKey="pink" percent={`${Math.round(stats.residential / stats.total * 100) || 0}%`} />
+          <StatCard icon="🚫" label={t("banned")} value={stats.banned} colorKey="coral" percent={`${Math.round(stats.banned / stats.total * 100) || 0}%`} />
         </div>
       )}
 
