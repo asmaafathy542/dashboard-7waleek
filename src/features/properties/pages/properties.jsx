@@ -9,6 +9,7 @@ import {
   toggleAvailability,
 } from "../services/propertiesServices";
 import { useLanguage } from "../../../context/LanguageContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import "./properties.css";
 
 const EMPTY_FORM = {
@@ -161,6 +162,7 @@ export default function Properties() {
         <button className="prop-add-btn" onClick={openAdd}>
           + {ar ? "إضافة عقار" : "Add Property"}
         </button>
+        <PageThemeToggle />
       </div>
 
       {/* Search */}

@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
 import { useLanguage } from "../../../context/LanguageContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 
 import {
   getNotificationRequests,
@@ -180,9 +181,12 @@ export default function AdminNotifications() {
     <div style={st.page}>
 
       {/* ── Header ── */}
-      <div style={st.header}>
-        <h1 style={st.title}>🔔 {t("notifications")}</h1>
-        <p style={st.sub}>{t("notif_manage_sub")}</p>
+      <div style={{ ...st.header, display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+        <div>
+          <h1 style={st.title}>🔔 {t("notifications")}</h1>
+          <p style={st.sub}>{t("notif_manage_sub")}</p>
+        </div>
+        <PageThemeToggle />
       </div>
 
       {/* ── Stats ── */}

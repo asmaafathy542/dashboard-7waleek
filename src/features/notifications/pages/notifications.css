@@ -16,7 +16,12 @@
 }
 
 /* ── Header ── */
-.nt-header { margin-bottom: 0.25rem; }
+.nt-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
 
 .nt-title {
   font-size: 1.5rem;

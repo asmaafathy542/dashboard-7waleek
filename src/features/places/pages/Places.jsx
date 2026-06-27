@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "../../../context/LanguageContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import {
   getPlaceById,
   deletePlaceImage,
@@ -509,6 +510,7 @@ export default function Places() {
           </span>
         </div>
         <div className="pl-header-right">
+          <PageThemeToggle />
           <div className="pl-meta">⭐ {place.rating} &nbsp;·&nbsp; {place.review_count} {t("reviews")}</div>
           <button className="pl-edit-btn" onClick={openEdit}>✏️ {t("bs_edit_info")}</button>
           <button

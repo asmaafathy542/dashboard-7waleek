@@ -4,6 +4,7 @@ import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
 import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "../../../context/LanguageContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 
 const BASE = "https://aroundubackend-production.up.railway.app/api";
 
@@ -80,15 +81,18 @@ export default function Users() {
                         {loading ? "Loading..." : `${users.length} ${t("total_users")}`}
                     </p>
                 </div>
-                <button
-                    onClick={fetchUsers}
-                    style={{
-                        padding: "8px 16px", borderRadius: "8px", border: "1px solid #e4e2dd",
-                        background: "var(--bg-card)", fontSize: "13px", cursor: "pointer", color: "var(--text-sub)", fontWeight: 500,
-                    }}
-                >
-                    🔄 {t("refresh")}
-                </button>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <PageThemeToggle />
+                    <button
+                        onClick={fetchUsers}
+                        style={{
+                            padding: "8px 16px", borderRadius: "8px", border: "1px solid #e4e2dd",
+                            background: "var(--bg-card)", fontSize: "13px", cursor: "pointer", color: "var(--text-sub)", fontWeight: 500,
+                        }}
+                    >
+                        🔄 {t("refresh")}
+                    </button>
+                </div>
             </div>
 
             {/* Search */}

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { useLanguage } from "../../../context/LanguageContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid,
     Tooltip, Legend, ResponsiveContainer,
@@ -226,9 +227,12 @@ export default function AdminDashboard() {
                     </h1>
                     <p style={{ fontSize: "0.85rem", color: "var(--icon-muted)" }}>{t("platform_summary")}</p>
                 </div>
-                <button onClick={handleRefresh} style={{ padding: "8px 16px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", cursor: "pointer", color: "var(--text-sub)", fontWeight: 500 }}>
-                    🔄 {t("refresh")}
-                </button>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <PageThemeToggle />
+                    <button onClick={handleRefresh} style={{ padding: "8px 16px", borderRadius: "8px", border: "1px solid #e4e2dd", background: "var(--bg-card)", fontSize: "13px", cursor: "pointer", color: "var(--text-sub)", fontWeight: 500 }}>
+                        🔄 {t("refresh")}
+                    </button>
+                </div>
             </div>
 
             {/* ── KPI Cards ── */}

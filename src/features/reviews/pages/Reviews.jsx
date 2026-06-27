@@ -6,6 +6,7 @@ import { getMyProperties } from "../../properties/services/propertiesServices";
 import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
 import { useLanguage } from "../../../context/LanguageContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import "./reviews.css";
 
 function StarRating({ rating }) {
@@ -90,6 +91,7 @@ const computedSentiment = {
             {ar ? `${total} تقييم` : `${total} review${total !== 1 ? "s" : ""} total`}
           </p>
         </div>
+        <PageThemeToggle />
       </div>
 
       <div className="rv-sentiment-row">
@@ -234,6 +236,7 @@ const computedSentiment = {
             {ar ? `${total} تقييم` : `${total} review${total !== 1 ? "s" : ""} total`}
           </p>
         </div>
+        <PageThemeToggle />
       </div>
 
       <div style={{ marginBottom: "16px" }}>

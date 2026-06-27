@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "../../../context/LanguageContext";
 import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import {
     getItems,
     getItemsBySubCategory,
@@ -626,6 +627,7 @@ export default function Items() {
                         <p className="it-subtitle">{items.length} {t("it_item")}</p>
                     </div>
                     <div className="it-header-actions">
+                        <PageThemeToggle />
                         <button className="it-bulk-btn" onClick={() => setShowBulk(true)}>📦 {t("it_bulk_import")}</button>
 
                         {items.length > 0 && (

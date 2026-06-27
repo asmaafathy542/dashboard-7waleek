@@ -10,6 +10,7 @@ import {
 import * as XLSX from "xlsx";
 import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import "./orders.css";
 
 const STATUS_OPTIONS = [
@@ -213,6 +214,7 @@ export default function Orders() {
           <p className="or-subtitle">{orders.length} {t("or_total_label")}</p>
         </div>
         <div className="or-export-btns">
+          <PageThemeToggle />
           <button className="or-export-btn" onClick={exportExcel}>⬇️ Excel</button>
           <button className="or-export-btn or-export-csv" onClick={exportCSV}>⬇️ CSV</button>
         </div>

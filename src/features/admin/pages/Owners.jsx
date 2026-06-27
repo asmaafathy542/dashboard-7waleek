@@ -4,6 +4,7 @@ import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "../../../context/LanguageContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 
 const BASE = "https://aroundubackend-production.up.railway.app/api";
 
@@ -314,6 +315,7 @@ export default function Owners() {
           </p>
         </div>
         <div style={{ display: "flex", gap: "8px" }}>
+          <PageThemeToggle />
           <button
             onClick={() => { setShowModal(true); setFormError(""); setForm(EMPTY_FORM); }}
             style={{ padding: "8px 16px", borderRadius: "8px", border: "none", background: "var(--color-primary)", color: "var(--text-on-dark)", fontSize: "13px", cursor: "pointer", fontWeight: 600 }}

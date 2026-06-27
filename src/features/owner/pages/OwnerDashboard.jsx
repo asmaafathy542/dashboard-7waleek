@@ -16,6 +16,7 @@ import {
 } from "../services/ownerDashboardService";
 import { getOrdersByBranch } from "../../orders/services/ordersService";
 import { useTheme } from "../../../context/ThemeContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import {
     BarChart,
     Bar,
@@ -99,7 +100,6 @@ function resolveDateRange(dateRange, customFrom, customTo) {
 
 function ResidentialOverview() {
     const { t } = useLanguage();
-    const { isDark, toggleTheme } = useTheme();
 
     const { data: properties = [], isLoading: loading } = useQuery({
         queryKey: ["properties"],
@@ -121,19 +121,6 @@ function ResidentialOverview() {
                     <h1 className="od-title">{t("welcome")}</h1>
                     <p className="od-subtitle">{t("properties_summary")}</p>
                 </div>
-                <button
-                    onClick={toggleTheme}
-                    style={{
-                        width: "36px", height: "36px",
-                        borderRadius: "8px",
-                        border: "1px solid #e4e2dd",
-                        background: isDark ? "#1A2639" : "#fff",
-                        fontSize: "18px", cursor: "pointer",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                    }}
-                >
-                    {isDark ? "☀️" : "🌙"}
-                </button>
             </div>
 
             <div className="od-cards">
@@ -213,7 +200,6 @@ export default function OwnerDashboard() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     const isResidential = user?.owner_type === "RESIDENTIAL";
     const queryClient = useQueryClient();
-    const { isDark, toggleTheme } = useTheme();
 
     const statCards = [
         { key: "visits", label: t("stat_visits"), icon: "👁️" },
@@ -376,19 +362,7 @@ export default function OwnerDashboard() {
                 </div>
 
                 <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                    <button
-                        onClick={toggleTheme}
-                        style={{
-                            width: "36px", height: "36px",
-                            borderRadius: "8px",
-                            border: "1px solid #e4e2dd",
-                            background: isDark ? "#1A2639" : "#fff",
-                            fontSize: "18px", cursor: "pointer",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                        }}
-                    >
-                        {isDark ? "☀️" : "🌙"}
-                    </button>
+                    <PageThemeToggle />
                     <button
                         className={`od-refresh-btn ${refreshing ? "od-refreshing" : ""}`}
                         onClick={handleRefresh}

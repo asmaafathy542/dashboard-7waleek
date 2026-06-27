@@ -4,6 +4,7 @@ import { getNotifications, sendNotification } from "../services/notificationsSer
 import Pagination from "../../../shared/components/ui/Pagination";
 import { usePagination } from "../../../hooks/usePagination";
 import { useLanguage } from "../../../context/LanguageContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import "./notifications.css";
 
 const EMPTY_FORM = { title: "", message: "", target_type: "ALL_USERS", target_user_id: "" };
@@ -92,15 +93,18 @@ export default function Notifications() {
 
       {/* Header */}
       <div className="nt-header">
-        <h1 className="nt-title">{ar ? "الإشعارات" : "Notifications"}</h1>
-        <p className="nt-subtitle">
-          {loading
-            ? (ar ? "جاري التحميل..." : "Loading...")
-            : ar
-              ? `${notifications.length} إشعار مُرسَل`
-              : `${notifications.length} notification${notifications.length !== 1 ? "s" : ""} sent`
-          }
-        </p>
+        <div>
+          <h1 className="nt-title">{ar ? "الإشعارات" : "Notifications"}</h1>
+          <p className="nt-subtitle">
+            {loading
+              ? (ar ? "جاري التحميل..." : "Loading...")
+              : ar
+                ? `${notifications.length} إشعار مُرسَل`
+                : `${notifications.length} notification${notifications.length !== 1 ? "s" : ""} sent`
+            }
+          </p>
+        </div>
+        <PageThemeToggle />
       </div>
 
       {/* Daily Limit Cards */}

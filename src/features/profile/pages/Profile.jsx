@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProfile, updateProfile, changePassword } from "../services/profileService";
 import { useLanguage } from "../../../context/LanguageContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import "./profile.css";
 
 export default function Profile() {
@@ -87,8 +88,11 @@ export default function Profile() {
     <div className="pr-page">
 
       <div className="pr-header">
-        <h1 className="pr-title">{ar ? "الملف الشخصي" : "Profile"}</h1>
-        <p className="pr-subtitle">{ar ? "معلومات حسابك." : "Your account information."}</p>
+        <div>
+          <h1 className="pr-title">{ar ? "الملف الشخصي" : "Profile"}</h1>
+          <p className="pr-subtitle">{ar ? "معلومات حسابك." : "Your account information."}</p>
+        </div>
+        <PageThemeToggle />
       </div>
 
       <div className="pr-card">

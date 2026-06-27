@@ -4,6 +4,7 @@ import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "../../../context/LanguageContext";
+import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 
 const BASE = "https://aroundubackend-production.up.railway.app/api";
 
@@ -528,6 +529,7 @@ export default function AdminPlaces() {
                     <p style={{ fontSize: "0.85rem", color: "var(--icon-muted)" }}>{loading ? "Loading..." : `${total} ${t("total_places")}`}</p>
                 </div>
                 <div style={{ display: "flex", gap: "10px" }}>
+                    <PageThemeToggle />
                     <button onClick={() => setShowCreate(true)} style={{ padding: "8px 14px", borderRadius: "8px", border: "none", background: "var(--color-primary)", color: "var(--text-on-dark)", fontSize: "13px", cursor: "pointer", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
                         ➕ {t("create_place")}
                     </button>
