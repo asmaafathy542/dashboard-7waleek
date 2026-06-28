@@ -108,43 +108,23 @@ export default function Notifications() {
       </div>
 
       {/* Daily Limit Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
         {/* Sent Today */}
-        <div style={{
-          borderRadius: "12px", padding: "1.1rem 1.25rem",
-          border: "1px solid var(--border)", background: "var(--bg-card)",
-          display: "flex", alignItems: "center", gap: "12px",
-        }}>
-          <span style={{ fontSize: "1.6rem" }}>📅</span>
-          <div>
-            <div style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--color-primary)", lineHeight: 1 }}>
-              {sentToday} <span style={{ fontSize: "0.9rem", fontWeight: 400, color: "var(--icon-muted)" }}>/ {DAILY_LIMIT}</span>
-            </div>
-            <div style={{ fontSize: "0.72rem", color: "var(--icon-muted)", marginTop: "4px" }}>
-              {ar ? "مُرسَل اليوم" : "Sent Today"}
-            </div>
+        <div className="od-card">
+          <div className="od-card-icon">📅</div>
+          <div className="od-card-value" style={{ color: "var(--color-primary)" }}>
+            {sentToday} <span style={{ fontSize: "0.9rem", fontWeight: 400, color: "var(--icon-muted)" }}>/ {DAILY_LIMIT}</span>
           </div>
+          <div className="od-card-label">{ar ? "مُرسَل اليوم" : "Sent Today"}</div>
         </div>
 
         {/* Remaining Today */}
-        <div style={{
-          borderRadius: "12px", padding: "1.1rem 1.25rem",
-          border: `1px solid ${remainingToday === 0 ? "var(--danger)" : "var(--border)"}`,
-          background: remainingToday === 0 ? "var(--danger-bg)" : "var(--bg-card)",
-          display: "flex", alignItems: "center", gap: "12px",
-        }}>
-          <span style={{ fontSize: "1.6rem" }}>{remainingToday === 0 ? "🚫" : "🟢"}</span>
-          <div>
-            <div style={{
-              fontSize: "1.4rem", fontWeight: 700, lineHeight: 1,
-              color: remainingToday === 0 ? "var(--danger)" : "var(--success)",
-            }}>
-              {remainingToday}
-            </div>
-            <div style={{ fontSize: "0.72rem", color: "var(--icon-muted)", marginTop: "4px" }}>
-              {ar ? "متبقي اليوم" : "Remaining Today"}
-            </div>
+        <div className="od-card">
+          <div className="od-card-icon">{remainingToday === 0 ? "🚫" : "🟢"}</div>
+          <div className="od-card-value" style={{ color: remainingToday === 0 ? "var(--danger)" : "var(--success)" }}>
+            {remainingToday}
           </div>
+          <div className="od-card-label">{ar ? "متبقي اليوم" : "Remaining Today"}</div>
         </div>
       </div>
 

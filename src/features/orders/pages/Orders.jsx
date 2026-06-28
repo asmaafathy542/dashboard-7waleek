@@ -265,16 +265,19 @@ export default function Orders() {
 
       <div className="or-stats">
         <div className="or-stat-card">
-          <span className="or-stat-label">{t("or_stat_total")}</span>
+          <div style={{ fontSize: "1.2rem" }}>📦</div>
           <span className="or-stat-value">{orders.length}</span>
+          <span className="or-stat-label">{t("or_stat_total")}</span>
         </div>
         <div className="or-stat-card">
-          <span className="or-stat-label">{t("or_stat_revenue")}</span>
+          <div style={{ fontSize: "1.2rem" }}>💰</div>
           <span className="or-stat-value">{totalRevenue.toLocaleString()} {t("it_egp")}</span>
+          <span className="or-stat-label">{t("or_stat_revenue")}</span>
         </div>
         <div className="or-stat-card">
-          <span className="or-stat-label">{t("or_stat_pending")}</span>
+          <div style={{ fontSize: "1.2rem" }}>⏳</div>
           <span className="or-stat-value or-stat-pending">{pendingCount}</span>
+          <span className="or-stat-label">{t("or_stat_pending")}</span>
         </div>
       </div>
 

@@ -141,31 +141,59 @@
 /* ── Sentiment Summary ── */
 .rv-sentiment-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .rv-sentiment-card {
-  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
   padding: 1rem 1.25rem;
-  border: 1px solid;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
+.rv-sentiment-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 16px 16px 0 0;
+}
+
+.rv-sentiment-card:hover {
+  box-shadow: 0 6px 20px rgba(33, 72, 176, 0.1);
+  transform: translateY(-2px);
+}
+
+.rv-sentiment-positive::before { background: linear-gradient(90deg, #16a34a, #4ade80); }
+.rv-sentiment-negative::before { background: linear-gradient(90deg, #dc2626, #f87171); }
+.rv-sentiment-neutral::before  { background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); }
+
 .rv-sentiment-num {
-  font-size: 1.75rem;
+  font-size: 1.4rem;
   font-weight: 700;
   line-height: 1;
-  margin-bottom: 0.4rem;
+  color: var(--text-main);
 }
 
 .rv-sentiment-label {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--icon-muted);
 }
 
-.rv-sentiment-positive { background: var(--success-bg); border-color: var(--success-bg); color: var(--success); }
-.rv-sentiment-negative { background: var(--danger-bg); border-color: var(--danger-bg); color: var(--danger); }
-.rv-sentiment-neutral  { background: var(--bg-surface); border-color: var(--border); color: var(--text-sub); }
-.rv-sentiment-unknown  { background: var(--hover-bg); border-color: var(--border); color: var(--icon-muted); }
+.rv-sentiment-positive { background: var(--bg-card); border-color: var(--border); }
+.rv-sentiment-negative { background: var(--bg-card); border-color: var(--border); }
+.rv-sentiment-neutral  { background: var(--bg-card); border-color: var(--border); }
+.rv-sentiment-unknown  { background: var(--bg-card); border-color: var(--border); }
