@@ -106,10 +106,10 @@ export const updateWorkingHours = async (placeId, workingHoursString) => {
   return res.data;
 };
 
-export const updatePlaceStatus = async (isActive) => {
+export const updatePlaceStatus = async (isOpen) => {
   const res = await api.put(
     `/owner/my-place/status`,
-    { is_active: isActive },
+    { is_open: isOpen },
     { headers: authHeader() }
   );
   return res.data;

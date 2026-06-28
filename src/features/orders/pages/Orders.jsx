@@ -7,7 +7,7 @@ import {
   getOrdersByBranch,
   updateOrderStatus,
 } from "../services/ordersService";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { usePagination } from "../../../hooks/usePagination";
 import Pagination from "../../../shared/components/ui/Pagination";
 import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
@@ -23,10 +23,8 @@ const STATUS_OPTIONS = [
   "CANCELLED",
 ];
 
-// الـ flow الجديد — كل status ممكن يروح فين
 const getAllowedTransitions = (order) => {
-  const type = order?.order_type; // "TAKE_AWAY" or "CASH_ON_DELIVERY" etc.
-  
+  const type = order?.order_type;
   return {
     PENDING:          ["CONFIRMED", "CANCELLED"],
     CONFIRMED:        ["PREPARING", "CANCELLED"],
@@ -66,6 +64,12 @@ function playBeep() {
   } catch (e) {}
 }
 
+const orderTypeLabel = (type) => {
+  if (!type) return "";
+  const map = { CASH_ON_DELIVERY: "Cash on Delivery", TAKE_AWAY: "Take Away", DELIVERY: "Delivery" };
+  return map[type] || type.replace(/_/g, " ");
+};
+
 export default function Orders() {
   const { selectedPlaceId, placeName } = useOutletContext() ?? {};
   const queryClient = useQueryClient();
@@ -81,6 +85,16 @@ export default function Orders() {
     CANCELLED:         t("or_status_cancelled"),
   };
 
+  const statusConfig = {
+    PENDING:          { emoji: "🟡", bg: "FFFEF3C7", fg: "FF92400E" },
+    CONFIRMED:        { emoji: "🔵", bg: "FFDBEAFE", fg: "FF1E40AF" },
+    PREPARING:        { emoji: "🟣", bg: "FFEDE9FE", fg: "FF5B21B6" },
+    READY_FOR_PICKUP: { emoji: "🟤", bg: "FFD1FAE5", fg: "FF065F46" },
+    OUT_FOR_DELIVERY: { emoji: "🚚", bg: "FFE0F2FE", fg: "FF0369A1" },
+    COMPLETED:        { emoji: "✅", bg: "FFDCFCE7", fg: "FF15803D" },
+    CANCELLED:        { emoji: "🔴", bg: "FFFEE2E2", fg: "FFB91C1C" },
+  };
+
   const [selected, setSelected] = useState(null);
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [newOrderAlert, setNewOrderAlert] = useState(null);
@@ -92,7 +106,6 @@ export default function Orders() {
     queryFn: async () => {
       const data = await getOrdersByBranch(selectedPlaceId);
       const arr = Array.isArray(data) ? data : [data];
-
       if (knownIdsRef.current !== null) {
         const newOrders = arr.filter((o) => !knownIdsRef.current.has(o.id));
         if (newOrders.length > 0) {
@@ -113,12 +126,10 @@ export default function Orders() {
 
   const handleStatusChange = async (orderId, newStatus) => {
     const prevStatus = orders.find((o) => o.id === orderId)?.status;
-
     queryClient.setQueryData(["orders", selectedPlaceId], (prev) =>
       (prev ?? []).map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
     );
     if (selected?.id === orderId) setSelected((prev) => ({ ...prev, status: newStatus }));
-
     try {
       const updatedOrder = await updateOrderStatus(orderId, newStatus);
       queryClient.setQueryData(["orders", selectedPlaceId], (prev) =>
@@ -134,97 +145,11 @@ export default function Orders() {
     }
   };
 
-  
-
   const copyUserId = (userId) => {
     navigator.clipboard.writeText(String(userId)).then(() => {
       setCopiedId(true);
       setTimeout(() => setCopiedId(false), 2000);
     });
-  };
-
-  const exportExcel = () => {
-    const orderTypeLabel = (type) => {
-      if (!type) return "";
-      const map = { CASH_ON_DELIVERY: "Cash on Delivery", TAKE_AWAY: "Take Away", DELIVERY: "Delivery" };
-      return map[type] || type.replace(/_/g, " ");
-    };
-
-    const headers = [
-      "#", t("or_col_user_id"), t("or_col_customer"), t("or_col_phone"),
-      t("or_col_address"), t("or_col_type"), t("or_col_total"),
-      t("or_col_date"), t("or_col_status"),
-    ];
-
-    const rows = filtered.map((o) => [
-      o.id, o.user_id ?? "", o.full_name ?? "", o.phone_number ?? "",
-      o.address ?? "", orderTypeLabel(o.order_type), o.total_price,
-      new Date(o.created_at).toLocaleDateString(),
-      statusLabel[o.status] || o.status,
-    ]);
-
-    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-
-    ws["!cols"] = [
-      { wch: 6 }, { wch: 10 }, { wch: 20 }, { wch: 16 },
-      { wch: 30 }, { wch: 20 }, { wch: 12 }, { wch: 14 }, { wch: 18 },
-    ];
-
-    // Header style
-    headers.forEach((_, ci) => {
-      const cell = ws[XLSX.utils.encode_cell({ r: 0, c: ci })];
-      if (!cell) return;
-      cell.s = {
-        font: { bold: true, color: { rgb: "FFFFFF" }, sz: 11 },
-        fill: { fgColor: { rgb: "2148B0" } },
-        alignment: { horizontal: "center", vertical: "center" },
-      };
-    });
-
-    // Status colors
-    const statusColors = {
-      PENDING:          { bg: "FEF3C7", fg: "92400E" },
-      CONFIRMED:        { bg: "DBEAFE", fg: "1E40AF" },
-      PREPARING:        { bg: "EDE9FE", fg: "5B21B6" },
-      READY_FOR_PICKUP: { bg: "D1FAE5", fg: "065F46" },
-      OUT_FOR_DELIVERY: { bg: "E0F2FE", fg: "0369A1" },
-      COMPLETED:        { bg: "DCFCE7", fg: "15803D" },
-      CANCELLED:        { bg: "FEE2E2", fg: "B91C1C" },
-    };
-    filtered.forEach((o, ri) => {
-      const colors = statusColors[o.status];
-      if (!colors) return;
-      const cell = ws[XLSX.utils.encode_cell({ r: ri + 1, c: 8 })];
-      if (!cell) return;
-      cell.s = { font: { bold: true, color: { rgb: colors.fg } }, fill: { fgColor: { rgb: colors.bg } }, alignment: { horizontal: "center" } };
-    });
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Orders");
-    XLSX.writeFile(wb, `orders-${placeName || "branch"}.xlsx`, { cellStyles: true });
-  };
-
-  const exportCSV = () => {
-    const headers = [
-      "#", t("or_col_user_id"), t("or_col_customer"), t("or_col_phone"),
-      t("or_col_address"), t("or_col_type"), t("or_col_total"),
-      t("or_col_date"), t("or_col_status"),
-    ];
-    const rows = filtered.map((o) => [
-      o.id, o.user_id ?? "", o.full_name, o.phone_number, o.address,
-      o.order_type?.replace("_", " "),
-      `${o.total_price} ${t("it_egp")}`,
-      new Date(o.created_at).toLocaleDateString(),
-      statusLabel[o.status] || o.status,
-    ]);
-    const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `orders-${placeName || "branch"}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   const totalRevenue = orders
@@ -238,6 +163,91 @@ export default function Orders() {
   const pagination = usePagination(filtered, pageSize);
   const { paginated, reset: resetPage } = pagination;
   useMemo(() => { resetPage(); }, [filterStatus]);
+
+  // ── Excel Export (ExcelJS) ─────────────────────────────────────────────
+  const exportExcel = async () => {
+    const wb = new ExcelJS.Workbook();
+    wb.creator = "7waleek Dashboard";
+    const ws = wb.addWorksheet("Orders");
+
+    ws.columns = [
+      { header: "#",                  key: "id",      width: 7  },
+      { header: t("or_col_user_id"),  key: "uid",     width: 10 },
+      { header: t("or_col_customer"), key: "name",    width: 22 },
+      { header: t("or_col_phone"),    key: "phone",   width: 18 },
+      { header: t("or_col_address"),  key: "address", width: 32 },
+      { header: t("or_col_type"),     key: "type",    width: 20 },
+      { header: t("or_col_total"),    key: "total",   width: 14 },
+      { header: t("or_col_date"),     key: "date",    width: 14 },
+      { header: t("or_col_status"),   key: "status",  width: 20 },
+    ];
+
+    const headerRow = ws.getRow(1);
+    headerRow.height = 28;
+    headerRow.eachCell((cell) => {
+      cell.fill      = { type: "pattern", pattern: "solid", fgColor: { argb: "FF2148B0" } };
+      cell.font      = { bold: true, color: { argb: "FFFFFFFF" }, size: 11 };
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+    });
+
+    filtered.forEach((o, i) => {
+      const cfg = statusConfig[o.status];
+      const row = ws.addRow({
+        id:      o.id,
+        uid:     o.user_id ?? "",
+        name:    o.full_name ?? "",
+        phone:   String(o.phone_number ?? ""),
+        address: o.address ?? "",
+        type:    orderTypeLabel(o.order_type),
+        total:   o.total_price,
+        date:    new Date(o.created_at).toLocaleDateString("en-GB"),
+        status:  cfg ? `${cfg.emoji} ${statusLabel[o.status] || o.status}` : (statusLabel[o.status] || o.status),
+      });
+      row.height = 22;
+
+      const rowBg = i % 2 === 0 ? "FFF8FAFF" : "FFFFFFFF";
+      row.eachCell({ includeEmpty: true }, (cell, col) => {
+        cell.alignment = { vertical: "middle" };
+        if (col !== 9) {
+          cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: rowBg } };
+        }
+      });
+
+      const phoneCell = row.getCell(4);
+      phoneCell.numFmt = "@";
+
+      const totalCell = row.getCell(7);
+      totalCell.numFmt = '#,##0 "EGP"';
+      totalCell.alignment = { horizontal: "right", vertical: "middle" };
+
+      if (cfg) {
+        const statusCell = row.getCell(9);
+        statusCell.fill      = { type: "pattern", pattern: "solid", fgColor: { argb: cfg.bg } };
+        statusCell.font      = { bold: true, color: { argb: cfg.fg } };
+        statusCell.alignment = { horizontal: "center", vertical: "middle" };
+      }
+    });
+
+    ws.eachRow({ includeEmpty: false }, (row) => {
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top:    { style: "hair", color: { argb: "FFD5DEF0" } },
+          bottom: { style: "hair", color: { argb: "FFD5DEF0" } },
+          left:   { style: "hair", color: { argb: "FFD5DEF0" } },
+          right:  { style: "hair", color: { argb: "FFD5DEF0" } },
+        };
+      });
+    });
+
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob   = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url    = URL.createObjectURL(blob);
+    const a      = document.createElement("a");
+    a.href       = url;
+    a.download   = `orders-${placeName || "branch"}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   if (!selectedPlaceId) return <div className="or-loading">{t("loading")}</div>;
   if (loading) return <div className="or-loading">{t("loading")}</div>;
@@ -259,7 +269,6 @@ export default function Orders() {
         <div className="or-export-btns">
           <PageThemeToggle />
           <button className="or-export-btn" onClick={exportExcel}>⬇️ Excel</button>
-          <button className="or-export-btn or-export-csv" onClick={exportCSV}>⬇️ CSV</button>
         </div>
       </div>
 
@@ -322,7 +331,7 @@ export default function Orders() {
                   <td>{order.full_name}</td>
                   <td>{order.phone_number}</td>
                   <td>{order.address}</td>
-                  <td className="or-type">{t(`or_type_${order.order_type}`) || order.order_type?.replace(/_/g, " ")}</td>
+                  <td className="or-type">{t(`or_type_${order.order_type}`) || orderTypeLabel(order.order_type)}</td>
                   <td className="or-price">{order.total_price} {t("it_egp")}</td>
                   <td className="or-date">{new Date(order.created_at).toLocaleDateString()}</td>
                   <td onClick={(e) => e.stopPropagation()}>
@@ -330,7 +339,7 @@ export default function Orders() {
                       className={`or-status ${statusClass[order.status]}`}
                       value={order.status}
                       onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                     disabled={getAllowedTransitions(order)[order.status]?.length === 0}
+                      disabled={getAllowedTransitions(order)[order.status]?.length === 0}
                     >
                       <option value={order.status}>{statusLabel[order.status]}</option>
                       {getAllowedTransitions(order)[order.status]?.map((s) => (
@@ -353,7 +362,6 @@ export default function Orders() {
         </div>
       )}
 
-      {/* Order Detail Modal */}
       {selected && (
         <div className="or-modal-overlay" onClick={() => setSelected(null)}>
           <div className="or-modal" onClick={(e) => e.stopPropagation()}>
@@ -439,7 +447,6 @@ export default function Orders() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

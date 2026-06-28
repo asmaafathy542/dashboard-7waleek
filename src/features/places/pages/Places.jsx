@@ -189,6 +189,7 @@ export default function Places() {
   useEffect(() => {
     if (place) {
       setIsActive(place.is_active ?? true);
+      setIsOpen(place.is_open ?? true);
     }
   }, [place]);
 
