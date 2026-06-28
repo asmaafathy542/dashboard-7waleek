@@ -17,14 +17,12 @@ export const getPlaceById = async (placeId) => {
 export const getMyPlaces = async () => {
   const res = await api.get("/owner/my-places", { headers: authHeader() });
   const data = res.data;
-  // ✅ DEBUG: اطبع الـ response shape مرة واحدة عشان نعرف الـ structure
   console.log("[getMyPlaces] raw response:", JSON.stringify(data)?.slice(0, 300));
-  // بيدعم كل response shapes: array مباشرة، { results: [] }، { data: [] }، أو object واحد
   if (Array.isArray(data)) return data;
   if (Array.isArray(data?.results)) return data.results;
   if (Array.isArray(data?.data)) return data.data;
   if (Array.isArray(data?.places)) return data.places;
-  if (data && typeof data === "object" && data.id) return [data]; // single place object
+  if (data && typeof data === "object" && data.id) return [data];
   return [];
 };
 
@@ -106,9 +104,10 @@ export const updateWorkingHours = async (placeId, workingHoursString) => {
   return res.data;
 };
 
-export const updatePlaceStatus = async (isOpen) => {
+// ✅ التعديل هنا — ضفنا placeId
+export const updatePlaceStatus = async (isOpen, placeId) => {
   const res = await api.put(
-    `/owner/my-place/status`,
+    `/owner/my-place/status?place_id=${placeId}`,
     { is_open: isOpen },
     { headers: authHeader() }
   );
@@ -135,7 +134,7 @@ export const activateBranch = async (branchId) => {
 };
 
 export const getCategories = async () => {
-  const res = await api.get("/v1/categories"); // ← شيل الـ /api من الأول
+  const res = await api.get("/v1/categories");
   return res.data;
 };
 

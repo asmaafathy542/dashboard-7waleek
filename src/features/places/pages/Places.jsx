@@ -435,7 +435,7 @@ export default function Places() {
     setConfirmOpen(false);
     setTogglingOpen(true);
     try {
-      await updatePlaceStatus(!isOpen);
+      await updatePlaceStatus(!isOpen, selectedPlaceId);
       setIsOpen((prev) => !prev);
     } catch (err) {
       console.error("Failed to toggle place status", err);
