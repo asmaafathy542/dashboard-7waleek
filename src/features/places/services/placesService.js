@@ -10,7 +10,7 @@ export const getPlaces = async () => {
 };
 
 export const getPlaceById = async (placeId) => {
-  const res = await api.get(`/mobile/places/${placeId}`, { headers: authHeader() });
+  const res = await api.get(`/owner/my-place?place_id=${placeId}`, { headers: authHeader() });
   return res.data?.data ?? res.data;
 };
 
