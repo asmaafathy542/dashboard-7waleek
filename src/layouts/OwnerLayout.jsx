@@ -219,6 +219,7 @@ export default function OwnerLayout() {
   const knownIdsRef = useRef(null);
   const knownReviewIdsRef = useRef(null);
   const swRef = useRef(null);
+  const audioCtxRef = useRef(null);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const isResidential = user?.owner_type === "RESIDENTIAL";
@@ -261,6 +262,32 @@ export default function OwnerLayout() {
   useEffect(() => {
     if (isResidential || !selectedPlace?.id) return;
     knownIdsRef.current = null;
+
+    const playOrderSound = () => {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        audioCtxRef.current = ctx;
+        // نغمة بسيطة: ثلاث نوتات صاعدة
+        const notes = [523, 659, 784]; // C5, E5, G5
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = "sine";
+          osc.frequency.value = freq;
+          const start = ctx.currentTime + i * 0.15;
+          gain.gain.setValueAtTime(0, start);
+          gain.gain.linearRampToValueAtTime(0.4, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.25);
+          osc.start(start);
+          osc.stop(start + 0.25);
+        });
+      } catch (err) {
+        console.warn("Audio play failed:", err);
+      }
+    };
+
     const sendPushNotification = async (count) => {
       try {
         if (isIOS) return;
@@ -283,6 +310,7 @@ export default function OwnerLayout() {
         }
         const newOrders = arr.filter((o) => o?.id && !knownIdsRef.current.has(o.id));
         if (newOrders.length > 0) {
+          playOrderSound();
           await sendPushNotification(newOrders.length);
           newOrders.forEach((o) => knownIdsRef.current.add(o.id));
         }

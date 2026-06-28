@@ -468,7 +468,7 @@ export default function Items() {
     const context = useOutletContext() ?? {};
     const { selectedPlaceId } = context;
     const queryClient = useQueryClient();
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
 
     const [selectedSubCat, setSelectedSubCat] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -482,6 +482,9 @@ export default function Items() {
     const [saving, setSaving] = useState(false);
     const [deletingAll, setDeletingAll] = useState(false);
     const [pageSize, setPageSize] = useState(12);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [showHiddenModal, setShowHiddenModal] = useState(false);
+    const [activatingId, setActivatingId] = useState(null);
 
     const { data: subCategories = [] } = useQuery({
         queryKey: ["sub-categories", selectedPlaceId],
@@ -506,9 +509,19 @@ export default function Items() {
     const invalidateSubCats = () =>
         queryClient.invalidateQueries({ queryKey: ["sub-categories", selectedPlaceId] });
 
-    const pagination = usePagination(items, pageSize);
+    const filteredItems = useMemo(() => {
+        if (!searchQuery.trim()) return items;
+        const q = searchQuery.trim().toLowerCase();
+        return items.filter((item) =>
+            item.name?.toLowerCase().includes(q) ||
+            item.description?.toLowerCase().includes(q) ||
+            item.subcategory_name?.toLowerCase().includes(q)
+        );
+    }, [items, searchQuery]);
+
+    const pagination = usePagination(filteredItems, pageSize);
     const { paginated, reset: resetPage } = pagination;
-    useMemo(() => { resetPage(); }, [selectedSubCat, items.length]);
+    useMemo(() => { resetPage(); }, [selectedSubCat, filteredItems.length]);
 
     const openAdd = () => {
         setEditItem(null);
@@ -624,7 +637,7 @@ export default function Items() {
                         <h1 className="it-title">
                             {selectedSubCat ? subCategories.find(s => s.id === selectedSubCat)?.name : t("it_all_items")}
                         </h1>
-                        <p className="it-subtitle">{items.length} {t("it_item")}</p>
+                        <p className="it-subtitle">{searchQuery ? `${filteredItems.length} / ${items.length}` : items.length} {t("it_item")}</p>
                     </div>
                     <div className="it-header-actions">
                         <PageThemeToggle />
@@ -649,12 +662,254 @@ export default function Items() {
                     </div>
                 </div>
 
+                {/* ── Unavailable Items Warning ── */}
+                {!loading && (() => {
+                    const unavailableCount = items.filter(i => !i.is_available).length;
+                    if (unavailableCount === 0) return null;
+                    return (
+                        <>
+                            {/* Banner */}
+                            <div style={{
+                                display: "flex", alignItems: "center", gap: "10px",
+                                padding: "10px 16px",
+                                marginBottom: "14px",
+                                background: "var(--warning-bg, #FBF3DC)",
+                                border: "1.5px solid var(--warning, #B07D20)",
+                                borderRadius: "12px",
+                            }}>
+                                <span style={{ fontSize: "18px", flexShrink: 0 }}>⚠️</span>
+                                <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--warning, #B07D20)", flex: 1 }}>
+                                    {lang === "ar"
+                                        ? `لديك ${unavailableCount} ${unavailableCount > 1 ? "منتجات" : "منتج"} مخفية — مش هتظهر للعملاء`
+                                        : `You have ${unavailableCount} hidden item${unavailableCount > 1 ? "s" : ""} — not visible to customers`}
+                                </span>
+                                <button
+                                    onClick={() => setShowHiddenModal(true)}
+                                    style={{
+                                        padding: "6px 14px",
+                                        background: "var(--warning, #B07D20)",
+                                        color: "#fff",
+                                        border: "none",
+                                        borderRadius: "8px",
+                                        fontSize: "12px",
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                        flexShrink: 0,
+                                        whiteSpace: "nowrap",
+                                    }}
+                                >
+                                    {lang === "ar" ? "عرض المخفية" : "View hidden items"}
+                                </button>
+                            </div>
+
+                            {/* Hidden Items Modal */}
+                            {showHiddenModal && (() => {
+                                const hiddenItems = items.filter(i => !i.is_available);
+                                return (
+                                    <>
+                                        <div
+                                            onClick={() => setShowHiddenModal(false)}
+                                            style={{
+                                                position: "fixed", inset: 0, zIndex: 1000,
+                                                background: "rgba(0,0,0,0.45)",
+                                                backdropFilter: "blur(2px)",
+                                            }}
+                                        />
+                                        <div style={{
+                                            position: "fixed",
+                                            top: "50%", left: "50%",
+                                            transform: "translate(-50%, -50%)",
+                                            zIndex: 1001,
+                                            background: "var(--bg-card)",
+                                            borderRadius: "16px",
+                                            boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+                                            width: "min(480px, 90vw)",
+                                            maxHeight: "70vh",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            overflow: "hidden",
+                                        }}>
+                                            {/* Modal Header */}
+                                            <div style={{
+                                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                                padding: "18px 20px",
+                                                borderBottom: "1px solid var(--border)",
+                                                flexShrink: 0,
+                                            }}>
+                                                <div>
+                                                    <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "var(--text-main)" }}>
+                                                        🙈 {lang === "ar" ? "المنتجات المخفية" : "Hidden Items"}
+                                                    </h3>
+                                                    <p style={{ margin: "2px 0 0", fontSize: "12px", color: "var(--text-sub)" }}>
+                                                        {lang === "ar"
+                                                            ? `${hiddenItems.length} منتج مش ظاهر للعملاء`
+                                                            : `${hiddenItems.length} item${hiddenItems.length > 1 ? "s" : ""} not visible to customers`}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={() => setShowHiddenModal(false)}
+                                                    style={{
+                                                        background: "var(--bg-surface)", border: "none",
+                                                        borderRadius: "8px", width: "32px", height: "32px",
+                                                        cursor: "pointer", fontSize: "16px",
+                                                        color: "var(--text-sub)", display: "flex",
+                                                        alignItems: "center", justifyContent: "center",
+                                                    }}
+                                                >✕</button>
+                                            </div>
+
+                                            {/* Modal Body */}
+                                            <div style={{ overflowY: "auto", padding: "12px 16px", flex: 1 }}>
+                                                {hiddenItems.map((item) => {
+                                                    const imgUrl = item.image_url
+                                                        ? (item.image_url.startsWith("http") ? item.image_url : `https://aroundubackend-production.up.railway.app/${item.image_url}`)
+                                                        : null;
+                                                    const isActivating = activatingId === item.id;
+                                                    return (
+                                                        <div key={item.id} style={{
+                                                            display: "flex", alignItems: "center", gap: "12px",
+                                                            padding: "12px",
+                                                            marginBottom: "8px",
+                                                            background: "var(--bg-surface)",
+                                                            border: "1px solid var(--border)",
+                                                            borderRadius: "12px",
+                                                        }}>
+                                                            {/* Image or placeholder */}
+                                                            <div style={{
+                                                                width: "48px", height: "48px",
+                                                                borderRadius: "10px", flexShrink: 0,
+                                                                overflow: "hidden",
+                                                                background: "var(--border)",
+                                                                display: "flex", alignItems: "center", justifyContent: "center",
+                                                            }}>
+                                                                {imgUrl
+                                                                    ? <img src={imgUrl} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                                                    : <span style={{ fontSize: "22px" }}>🍽️</span>
+                                                                }
+                                                            </div>
+
+                                                            {/* Info */}
+                                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                                <div style={{
+                                                                    fontWeight: 600, fontSize: "14px",
+                                                                    color: "var(--text-main)",
+                                                                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                                                                }}>{item.name}</div>
+                                                                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "3px" }}>
+                                                                    {item.subcategory_name && (
+                                                                        <span style={{
+                                                                            fontSize: "11px", color: "var(--text-sub)",
+                                                                            background: "var(--bg-card)",
+                                                                            padding: "1px 7px", borderRadius: "999px",
+                                                                            border: "1px solid var(--border)",
+                                                                        }}>{item.subcategory_name}</span>
+                                                                    )}
+                                                                    <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--success)" }}>
+                                                                        {Number(item.price).toLocaleString()} EGP
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Activate button */}
+                                                            <button
+                                                                disabled={isActivating}
+                                                                onClick={async () => {
+                                                                    setActivatingId(item.id);
+                                                                    await handleToggle(item);
+                                                                    setActivatingId(null);
+                                                                    if (items.filter(i => !i.is_available && i.id !== item.id).length === 0) {
+                                                                        setShowHiddenModal(false);
+                                                                    }
+                                                                }}
+                                                                style={{
+                                                                    padding: "7px 14px",
+                                                                    background: isActivating ? "var(--bg-surface)" : "#dcfce7",
+                                                                    color: isActivating ? "var(--text-sub)" : "#15803d",
+                                                                    border: "1.5px solid",
+                                                                    borderColor: isActivating ? "var(--border)" : "#86efac",
+                                                                    borderRadius: "8px",
+                                                                    fontSize: "12px", fontWeight: 600,
+                                                                    cursor: isActivating ? "not-allowed" : "pointer",
+                                                                    flexShrink: 0,
+                                                                    transition: "all 0.15s",
+                                                                    whiteSpace: "nowrap",
+                                                                }}
+                                                            >
+                                                                {isActivating ? "⏳" : (lang === "ar" ? "✓ تفعيل" : "✓ Activate")}
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </>
+                    );
+                })()}
+
+                {/* ── Search Bar ── */}
+                {!loading && items.length > 0 && (
+                    <div style={{
+                        margin: "0 0 18px",
+                        position: "relative",
+                        maxWidth: "420px",
+                    }}>
+                        <span style={{
+                            position: "absolute",
+                            top: "50%", left: "14px",
+                            transform: "translateY(-50%)",
+                            fontSize: "16px",
+                            pointerEvents: "none",
+                            color: "var(--icon-muted)",
+                        }}>🔍</span>
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => { setSearchQuery(e.target.value); resetPage(); }}
+                            placeholder={lang === "ar" ? "ابحث عن اسم الايتم..." : "Search by item name..."}
+                            style={{
+                                width: "100%",
+                                padding: "10px 14px 10px 42px",
+                                border: "1.5px solid var(--border)",
+                                borderRadius: "12px",
+                                fontSize: "14px",
+                                background: "var(--bg-card)",
+                                color: "var(--text-main)",
+                                outline: "none",
+                                boxSizing: "border-box",
+                                transition: "border-color 0.2s",
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = "var(--color-primary)"}
+                            onBlur={(e) => e.target.style.borderColor = "var(--border)"}
+                        />
+                        {searchQuery && (
+                            <button
+                                onClick={() => setSearchQuery("")}
+                                style={{
+                                    position: "absolute", top: "50%", right: "12px",
+                                    transform: "translateY(-50%)",
+                                    background: "none", border: "none",
+                                    cursor: "pointer", fontSize: "16px",
+                                    color: "var(--icon-muted)", padding: 0,
+                                }}
+                            >✕</button>
+                        )}
+                    </div>
+                )}
+
                 {loading ? (
                     <div className="it-loading">{t("loading")}</div>
                 ) : items.length === 0 ? (
                     <div className="it-empty">
                         <div className="it-empty-icon">🍔</div>
                         <p>{t("it_no_items")}</p>
+                    </div>
+                ) : filteredItems.length === 0 ? (
+                    <div className="it-empty">
+                        <div className="it-empty-icon">🔍</div>
+                        <p style={{ color: "var(--text-sub)" }}>No items match "{searchQuery}"</p>
                     </div>
                 ) : (
                     <div className="it-grid">

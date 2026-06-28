@@ -144,21 +144,64 @@ export default function Orders() {
   };
 
   const exportExcel = () => {
-    const rows = filtered.map((o) => ({
-      "#": o.id,
-      [t("or_col_user_id")]: o.user_id ?? "",
-      [t("or_col_customer")]: o.full_name,
-      [t("or_col_phone")]: o.phone_number,
-      [t("or_col_address")]: o.address,
-      [t("or_col_type")]: o.order_type?.replace("_", " "),
-      [t("or_col_total")]: `${o.total_price} ${t("it_egp")}`,
-      [t("or_col_date")]: new Date(o.created_at).toLocaleDateString(),
-      [t("or_col_status")]: statusLabel[o.status] || o.status,
-    }));
-    const ws = XLSX.utils.json_to_sheet(rows);
+    const orderTypeLabel = (type) => {
+      if (!type) return "";
+      const map = { CASH_ON_DELIVERY: "Cash on Delivery", TAKE_AWAY: "Take Away", DELIVERY: "Delivery" };
+      return map[type] || type.replace(/_/g, " ");
+    };
+
+    const headers = [
+      "#", t("or_col_user_id"), t("or_col_customer"), t("or_col_phone"),
+      t("or_col_address"), t("or_col_type"), t("or_col_total"),
+      t("or_col_date"), t("or_col_status"),
+    ];
+
+    const rows = filtered.map((o) => [
+      o.id, o.user_id ?? "", o.full_name ?? "", o.phone_number ?? "",
+      o.address ?? "", orderTypeLabel(o.order_type), o.total_price,
+      new Date(o.created_at).toLocaleDateString(),
+      statusLabel[o.status] || o.status,
+    ]);
+
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+
+    ws["!cols"] = [
+      { wch: 6 }, { wch: 10 }, { wch: 20 }, { wch: 16 },
+      { wch: 30 }, { wch: 20 }, { wch: 12 }, { wch: 14 }, { wch: 18 },
+    ];
+
+    // Header style
+    headers.forEach((_, ci) => {
+      const cell = ws[XLSX.utils.encode_cell({ r: 0, c: ci })];
+      if (!cell) return;
+      cell.s = {
+        font: { bold: true, color: { rgb: "FFFFFF" }, sz: 11 },
+        fill: { fgColor: { rgb: "2148B0" } },
+        alignment: { horizontal: "center", vertical: "center" },
+      };
+    });
+
+    // Status colors
+    const statusColors = {
+      PENDING:          { bg: "FEF3C7", fg: "92400E" },
+      CONFIRMED:        { bg: "DBEAFE", fg: "1E40AF" },
+      PREPARING:        { bg: "EDE9FE", fg: "5B21B6" },
+      READY_FOR_PICKUP: { bg: "D1FAE5", fg: "065F46" },
+      OUT_FOR_DELIVERY: { bg: "E0F2FE", fg: "0369A1" },
+      COMPLETED:        { bg: "DCFCE7", fg: "15803D" },
+      CANCELLED:        { bg: "FEE2E2", fg: "B91C1C" },
+    };
+    filtered.forEach((o, ri) => {
+      const colors = statusColors[o.status];
+      if (!colors) return;
+      const cell = ws[XLSX.utils.encode_cell({ r: ri + 1, c: 8 })];
+      if (!cell) return;
+      cell.s = { font: { bold: true, color: { rgb: colors.fg } }, fill: { fgColor: { rgb: colors.bg } }, alignment: { horizontal: "center" } };
+    });
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Orders");
-    XLSX.writeFile(wb, `orders-${placeName || "branch"}.xlsx`);
+    XLSX.writeFile(wb, `orders-${placeName || "branch"}.xlsx`, { cellStyles: true });
   };
 
   const exportCSV = () => {

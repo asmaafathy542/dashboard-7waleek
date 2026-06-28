@@ -444,7 +444,7 @@ export default function OwnerDashboard() {
                             const medal = medalConfig[i] ?? medalConfig[2];
                             return (
                                 <div
-                                    key={item.id}
+                                    key={item.item_id}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -484,28 +484,12 @@ export default function OwnerDashboard() {
                                                 textOverflow: "ellipsis",
                                             }}
                                         >
-                                            {item.name}
+                                            {item.item_name}
                                         </div>
-                                        {item.subcategory_name && (
-                                            <div style={{ fontSize: "12px", color: "var(--icon-muted)", marginTop: "2px" }}>
-                                                {item.subcategory_name}
+                                        <div style={{ fontSize: "12px", color: "var(--icon-muted)", marginTop: "2px" }}>
+                                                🛒 {item.total_ordered} {item.total_ordered === 1 ? "order" : "orders"}
                                             </div>
-                                        )}
                                     </div>
-
-                                    <span
-                                        style={{
-                                            fontSize: "11px",
-                                            fontWeight: 600,
-                                            padding: "2px 8px",
-                                            borderRadius: "999px",
-                                            background: item.is_available ? "#dcfce7" : "#fee2e2",
-                                            color: item.is_available ? "#15803d" : "#b91c1c",
-                                            flexShrink: 0,
-                                        }}
-                                    >
-                                        {item.is_available ? t("prop_available") : t("prop_unavailable")}
-                                    </span>
 
                                     <div
                                         style={{
@@ -515,7 +499,7 @@ export default function OwnerDashboard() {
                                             flexShrink: 0,
                                         }}
                                     >
-                                        {Number(item.price).toLocaleString()} EGP
+                                        {Number(item.unit_price).toLocaleString()} EGP
                                     </div>
                                 </div>
                             );
