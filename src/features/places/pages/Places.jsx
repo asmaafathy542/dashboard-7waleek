@@ -196,18 +196,16 @@ const { data: place, isLoading: placeLoading } = useQuery({
 
   // ── Sync fetched data → local state ──────────────────────────────────────
 useEffect(() => {
-  if (place) {
-    setIsActive(place.is_active ?? true);
-    if (!isOpenInitialized.current) {
-      setIsOpen(place.is_open ?? false);
-      isOpenInitialized.current = true;
-    }
-  }
-}, [place, selectedPlaceId]);
-
-useEffect(() => {
   isOpenInitialized.current = false;
 }, [selectedPlaceId]);
+
+useEffect(() => {
+  if (place && !isOpenInitialized.current) {
+    setIsActive(place.is_active ?? true);
+    setIsOpen(place.is_open ?? false);
+    isOpenInitialized.current = true;
+  }
+}, [place]);
 
   useEffect(() => {
     if (hoursData) {
