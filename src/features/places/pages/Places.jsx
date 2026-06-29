@@ -152,7 +152,8 @@ export default function Places() {
   const [deliverySuccess, setDeliverySuccess] = useState(false);
   const [deliveryError, setDeliveryError] = useState("");
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const isOpenInitialized = useRef(false);
   const [togglingOpen, setTogglingOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -194,12 +195,19 @@ const { data: place, isLoading: placeLoading } = useQuery({
   });
 
   // ── Sync fetched data → local state ──────────────────────────────────────
-  useEffect(() => {
+useEffect(() => {
   if (place) {
     setIsActive(place.is_active ?? true);
-    setIsOpen(place.is_open ?? true);
+    if (!isOpenInitialized.current) {
+      setIsOpen(place.is_open ?? false);
+      isOpenInitialized.current = true;
+    }
   }
 }, [place, selectedPlaceId]);
+
+useEffect(() => {
+  isOpenInitialized.current = false;
+}, [selectedPlaceId]);
 
   useEffect(() => {
     if (hoursData) {
