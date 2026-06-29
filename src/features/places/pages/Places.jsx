@@ -157,12 +157,20 @@ export default function Places() {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   // ── useQuery ─────────────────────────────────────────────────────────────
-  const { data: place, isLoading: placeLoading } = useQuery({
+  /**const { data: place, isLoading: placeLoading } = useQuery({
     queryKey: ["place", selectedPlaceId],
     queryFn: () => getPlaceById(selectedPlaceId),
     enabled: !!selectedPlaceId,
     staleTime: 1000 * 60 * 5,
-  });
+  }); **/
+
+const { data: place, isLoading: placeLoading } = useQuery({
+  queryKey: ["place", selectedPlaceId],
+  queryFn: () => getPlaceById(selectedPlaceId),
+  enabled: !!selectedPlaceId,
+  staleTime: 0,
+  gcTime: 0,
+});
 
   const { data: hoursData } = useQuery({
     queryKey: ["working-hours", selectedPlaceId],
@@ -187,11 +195,11 @@ export default function Places() {
 
   // ── Sync fetched data → local state ──────────────────────────────────────
   useEffect(() => {
-    if (place) {
-      setIsActive(place.is_active ?? true);
-      setIsOpen(place.is_open ?? true);
-    }
-  }, [place]);
+  if (place) {
+    setIsActive(place.is_active ?? true);
+    setIsOpen(place.is_open ?? true);
+  }
+}, [place, selectedPlaceId]);
 
   useEffect(() => {
     if (hoursData) {

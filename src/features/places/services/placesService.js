@@ -9,9 +9,22 @@ export const getPlaces = async () => {
   return res.data;
 };
 
-export const getPlaceById = async (placeId) => {
+/** export const getPlaceById = async (placeId) => {
   const res = await api.get(`/owner/my-place?place_id=${placeId}`, { headers: authHeader() });
   return res.data?.data ?? res.data;
+}; **/
+
+export const getPlaceById = async (placeId) => {
+  const res = await api.get("/owner/my-places", { headers: authHeader() });
+  const data = res.data;
+  
+  let places = [];
+  if (Array.isArray(data)) places = data;
+  else if (Array.isArray(data?.results)) places = data.results;
+  else if (Array.isArray(data?.data)) places = data.data;
+  
+  const found = places.find((p) => String(p.id) === String(placeId));
+  return found ?? null;
 };
 
 export const getMyPlaces = async () => {
