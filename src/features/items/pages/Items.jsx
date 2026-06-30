@@ -50,6 +50,14 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
         return "";
     };
 
+    const ARABIC_HEADER_MAP = {
+        "الصنف": "name", "الاسم": "name", "اسم": "name",
+        "الوصف": "description", "وصف": "description",
+        "السعر": "price", "سعر": "price",
+        "القسم": "sub_category_id", "التصنيف": "sub_category_id",
+        "متاح": "is_available", "متوفر": "is_available",
+    };
+
     const parseFile = (file) => {
         const reader = new FileReader();
         reader.onload = (ev) => {
@@ -59,7 +67,11 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
             const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
             const parsed = json.map((row, idx) => {
                 const r = {};
-                Object.keys(row).forEach((k) => { r[k.toLowerCase().trim()] = row[k]; });
+                Object.keys(row).forEach((k) => {
+                    const cleanKey = k.toLowerCase().trim();
+                    const mappedKey = ARABIC_HEADER_MAP[k.trim()] || cleanKey;
+                    r[mappedKey] = row[k];
+                });
                 const obj = { _rowIdx: idx, _error: "", ...r };
                 const hasAnySize = [1, 2, 3, 4].some((n) => obj[`size${n}_name`] && obj[`size${n}_price`]);
                 if (!obj.name) obj._error = t("it_err_no_name");
