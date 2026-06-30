@@ -61,8 +61,9 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                 const r = {};
                 Object.keys(row).forEach((k) => { r[k.toLowerCase().trim()] = row[k]; });
                 const obj = { _rowIdx: idx, _error: "", ...r };
+                const hasAnySize = [1, 2, 3, 4].some((n) => obj[`size${n}_name`] && obj[`size${n}_price`]);
                 if (!obj.name) obj._error = t("it_err_no_name");
-                else if (!obj.price || isNaN(Number(obj.price))) obj._error = t("it_err_bad_price");
+                else if ((!obj.price || isNaN(Number(obj.price))) && !hasAnySize) obj._error = t("it_err_bad_price");
                 if (selectedSubCat != null) {
                     obj.sub_category_id = String(selectedSubCat);
                     obj._autoMatched = true;
@@ -104,13 +105,33 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                     fuzzyMatchSubCat(r.name) ||
                     (selectedSubCat != null ? selectedSubCat : undefined);
                 const subId = resolvedSubId ? Number(resolvedSubId) : undefined;
+
+                // لو فيه أعمدة أحجام (size1_name/size1_price ... size4_name/size4_price)
+                // نستخدم أول سعر حجم موجود كسعر أساسي للآيتم لو price مش متوفر
+                const sizePairs = [1, 2, 3, 4]
+                    .map((n) => ({ name: r[`size${n}_name`], price: r[`size${n}_price`] }))
+                    .filter((s) => s.name && s.price && !isNaN(Number(s.price)));
+
+                const basePrice = r.price && !isNaN(Number(r.price))
+                    ? Number(r.price)
+                    : (sizePairs[0]?.price ? Number(sizePairs[0].price) : 0);
+
                 const saved = await createItem({
                     name: r.name, description: r.description || "",
-                    price: Number(r.price), sub_category_id: subId || undefined,
+                    price: basePrice, sub_category_id: subId || undefined,
                     is_available: r.is_available !== "false", place_id: selectedPlaceId,
                 });
                 const itemId = saved?.id ?? saved?.data?.id;
-                if (itemId) created.push({ id: itemId, name: r.name });
+                if (itemId) {
+                    created.push({ id: itemId, name: r.name });
+                    for (const sp of sizePairs) {
+                        try {
+                            await createSubItem(itemId, {
+                                name: String(sp.name), price: Number(sp.price), is_available: true,
+                            });
+                        } catch { errors.push(`${r.name} (${sp.name}): ${t("it_bulk_img_failed")}`); }
+                    }
+                }
             } catch { errors.push(`${t("it_bulk_row")} ${i + 1} (${r.name}): ${t("it_bulk_failed")}`); }
             setProgress({ done: i + 1, total, errors: [...errors] });
         }
@@ -138,8 +159,8 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
 
     const downloadSample = () => {
         const data = [
-            { name: "نص فرخة مشوية", description: "فراخ مشوية عالفحم", price: 120, sub_category_id: 1, is_available: true },
-            { name: "كفتة مشوية", description: "كفتة بالخضار", price: 90, sub_category_id: 1, is_available: true },
+            { name: "بيتزا مارجريتا", description: "صلصة وجبنة موزاريلا", price: "", sub_category_id: 1, is_available: true, size1_name: "S", size1_price: 90, size2_name: "M", size2_price: 130, size3_name: "L", size3_price: 175, size4_name: "F", size4_price: 350 },
+            { name: "نص فرخة مشوية", description: "فراخ مشوية عالفحم", price: 120, sub_category_id: 1, is_available: true, size1_name: "", size1_price: "", size2_name: "", size2_price: "", size3_name: "", size3_price: "", size4_name: "", size4_price: "" },
         ];
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
@@ -166,6 +187,15 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                                 <span key={c} className={`it-bulk-tag ${c.includes("*") ? "it-bulk-tag-req" : ""}`}>{c}</span>
                             ))}
                         </div>
+                        <p className="it-label" style={{ marginTop: 10, marginBottom: 6 }}>عايز تضيف أحجام (S/M/L/F)؟ — اختياري</p>
+                        <div className="it-bulk-tags">
+                            {["size1_name", "size1_price", "size2_name", "size2_price", "size3_name", "size3_price", "size4_name", "size4_price"].map((c) => (
+                                <span key={c} className="it-bulk-tag">{c}</span>
+                            ))}
+                        </div>
+                        <p style={{ fontSize: 12, color: "#64748b", marginTop: 6, lineHeight: 1.6 }}>
+                            لو الآيتم عنده أكتر من حجم، سيبي خانة price فاضية واملي size1_name/size1_price لـ S، size2_name/size2_price لـ M، وهكذا. لو عنده حجم واحد بس استخدمي price العادي.
+                        </p>
                     </div>
                     {selectedSubCatName ? (
                         <div style={{ background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: "10px", padding: "10px 14px", fontSize: "13px", color: "#1e40af", marginBottom: "12px", lineHeight: 1.7 }}>
@@ -202,14 +232,18 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                     })()}
                     <div className="it-bulk-table-wrap">
                         <table className="it-bulk-table">
-                            <thead><tr><th>#</th><th>{t("it_col_name")} *</th><th>{t("it_col_desc")}</th><th>{t("it_col_price")} *</th><th>{t("it_col_subcat")}</th><th>{t("it_col_available")}</th><th></th></tr></thead>
+                            <thead><tr><th>#</th><th>{t("it_col_name")} *</th><th>{t("it_col_desc")}</th><th>{t("it_col_price")} *</th><th>{t("it_col_subcat")}</th><th>Sizes</th><th>{t("it_col_available")}</th><th></th></tr></thead>
                             <tbody>
-                                {rows.map((r, i) => (
+                                {rows.map((r, i) => {
+                                    const rowSizes = [1, 2, 3, 4]
+                                        .map((n) => ({ name: r[`size${n}_name`], price: r[`size${n}_price`] }))
+                                        .filter((s) => s.name && s.price);
+                                    return (
                                     <tr key={r._rowIdx} className={r._error ? "it-bulk-row-err" : ""}>
                                         <td className="it-bulk-num">{i + 1}</td>
                                         <td><input className="it-bulk-cell-input" value={r.name} onChange={(e) => updateRow(r._rowIdx, "name", e.target.value)} /></td>
                                         <td><input className="it-bulk-cell-input" value={r.description || ""} onChange={(e) => updateRow(r._rowIdx, "description", e.target.value)} /></td>
-                                        <td><input className="it-bulk-cell-input it-bulk-price" type="number" value={r.price} onChange={(e) => updateRow(r._rowIdx, "price", e.target.value)} /></td>
+                                        <td><input className="it-bulk-cell-input it-bulk-price" type="number" value={r.price} onChange={(e) => updateRow(r._rowIdx, "price", e.target.value)} placeholder={rowSizes.length ? "—" : ""} /></td>
                                         <td>
                                             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                                                 <select className="it-bulk-cell-input" value={r.sub_category_id || ""} onChange={(e) => updateRow(r._rowIdx, "sub_category_id", e.target.value)} style={r._autoMatched && r.sub_category_id ? { borderColor: "#22c55e" } : {}}>
@@ -219,10 +253,20 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                                                 {r._autoMatched && r.sub_category_id && <span title="Auto-matched" style={{ fontSize: 14 }}>✨</span>}
                                             </div>
                                         </td>
+                                        <td>
+                                            {rowSizes.length > 0 ? (
+                                                <span title={rowSizes.map((s) => `${s.name}: ${s.price}`).join(" | ")} style={{
+                                                    fontSize: 11, fontWeight: 600, color: "#1d4ed8",
+                                                    background: "#eff6ff", border: "1px solid #bfdbfe",
+                                                    borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap", cursor: "help",
+                                                }}>🧩 {rowSizes.length}</span>
+                                            ) : <span style={{ color: "#cbd5e1", fontSize: 12 }}>—</span>}
+                                        </td>
                                         <td><input type="checkbox" checked={r.is_available !== "false" && r.is_available !== false} onChange={(e) => updateRow(r._rowIdx, "is_available", e.target.checked)} /></td>
                                         <td><button className="it-bulk-del-row" onClick={() => removeRow(r._rowIdx)}>✕</button></td>
                                     </tr>
-                                ))}
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
@@ -479,6 +523,8 @@ export default function Items() {
     const [subItemsTarget, setSubItemsTarget] = useState(null);
     const [form, setForm] = useState({ name: "", description: "", price: "", sub_category_id: "", is_available: true });
     const [imageFile, setImageFile] = useState(null);
+    const [hasSizes, setHasSizes] = useState(false);
+    const [sizes, setSizes] = useState({ S: "", M: "", L: "", F: "" });
     const [saving, setSaving] = useState(false);
     const [deletingAll, setDeletingAll] = useState(false);
     const [pageSize, setPageSize] = useState(12);
@@ -527,6 +573,8 @@ export default function Items() {
         setEditItem(null);
         setForm({ name: "", description: "", price: "", sub_category_id: selectedSubCat ?? "", is_available: true });
         setImageFile(null);
+        setHasSizes(false);
+        setSizes({ S: "", M: "", L: "", F: "" });
         setShowModal(true);
     };
 
@@ -534,21 +582,41 @@ export default function Items() {
         setEditItem(item);
         setForm({ name: item.name ?? "", description: item.description ?? "", price: item.price ?? "", sub_category_id: item.sub_category_id ?? "", is_available: item.is_available ?? true });
         setImageFile(null);
+        setHasSizes(false);
+        setSizes({ S: "", M: "", L: "", F: "" });
         setShowModal(true);
     };
 
     const handleSave = async () => {
         setSaving(true);
         try {
+            const basePrice = hasSizes
+                ? Number(Object.values(sizes).find((v) => v && Number(v) > 0) || 0)
+                : Number(form.price);
+
             const payload = {
                 name: form.name, description: form.description,
-                price: Number(form.price), sub_category_id: Number(form.sub_category_id),
+                price: basePrice, sub_category_id: Number(form.sub_category_id),
                 is_available: form.is_available, place_id: selectedPlaceId,
             };
             let saved;
             if (editItem) saved = await updateItem(editItem.id, payload);
             else saved = await createItem(payload);
             if (imageFile && saved?.id) await uploadItemImage(saved.id, imageFile);
+
+            if (hasSizes && saved?.id) {
+                const sizeLabels = { S: "صغير", M: "وسط", L: "كبير", F: "فاميلي" };
+                for (const [key, val] of Object.entries(sizes)) {
+                    if (val && Number(val) > 0) {
+                        await createSubItem(saved.id, {
+                            name: sizeLabels[key],
+                            price: Number(val),
+                            is_available: true,
+                        });
+                    }
+                }
+            }
+
             setShowModal(false);
             invalidateItems();
         } catch (err) { console.error(err); }
@@ -994,8 +1062,31 @@ export default function Items() {
                         <input className="it-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                         <label className="it-label">{t("it_description")}</label>
                         <textarea className="it-input it-textarea" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-                        <label className="it-label">{t("it_price")} ({t("it_egp")})</label>
-                        <input className="it-input" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+                        <label className="it-label it-avail-label">
+                            <input type="checkbox" checked={hasSizes} onChange={(e) => setHasSizes(e.target.checked)} />
+                            عنده أحجام مختلفة؟ (S / M / L / F)
+                        </label>
+                        {!hasSizes ? (
+                            <>
+                                <label className="it-label">{t("it_price")} ({t("it_egp")})</label>
+                                <input className="it-input" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+                            </>
+                        ) : (
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 4 }}>
+                                {Object.keys(sizes).map((key) => (
+                                    <div key={key}>
+                                        <label className="it-label">{key}</label>
+                                        <input
+                                            className="it-input"
+                                            type="number"
+                                            placeholder="--"
+                                            value={sizes[key]}
+                                            onChange={(e) => setSizes({ ...sizes, [key]: e.target.value })}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                         <label className="it-label">{t("it_sub_category")}</label>
                         <select className="it-input" value={form.sub_category_id} onChange={(e) => setForm({ ...form, sub_category_id: e.target.value })}>
                             <option value="">-- {t("it_select")} --</option>
