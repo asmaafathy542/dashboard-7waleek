@@ -26,7 +26,7 @@ import {
 import "./Items.css";
 
 // ─── Bulk Import Modal ───────────────────────────────────────────────────────
-function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, selectedSubCat, t }) {
+function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, selectedSubCat, t, lang }) {
     const fileRef = useRef();
     const [rows, setRows] = useState([]);
     const [progress, setProgress] = useState({ done: 0, total: 0, errors: [] });
@@ -34,6 +34,7 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
     const [createdItems, setCreatedItems] = useState([]);
     const [imageMap, setImageMap] = useState({});
     const [imgProgress, setImgProgress] = useState({ done: 0, total: 0, errors: [] });
+    const [importMode, setImportMode] = useState("default"); // "default" | "pharmacy"
 
     const fuzzyMatchSubCat = (itemName) => {
         if (!itemName || !subCategories.length) return "";
@@ -50,12 +51,16 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
         return "";
     };
 
-    const ARABIC_HEADER_MAP = {
-        "الصنف": "name", "الاسم": "name", "اسم": "name",
-        "الوصف": "description", "وصف": "description",
-        "السعر": "price", "سعر": "price",
-        "القسم": "sub_category_id", "التصنيف": "sub_category_id",
-        "متاح": "is_available", "متوفر": "is_available",
+    const extractVariants = (r) => {
+        const variants = [];
+        for (let n = 1; n <= 4; n++) {
+            const name = r[`size${n}_name`];
+            const price = r[`size${n}_price`];
+            if (name && name.toString().trim() && price !== "" && !isNaN(Number(price))) {
+                variants.push({ name: name.toString().trim(), price: Number(price) });
+            }
+        }
+        return variants;
     };
 
     const parseFile = (file) => {
@@ -67,20 +72,33 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
             const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
             const parsed = json.map((row, idx) => {
                 const r = {};
-                Object.keys(row).forEach((k) => {
-                    const cleanKey = k.toLowerCase().trim();
-                    const mappedKey = ARABIC_HEADER_MAP[k.trim()] || cleanKey;
-                    r[mappedKey] = row[k];
-                });
+                Object.keys(row).forEach((k) => { r[k.toLowerCase().trim()] = row[k]; });
                 const obj = { _rowIdx: idx, _error: "", ...r };
-                const hasAnySize = [1, 2, 3, 4].some((n) => obj[`size${n}_name`] && obj[`size${n}_price`]);
-                if (!obj.name) obj._error = t("it_err_no_name");
-                else if ((!obj.price || isNaN(Number(obj.price))) && !hasAnySize) obj._error = t("it_err_bad_price");
+
+                if (importMode === "pharmacy") {
+                    const ar = (r.name_ar ?? "").toString().trim();
+                    const en = (r.name_en ?? "").toString().trim();
+                    obj.name_ar = ar;
+                    obj.name_en = en;
+                    obj.name = [ar, en].filter(Boolean).join(" - ");
+                    if (!ar || !en) obj._error = t("it_err_pharmacy_names");
+                } else {
+                    const variants = extractVariants(r);
+                    obj._variants = variants;
+                    if ((!obj.price || isNaN(Number(obj.price))) && variants.length) {
+                        obj.price = variants[0].price;
+                    }
+                }
+
+                if (!obj._error && !obj.name) obj._error = t("it_err_no_name");
+                else if (!obj._error && (!obj.price || isNaN(Number(obj.price)))) obj._error = t("it_err_bad_price");
                 if (selectedSubCat != null) {
                     obj.sub_category_id = String(selectedSubCat);
                     obj._autoMatched = true;
                 } else if (!obj.sub_category_id) {
-                    const matchedId = fuzzyMatchSubCat(obj.name);
+                    const matchedId =
+                        subCatIdByName(r.subcategory || r.sub_category || r.category) ||
+                        fuzzyMatchSubCat(obj.name);
                     if (matchedId) { obj.sub_category_id = String(matchedId); obj._autoMatched = true; }
                 }
                 return obj;
@@ -117,31 +135,22 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                     fuzzyMatchSubCat(r.name) ||
                     (selectedSubCat != null ? selectedSubCat : undefined);
                 const subId = resolvedSubId ? Number(resolvedSubId) : undefined;
-
-                // لو فيه أعمدة أحجام (size1_name/size1_price ... size4_name/size4_price)
-                // نستخدم أول سعر حجم موجود كسعر أساسي للآيتم لو price مش متوفر
-                const sizePairs = [1, 2, 3, 4]
-                    .map((n) => ({ name: r[`size${n}_name`], price: r[`size${n}_price`] }))
-                    .filter((s) => s.name && s.price && !isNaN(Number(s.price)));
-
-                const basePrice = r.price && !isNaN(Number(r.price))
-                    ? Number(r.price)
-                    : (sizePairs[0]?.price ? Number(sizePairs[0].price) : 0);
-
                 const saved = await createItem({
                     name: r.name, description: r.description || "",
-                    price: basePrice, sub_category_id: subId || undefined,
+                    price: Number(r.price), sub_category_id: subId || undefined,
                     is_available: r.is_available !== "false", place_id: selectedPlaceId,
                 });
                 const itemId = saved?.id ?? saved?.data?.id;
                 if (itemId) {
                     created.push({ id: itemId, name: r.name });
-                    for (const sp of sizePairs) {
-                        try {
-                            await createSubItem(itemId, {
-                                name: String(sp.name), price: Number(sp.price), is_available: true,
-                            });
-                        } catch { errors.push(`${r.name} (${sp.name}): ${t("it_bulk_img_failed")}`); }
+                    if (r._variants?.length) {
+                        for (const v of r._variants) {
+                            try {
+                                await createSubItem(itemId, { name: v.name, price: v.price, is_available: true });
+                            } catch {
+                                errors.push(`${r.name} (${v.name}): ${t("it_bulk_variant_failed")}`);
+                            }
+                        }
                     }
                 }
             } catch { errors.push(`${t("it_bulk_row")} ${i + 1} (${r.name}): ${t("it_bulk_failed")}`); }
@@ -170,14 +179,33 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
     };
 
     const downloadSample = () => {
-        const data = [
-            { name: "بيتزا مارجريتا", description: "صلصة وجبنة موزاريلا", price: "", sub_category_id: 1, is_available: true, size1_name: "S", size1_price: 90, size2_name: "M", size2_price: 130, size3_name: "L", size3_price: 175, size4_name: "F", size4_price: 350 },
-            { name: "نص فرخة مشوية", description: "فراخ مشوية عالفحم", price: 120, sub_category_id: 1, is_available: true, size1_name: "", size1_price: "", size2_name: "", size2_price: "", size3_name: "", size3_price: "", size4_name: "", size4_price: "" },
-        ];
+        const data = importMode === "pharmacy"
+            ? [
+                { name_ar: "بانادول اكسترا", name_en: "Panadol Extra", price: 25, sub_category: "مسكنات", is_available: true },
+                { name_ar: "فيتامين سي", name_en: "Vitamin C", price: 40, sub_category: "فيتامينات", is_available: true },
+            ]
+            : [
+                {
+                    name: "بيتزا وجبنة مارجريتا", description: "صلصة وجبنة موتزاريلا", price: "",
+                    sub_category_id: 1, is_available: true,
+                    size1_name: "S", size1_price: 90,
+                    size2_name: "M", size2_price: 130,
+                    size3_name: "L", size3_price: 175,
+                    size4_name: "F", size4_price: 350,
+                },
+                {
+                    name: "نص فرخة مشوية", description: "نص فرخة مشوية على الفحم مع أرز وسلطة", price: 120,
+                    sub_category_id: 1, is_available: true,
+                    size1_name: "", size1_price: "",
+                    size2_name: "", size2_price: "",
+                    size3_name: "", size3_price: "",
+                    size4_name: "", size4_price: "",
+                },
+            ];
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "items");
-        XLSX.writeFile(wb, "items_sample.xlsx");
+        XLSX.writeFile(wb, importMode === "pharmacy" ? "pharmacy_items_sample.xlsx" : "items_sample.xlsx");
     };
 
     const selectedSubCatName = selectedSubCat != null
@@ -192,22 +220,43 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                     <p className="it-bulk-hint">{t("it_bulk_hint")}<br />
                         <span style={{ color: "#f59e0b", fontWeight: 600 }}>📸 {t("it_bulk_img_hint")}</span>
                     </p>
+
+                    <div className="it-bulk-mode-toggle">
+                        <button
+                            type="button"
+                            className={`it-bulk-mode-btn ${importMode === "default" ? "it-bulk-mode-active" : ""}`}
+                            onClick={() => setImportMode("default")}
+                        >🍔 {lang === "ar" ? "مطاعم / كافيهات / سوبر ماركت" : "Restaurant / Cafe / Supermarket"}</button>
+                        <button
+                            type="button"
+                            className={`it-bulk-mode-btn ${importMode === "pharmacy" ? "it-bulk-mode-active" : ""}`}
+                            onClick={() => setImportMode("pharmacy")}
+                        >💊 {lang === "ar" ? "صيدلية" : "Pharmacy"}</button>
+                    </div>
+
                     <div className="it-bulk-columns">
                         <p className="it-label" style={{ marginBottom: 6 }}>{t("it_bulk_required_cols")}</p>
                         <div className="it-bulk-tags">
-                            {["name *", "description", "price *", "sub_category_id", "is_available"].map((c) => (
+                            {(importMode === "pharmacy"
+                                ? ["name_ar *", "name_en *", "price *", "sub_category", "is_available"]
+                                : ["name *", "description", "price", "sub_category_id", "is_available", "size1_name", "size1_price", "size2_name", "size2_price", "size3_name", "size3_price", "size4_name", "size4_price"]
+                            ).map((c) => (
                                 <span key={c} className={`it-bulk-tag ${c.includes("*") ? "it-bulk-tag-req" : ""}`}>{c}</span>
                             ))}
                         </div>
-                        <p className="it-label" style={{ marginTop: 10, marginBottom: 6 }}>عايز تضيف أحجام (S/M/L/F)؟ — اختياري</p>
-                        <div className="it-bulk-tags">
-                            {["size1_name", "size1_price", "size2_name", "size2_price", "size3_name", "size3_price", "size4_name", "size4_price"].map((c) => (
-                                <span key={c} className="it-bulk-tag">{c}</span>
-                            ))}
-                        </div>
-                        <p style={{ fontSize: 12, color: "#64748b", marginTop: 6, lineHeight: 1.6 }}>
-                            لو الآيتم عنده أكتر من حجم، سيبي خانة price فاضية واملي size1_name/size1_price لـ S، size2_name/size2_price لـ M، وهكذا. لو عنده حجم واحد بس استخدمي price العادي.
-                        </p>
+                        {importMode === "pharmacy" ? (
+                            <p style={{ fontSize: 12, color: "var(--text-sub)", marginTop: 6 }}>
+                                {lang === "ar"
+                                    ? "هيتدمجوا تلقائي في اسم واحد بالشكل: اسم عربي - Name English"
+                                    : "Will be combined automatically as: Arabic name - English name"}
+                            </p>
+                        ) : (
+                            <p style={{ fontSize: 12, color: "var(--text-sub)", marginTop: 6 }}>
+                                {lang === "ar"
+                                    ? "السعر اختياري لو الصنف عنده مقاسات (size1..size4) — هياخد سعر أول مقاس تلقائي. سيب أي عمود size فاضي لو مش محتاجاه."
+                                    : "Price is optional if the item has sizes (size1..size4) — it will default to the first size's price. Leave any size column empty if not needed."}
+                            </p>
+                        )}
                     </div>
                     {selectedSubCatName ? (
                         <div style={{ background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: "10px", padding: "10px 14px", fontSize: "13px", color: "#1e40af", marginBottom: "12px", lineHeight: 1.7 }}>
@@ -244,18 +293,14 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                     })()}
                     <div className="it-bulk-table-wrap">
                         <table className="it-bulk-table">
-                            <thead><tr><th>#</th><th>{t("it_col_name")} *</th><th>{t("it_col_desc")}</th><th>{t("it_col_price")} *</th><th>{t("it_col_subcat")}</th><th>Sizes</th><th>{t("it_col_available")}</th><th></th></tr></thead>
+                            <thead><tr><th>#</th><th>{t("it_col_name")} *</th><th>{t("it_col_desc")}</th><th>{t("it_col_price")}</th><th>{t("it_col_subcat")}</th><th>{t("it_col_available")}</th>{importMode === "default" && <th>{lang === "ar" ? "مقاسات" : "Sizes"}</th>}<th></th></tr></thead>
                             <tbody>
-                                {rows.map((r, i) => {
-                                    const rowSizes = [1, 2, 3, 4]
-                                        .map((n) => ({ name: r[`size${n}_name`], price: r[`size${n}_price`] }))
-                                        .filter((s) => s.name && s.price);
-                                    return (
+                                {rows.map((r, i) => (
                                     <tr key={r._rowIdx} className={r._error ? "it-bulk-row-err" : ""}>
                                         <td className="it-bulk-num">{i + 1}</td>
                                         <td><input className="it-bulk-cell-input" value={r.name} onChange={(e) => updateRow(r._rowIdx, "name", e.target.value)} /></td>
                                         <td><input className="it-bulk-cell-input" value={r.description || ""} onChange={(e) => updateRow(r._rowIdx, "description", e.target.value)} /></td>
-                                        <td><input className="it-bulk-cell-input it-bulk-price" type="number" value={r.price} onChange={(e) => updateRow(r._rowIdx, "price", e.target.value)} placeholder={rowSizes.length ? "—" : ""} /></td>
+                                        <td><input className="it-bulk-cell-input it-bulk-price" type="number" placeholder={r._variants?.length ? (lang === "ar" ? "تلقائي" : "auto") : ""} value={r.price} onChange={(e) => updateRow(r._rowIdx, "price", e.target.value)} /></td>
                                         <td>
                                             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                                                 <select className="it-bulk-cell-input" value={r.sub_category_id || ""} onChange={(e) => updateRow(r._rowIdx, "sub_category_id", e.target.value)} style={r._autoMatched && r.sub_category_id ? { borderColor: "#22c55e" } : {}}>
@@ -265,20 +310,17 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                                                 {r._autoMatched && r.sub_category_id && <span title="Auto-matched" style={{ fontSize: 14 }}>✨</span>}
                                             </div>
                                         </td>
-                                        <td>
-                                            {rowSizes.length > 0 ? (
-                                                <span title={rowSizes.map((s) => `${s.name}: ${s.price}`).join(" | ")} style={{
-                                                    fontSize: 11, fontWeight: 600, color: "#1d4ed8",
-                                                    background: "#eff6ff", border: "1px solid #bfdbfe",
-                                                    borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap", cursor: "help",
-                                                }}>🧩 {rowSizes.length}</span>
-                                            ) : <span style={{ color: "#cbd5e1", fontSize: 12 }}>—</span>}
-                                        </td>
                                         <td><input type="checkbox" checked={r.is_available !== "false" && r.is_available !== false} onChange={(e) => updateRow(r._rowIdx, "is_available", e.target.checked)} /></td>
+                                        {importMode === "default" && (
+                                            <td>
+                                                {r._variants?.length
+                                                    ? <span className="it-bulk-tag" title={r._variants.map(v => `${v.name}: ${v.price}`).join(" • ")}>🏷️ {r._variants.length}</span>
+                                                    : <span style={{ color: "var(--icon-muted)", fontSize: 12 }}>—</span>}
+                                            </td>
+                                        )}
                                         <td><button className="it-bulk-del-row" onClick={() => removeRow(r._rowIdx)}>✕</button></td>
                                     </tr>
-                                    );
-                                })}
+                                ))}
                             </tbody>
                         </table>
                     </div>
@@ -535,12 +577,11 @@ export default function Items() {
     const [subItemsTarget, setSubItemsTarget] = useState(null);
     const [form, setForm] = useState({ name: "", description: "", price: "", sub_category_id: "", is_available: true });
     const [imageFile, setImageFile] = useState(null);
-    const [hasSizes, setHasSizes] = useState(false);
-    const [sizes, setSizes] = useState({ S: "", M: "", L: "", F: "" });
     const [saving, setSaving] = useState(false);
     const [deletingAll, setDeletingAll] = useState(false);
     const [pageSize, setPageSize] = useState(12);
     const [searchQuery, setSearchQuery] = useState("");
+    const [catSearch, setCatSearch] = useState("");
     const [showHiddenModal, setShowHiddenModal] = useState(false);
     const [activatingId, setActivatingId] = useState(null);
 
@@ -577,6 +618,14 @@ export default function Items() {
         );
     }, [items, searchQuery]);
 
+    const filteredSubCategories = useMemo(() => {
+        if (!catSearch.trim()) return subCategories;
+        const q = catSearch.trim().toLowerCase();
+        return subCategories.filter((sc) =>
+            sc.name?.toLowerCase().includes(q) || String(sc.id).includes(q)
+        );
+    }, [subCategories, catSearch]);
+
     const pagination = usePagination(filteredItems, pageSize);
     const { paginated, reset: resetPage } = pagination;
     useMemo(() => { resetPage(); }, [selectedSubCat, filteredItems.length]);
@@ -585,8 +634,6 @@ export default function Items() {
         setEditItem(null);
         setForm({ name: "", description: "", price: "", sub_category_id: selectedSubCat ?? "", is_available: true });
         setImageFile(null);
-        setHasSizes(false);
-        setSizes({ S: "", M: "", L: "", F: "" });
         setShowModal(true);
     };
 
@@ -594,41 +641,21 @@ export default function Items() {
         setEditItem(item);
         setForm({ name: item.name ?? "", description: item.description ?? "", price: item.price ?? "", sub_category_id: item.sub_category_id ?? "", is_available: item.is_available ?? true });
         setImageFile(null);
-        setHasSizes(false);
-        setSizes({ S: "", M: "", L: "", F: "" });
         setShowModal(true);
     };
 
     const handleSave = async () => {
         setSaving(true);
         try {
-            const basePrice = hasSizes
-                ? Number(Object.values(sizes).find((v) => v && Number(v) > 0) || 0)
-                : Number(form.price);
-
             const payload = {
                 name: form.name, description: form.description,
-                price: basePrice, sub_category_id: Number(form.sub_category_id),
+                price: Number(form.price), sub_category_id: Number(form.sub_category_id),
                 is_available: form.is_available, place_id: selectedPlaceId,
             };
             let saved;
             if (editItem) saved = await updateItem(editItem.id, payload);
             else saved = await createItem(payload);
             if (imageFile && saved?.id) await uploadItemImage(saved.id, imageFile);
-
-            if (hasSizes && saved?.id) {
-                const sizeLabels = { S: "صغير", M: "وسط", L: "كبير", F: "فاميلي" };
-                for (const [key, val] of Object.entries(sizes)) {
-                    if (val && Number(val) > 0) {
-                        await createSubItem(saved.id, {
-                            name: sizeLabels[key],
-                            price: Number(val),
-                            is_available: true,
-                        });
-                    }
-                }
-            }
-
             setShowModal(false);
             invalidateItems();
         } catch (err) { console.error(err); }
@@ -684,6 +711,24 @@ export default function Items() {
                     <button className="it-subcat-add" onClick={() => { setEditSubCat(null); setShowSubCatModal(true); }} title={t("it_add_subcat")}>+</button>
                 </div>
 
+                <div className="it-subcat-search-wrap">
+                    <span className="it-subcat-search-icon">🔍</span>
+                    <input
+                        type="text"
+                        className="it-subcat-search-input"
+                        value={catSearch}
+                        onChange={(e) => setCatSearch(e.target.value)}
+                        placeholder={lang === "ar" ? "ابحث في الكاتيجوريز..." : "Search categories..."}
+                    />
+                    {catSearch && (
+                        <button
+                            type="button"
+                            className="it-subcat-search-clear"
+                            onClick={() => setCatSearch("")}
+                        >✕</button>
+                    )}
+                </div>
+
                 <div className="it-subcat-list">
                     <button
                         className={`it-subcat-item ${selectedSubCat === null ? "it-subcat-active" : ""}`}
@@ -693,7 +738,7 @@ export default function Items() {
                         <span className="it-subcat-count">{items.length}</span>
                     </button>
 
-                    {subCategories.map((sc) => (
+                    {filteredSubCategories.map((sc) => (
                         <div key={sc.id} className={`it-subcat-item ${selectedSubCat === sc.id ? "it-subcat-active" : ""}`}>
                             <button className="it-subcat-btn" onClick={() => setSelectedSubCat(sc.id)}>
                                 <span className="it-subcat-name">
@@ -707,6 +752,12 @@ export default function Items() {
                             </div>
                         </div>
                     ))}
+
+                    {catSearch && filteredSubCategories.length === 0 && (
+                        <p className="it-subcat-empty">
+                            {lang === "ar" ? "مفيش كاتيجوريز بالاسم ده" : "No categories match"}
+                        </p>
+                    )}
                 </div>
             </div>
 
@@ -1074,31 +1125,8 @@ export default function Items() {
                         <input className="it-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                         <label className="it-label">{t("it_description")}</label>
                         <textarea className="it-input it-textarea" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-                        <label className="it-label it-avail-label">
-                            <input type="checkbox" checked={hasSizes} onChange={(e) => setHasSizes(e.target.checked)} />
-                            عنده أحجام مختلفة؟ (S / M / L / F)
-                        </label>
-                        {!hasSizes ? (
-                            <>
-                                <label className="it-label">{t("it_price")} ({t("it_egp")})</label>
-                                <input className="it-input" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-                            </>
-                        ) : (
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 4 }}>
-                                {Object.keys(sizes).map((key) => (
-                                    <div key={key}>
-                                        <label className="it-label">{key}</label>
-                                        <input
-                                            className="it-input"
-                                            type="number"
-                                            placeholder="--"
-                                            value={sizes[key]}
-                                            onChange={(e) => setSizes({ ...sizes, [key]: e.target.value })}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        <label className="it-label">{t("it_price")} ({t("it_egp")})</label>
+                        <input className="it-input" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
                         <label className="it-label">{t("it_sub_category")}</label>
                         <select className="it-input" value={form.sub_category_id} onChange={(e) => setForm({ ...form, sub_category_id: e.target.value })}>
                             <option value="">-- {t("it_select")} --</option>
@@ -1148,6 +1176,7 @@ export default function Items() {
                     selectedPlaceId={selectedPlaceId}
                     selectedSubCat={selectedSubCat}
                     t={t}
+                    lang={lang}
                 />
             )}
         </div>
