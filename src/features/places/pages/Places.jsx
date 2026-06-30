@@ -20,7 +20,11 @@ import {
 } from "../services/placesService";
 import "./places.css";
 
-const EMPTY_FORM = { file: null, image_type: "place", caption: "" };
+const EMPTY_FORM = {
+  files: [],
+  image_type: "place",
+  caption: "",
+};
 
 const EMPTY_EDIT = {
   name: "", description: "", address: "", phone: [],
@@ -42,23 +46,23 @@ const EMPTY_DELIVERY = {
 };
 
 const DAYS = [
-  { key: "saturday",  label: "Saturday"  },
-  { key: "sunday",    label: "Sunday"    },
-  { key: "monday",    label: "Monday"    },
-  { key: "tuesday",   label: "Tuesday"   },
+  { key: "saturday", label: "Saturday" },
+  { key: "sunday", label: "Sunday" },
+  { key: "monday", label: "Monday" },
+  { key: "tuesday", label: "Tuesday" },
   { key: "wednesday", label: "wednesday" },
-  { key: "thursday",  label: "Thursday"  },
-  { key: "friday",    label: "Friday"    },
+  { key: "thursday", label: "Thursday" },
+  { key: "friday", label: "Friday" },
 ];
 
 const DAY_T_KEYS = {
-  saturday:  "bs_day_saturday",
-  sunday:    "bs_day_sunday",
-  monday:    "bs_day_monday",
-  tuesday:   "bs_day_tuesday",
+  saturday: "bs_day_saturday",
+  sunday: "bs_day_sunday",
+  monday: "bs_day_monday",
+  tuesday: "bs_day_tuesday",
   wednesday: "bs_day_wednesday",
-  thursday:  "bs_day_thursday",
-  friday:    "bs_day_friday",
+  thursday: "bs_day_thursday",
+  friday: "bs_day_friday",
 };
 
 const TIME_OPTIONS = [
@@ -124,7 +128,7 @@ export default function Places() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewUrls, setPreviewUrls] = useState([]);
   const fileInputRef = useRef(null);
 
   const [showEdit, setShowEdit] = useState(false);
@@ -165,13 +169,13 @@ export default function Places() {
     staleTime: 1000 * 60 * 5,
   }); **/
 
-const { data: place, isLoading: placeLoading } = useQuery({
-  queryKey: ["place", selectedPlaceId],
-  queryFn: () => getPlaceById(selectedPlaceId),
-  enabled: !!selectedPlaceId,
-  staleTime: 0,
-  gcTime: 0,
-});
+  const { data: place, isLoading: placeLoading } = useQuery({
+    queryKey: ["place", selectedPlaceId],
+    queryFn: () => getPlaceById(selectedPlaceId),
+    enabled: !!selectedPlaceId,
+    staleTime: 0,
+    gcTime: 0,
+  });
 
   const { data: hoursData } = useQuery({
     queryKey: ["working-hours", selectedPlaceId],
@@ -195,17 +199,17 @@ const { data: place, isLoading: placeLoading } = useQuery({
   });
 
   // ── Sync fetched data → local state ──────────────────────────────────────
-useEffect(() => {
-  isOpenInitialized.current = false;
-}, [selectedPlaceId]);
+  useEffect(() => {
+    isOpenInitialized.current = false;
+  }, [selectedPlaceId]);
 
-useEffect(() => {
-  if (place && !isOpenInitialized.current) {
-    setIsActive(place.is_active ?? true);
-    setIsOpen(place.is_open ?? false);
-    isOpenInitialized.current = true;
-  }
-}, [place]);
+  useEffect(() => {
+    if (place && !isOpenInitialized.current) {
+      setIsActive(place.is_active ?? true);
+      setIsOpen(place.is_open ?? false);
+      isOpenInitialized.current = true;
+    }
+  }, [place]);
 
   useEffect(() => {
     if (hoursData) {
@@ -242,8 +246,10 @@ useEffect(() => {
   }, []);
 
   useEffect(() => {
-    return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
-  }, [previewUrl]);
+    return () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previewUrls]);
 
   // ── invalidate helper ────────────────────────────────────────────────────
   const invalidatePlace = () => {
@@ -271,28 +277,65 @@ useEffect(() => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(URL.createObjectURL(file));
-    setForm((prev) => ({ ...prev, file }));
+    const files = Array.from(e.target.files);
+
+    if (!files.length) return;
+
+    setPreviewUrls(
+      files.map((file) => URL.createObjectURL(file))
+    );
+
+    setForm((prev) => ({
+      ...prev,
+      files,
+    }));
+
     setError("");
   };
 
   const handleUpload = async () => {
-    if (!form.file) { setError("Please select an image file."); return; }
+    if (!form.files || form.files.length === 0) {
+      setError("Please select images.");
+      return;
+    }
+
     setUploading(true);
     setError("");
+
     try {
-      const newImg = await uploadPlaceImage(place.id, form.file, form.image_type, form.caption);
-      // optimistic update
-      queryClient.setQueryData(["place", selectedPlaceId], (prev) =>
-        prev ? { ...prev, images: [...(prev.images || []), newImg] } : prev
+      const uploadedImages = [];
+
+      for (const file of form.files) {
+        const img = await uploadPlaceImage(
+          place.id,
+          file,
+          form.image_type,
+          form.caption
+        );
+
+        uploadedImages.push(img);
+      }
+
+      queryClient.setQueryData(
+        ["place", selectedPlaceId],
+        (prev) =>
+          prev
+            ? {
+              ...prev,
+              images: [
+                ...(prev.images || []),
+                ...uploadedImages,
+              ],
+            }
+            : prev
       );
+
       setShowUpload(false);
       setForm(EMPTY_FORM);
-      setPreviewUrl(null);
-    } catch {
+      setPreviewUrls([]);
+
+    } catch (err) {
+      console.error(err);
       setError("Upload failed. Please try again.");
     } finally {
       setUploading(false);
@@ -302,7 +345,7 @@ useEffect(() => {
   const handleCloseUpload = () => {
     setShowUpload(false);
     setForm(EMPTY_FORM);
-    setPreviewUrl(null);
+    setPreviewUrls([]);
     setError("");
   };
 
@@ -615,7 +658,7 @@ useEffect(() => {
                   textDecoration: "none", fontWeight: 500,
                 }}
               >
-              🗺️ {t("bs_open_maps")}
+                🗺️ {t("bs_open_maps")}
               </a>
             )}
           </div>
@@ -1038,7 +1081,7 @@ useEffect(() => {
                 style={{
                   border: "2px dashed #e2e8f0", borderRadius: "12px", padding: "24px",
                   textAlign: "center", cursor: "pointer",
-                  background: previewUrl ? "var(--bg-surface)" : "var(--bg-surface)",
+                  background: previewUrls ? "var(--bg-surface)" : "var(--bg-surface)",
                   transition: "border-color 0.2s", position: "relative",
                   overflow: "hidden", minHeight: "140px",
                   display: "flex", alignItems: "center", justifyContent: "center",
@@ -1046,9 +1089,34 @@ useEffect(() => {
                 onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--text-main)"}
                 onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--border)"}
               >
-                {previewUrl ? (
-                  <img src={previewUrl} alt="preview"
-                    style={{ maxHeight: "160px", maxWidth: "100%", borderRadius: "8px", objectFit: "contain" }} />
+                {previewUrls.length > 0 ? (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fill,minmax(90px,1fr))",
+                      gap: "8px",
+                      width: "100%",
+                      maxHeight: "300px",   // أو 250px
+                      overflowY: "auto",
+                      padding: "8px",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    {previewUrls.map((url, index) => (
+                      <img
+                        key={index}
+                        src={url}
+                        alt={`preview-${index}`}
+                        style={{
+                          width: "100%",
+                          height: "90px",
+                          objectFit: "cover",
+                          borderRadius: "8px",
+                        }}
+                      />
+                    ))}
+                  </div>
                 ) : (
                   <div>
                     <div style={{ fontSize: "32px", marginBottom: "8px" }}>🖼️</div>
@@ -1056,10 +1124,17 @@ useEffect(() => {
                     <div style={{ fontSize: "12px", color: "var(--icon-muted)", marginTop: "4px" }}>JPG, PNG, WEBP</div>
                   </div>
                 )}
-                <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleFileChange} />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
               </div>
 
-              {previewUrl && (
+              {previewUrls.length > 0 && (
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   style={{
@@ -1088,7 +1163,7 @@ useEffect(() => {
 
               {error && <p className="pl-error">⚠️ {error}</p>}
 
-              <button className="pl-submit-btn" onClick={handleUpload} disabled={uploading || !form.file}>
+              <button className="pl-submit-btn" onClick={handleUpload} disabled={uploading || !form.files?.length}>
                 {uploading ? t("bs_uploading") : `⬆️ ${t("bs_upload_image")}`}
               </button>
             </div>
