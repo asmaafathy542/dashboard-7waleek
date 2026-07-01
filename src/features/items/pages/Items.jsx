@@ -25,8 +25,96 @@ import {
 } from "../services/itemsService";
 import "./Items.css";
 
+// وحدات البيع الخاصة بالسوبرماركت (بالكيلو / حبة / علبة / باكت)
+const UNIT_OPTIONS = [
+    { value: "kg", ar: "كيلو", en: "Kg" },
+    { value: "piece", ar: "حبة / قطعة", en: "Piece" },
+    { value: "box", ar: "علبة", en: "Box" },
+    { value: "pack", ar: "باكت", en: "Pack" },
+];
+const normalizeUnit = (raw) => {
+    const v = (raw ?? "").toString().toLowerCase().trim();
+    if (!v) return "piece";
+    if (/kg|كيلو/.test(v)) return "kg";
+    if (/box|علبة|علبه/.test(v)) return "box";
+    if (/pack|باكت|باكيت/.test(v)) return "pack";
+    if (/piece|حبة|حبه|قطعة|قطعه/.test(v)) return "piece";
+    return "piece";
+};
+
+// ─── Place type config (per business type) ───────────────────────────────────
+const PLACE_TYPE_CONFIG = {
+    restaurant: {
+        icon: "🍔",
+        label: { ar: "مطعم", en: "Restaurant" },
+        fileName: "restaurant_items_sample.xlsx",
+        hasSizes: true,
+        sample: [
+            { name: "بيتزا وجبنة مارجريتا", description: "صلصة وجبنة موتزاريلا", price: "", sub_category_id: 1, is_available: true, size1_name: "S", size1_price: 90, size2_name: "M", size2_price: 130, size3_name: "L", size3_price: 175, size4_name: "F", size4_price: 350 },
+            { name: "نص فرخة مشوية", description: "نص فرخة مشوية على الفحم مع أرز وسلطة", price: 120, sub_category_id: 1, is_available: true, size1_name: "", size1_price: "", size2_name: "", size2_price: "", size3_name: "", size3_price: "", size4_name: "", size4_price: "" },
+        ],
+    },
+    cafe: {
+        icon: "☕",
+        label: { ar: "كافيه", en: "Cafe" },
+        fileName: "cafe_items_sample.xlsx",
+        hasSizes: true,
+        sample: [
+            { name: "كابتشينو", description: "إسبريسو مع حليب مبخر ورغوة", price: "", sub_category_id: 1, is_available: true, size1_name: "S", size1_price: 35, size2_name: "M", size2_price: 45, size3_name: "L", size3_price: 55, size4_name: "", size4_price: "" },
+            { name: "كرواسون", description: "كرواسون زبدة طازج", price: 30, sub_category_id: 1, is_available: true, size1_name: "", size1_price: "", size2_name: "", size2_price: "", size3_name: "", size3_price: "", size4_name: "", size4_price: "" },
+        ],
+    },
+    supermarket: {
+        icon: "🛒",
+        label: { ar: "سوبر ماركت", en: "Supermarket" },
+        fileName: "supermarket_items_sample.xlsx",
+        hasUnit: true,
+        sample: [
+            { name: "أرز مصري", description: "", price: 45, sub_category_id: 1, is_available: true, unit: "kg" },
+            { name: "زيت عافية عباد شمس", description: "", price: 85, sub_category_id: 1, is_available: true, unit: "piece" },
+            { name: "شيبسي چيبس", description: "", price: 15, sub_category_id: 1, is_available: true, unit: "pack" },
+        ],
+    },
+    pharmacy: {
+        icon: "💊",
+        label: { ar: "صيدلية", en: "Pharmacy" },
+        fileName: "pharmacy_items_sample.xlsx",
+        hasBilingualName: true,
+        sample: [
+            { name_ar: "بانادول اكسترا", name_en: "Panadol Extra", price: 25, sub_category: "مسكنات", is_available: true },
+            { name_ar: "فيتامين سي", name_en: "Vitamin C", price: 40, sub_category: "فيتامينات", is_available: true },
+        ],
+    },
+};
+
+// يحدد نوع النشاط تلقائي من بيانات المكان بتاع الـ Owner (مش اختيار يدوي)
+// بيدور على اسم الكاتيجوري في أي شكل بيرجعه الباك إند (category_name / category.name / category)
+// ─── خريطة أرقام الكاتيجوري (category_id) لكل نوع نشاط ────────────────────────
+// 1  = Restaurant
+// 6  = Cafe
+// 10 = Restaurant & Café (نوع مدمج) → بيتعامل زي مطعم (نفس شكل الفورم والسامبل)
+// 3  = Supermarket
+// 11 = Pharmacy
+const CATEGORY_ID_MAP = {
+    1: "restaurant",
+    6: "cafe",
+    10: "restaurant",
+    3: "supermarket",
+    11: "pharmacy",
+};
+
+// يحدد نوع النشاط تلقائي من بيانات المكان بتاع الـ Owner (مش اختيار يدوي)
+// بيعتمد على category_id (رقم) لأن الباك إند بيرجعه رقم بس من غير اسم نصي
+const detectPlaceType = (place) => {
+    const categoryId = Number(place?.category_id);
+    if (!Number.isNaN(categoryId) && CATEGORY_ID_MAP[categoryId]) {
+        return CATEGORY_ID_MAP[categoryId];
+    }
+    return "restaurant"; // fallback لو الـ category_id مش معروف
+};
+
 // ─── Bulk Import Modal ───────────────────────────────────────────────────────
-function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, selectedSubCat, t, lang }) {
+function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, selectedPlace, selectedSubCat, t, lang }) {
     const fileRef = useRef();
     const [rows, setRows] = useState([]);
     const [progress, setProgress] = useState({ done: 0, total: 0, errors: [] });
@@ -34,7 +122,14 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
     const [createdItems, setCreatedItems] = useState([]);
     const [imageMap, setImageMap] = useState({});
     const [imgProgress, setImgProgress] = useState({ done: 0, total: 0, errors: [] });
-    const [importMode, setImportMode] = useState("default"); // "default" | "pharmacy"
+    // بيتحدد تلقائي بناءً على نوع نشاط الـ Owner، مع إمكانية التغيير اليدوي لو الكاتيجوري مش متطابقة
+    const detectedType = useMemo(() => detectPlaceType(selectedPlace), [selectedPlace]);
+    const [importMode, setImportMode] = useState(detectedType); // "restaurant" | "cafe" | "supermarket" | "pharmacy"
+    const [showTypePicker, setShowTypePicker] = useState(false);
+    const typeConfig = PLACE_TYPE_CONFIG[importMode];
+    const isPharmacy = importMode === "pharmacy";
+    const isSupermarket = importMode === "supermarket";
+    const hasSizes = !!typeConfig.hasSizes;
 
     const fuzzyMatchSubCat = (itemName) => {
         if (!itemName || !subCategories.length) return "";
@@ -82,6 +177,8 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                     obj.name_en = en;
                     obj.name = [ar, en].filter(Boolean).join(" - ");
                     if (!ar || !en) obj._error = t("it_err_pharmacy_names");
+                } else if (importMode === "supermarket") {
+                    obj.unit = normalizeUnit(r.unit);
                 } else {
                     const variants = extractVariants(r);
                     obj._variants = variants;
@@ -139,6 +236,7 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                     name: r.name, description: r.description || "",
                     price: Number(r.price), sub_category_id: subId || undefined,
                     is_available: r.is_available !== "false", place_id: selectedPlaceId,
+                    ...(r.unit ? { unit: r.unit } : {}),
                 });
                 const itemId = saved?.id ?? saved?.data?.id;
                 if (itemId) {
@@ -179,33 +277,11 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
     };
 
     const downloadSample = () => {
-        const data = importMode === "pharmacy"
-            ? [
-                { name_ar: "بانادول اكسترا", name_en: "Panadol Extra", price: 25, sub_category: "مسكنات", is_available: true },
-                { name_ar: "فيتامين سي", name_en: "Vitamin C", price: 40, sub_category: "فيتامينات", is_available: true },
-            ]
-            : [
-                {
-                    name: "بيتزا وجبنة مارجريتا", description: "صلصة وجبنة موتزاريلا", price: "",
-                    sub_category_id: 1, is_available: true,
-                    size1_name: "S", size1_price: 90,
-                    size2_name: "M", size2_price: 130,
-                    size3_name: "L", size3_price: 175,
-                    size4_name: "F", size4_price: 350,
-                },
-                {
-                    name: "نص فرخة مشوية", description: "نص فرخة مشوية على الفحم مع أرز وسلطة", price: 120,
-                    sub_category_id: 1, is_available: true,
-                    size1_name: "", size1_price: "",
-                    size2_name: "", size2_price: "",
-                    size3_name: "", size3_price: "",
-                    size4_name: "", size4_price: "",
-                },
-            ];
-        const ws = XLSX.utils.json_to_sheet(data);
+        const config = PLACE_TYPE_CONFIG[importMode];
+        const ws = XLSX.utils.json_to_sheet(config.sample);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "items");
-        XLSX.writeFile(wb, importMode === "pharmacy" ? "pharmacy_items_sample.xlsx" : "items_sample.xlsx");
+        XLSX.writeFile(wb, config.fileName);
     };
 
     const selectedSubCatName = selectedSubCat != null
@@ -221,34 +297,57 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                         <span style={{ color: "#f59e0b", fontWeight: 600 }}>📸 {t("it_bulk_img_hint")}</span>
                     </p>
 
-                    <div className="it-bulk-mode-toggle">
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, background: "var(--bg-surface)", border: "1px solid var(--border-color, #e4e2dd)", borderRadius: 10, padding: "10px 14px", marginBottom: 10 }}>
+                        <span style={{ fontSize: 13, color: "var(--text-main)" }}>
+                            {PLACE_TYPE_CONFIG[importMode].icon} {lang === "ar" ? "نوع النشاط: " : "Business type: "}
+                            <strong>{PLACE_TYPE_CONFIG[importMode].label[lang === "ar" ? "ar" : "en"]}</strong>
+                            <span style={{ opacity: 0.7 }}> {lang === "ar" ? "(محدد تلقائي حسب مكانك)" : "(auto-detected from your place)"}</span>
+                        </span>
                         <button
                             type="button"
-                            className={`it-bulk-mode-btn ${importMode === "default" ? "it-bulk-mode-active" : ""}`}
-                            onClick={() => setImportMode("default")}
-                        >🍔 {lang === "ar" ? "مطاعم / كافيهات / سوبر ماركت" : "Restaurant / Cafe / Supermarket"}</button>
-                        <button
-                            type="button"
-                            className={`it-bulk-mode-btn ${importMode === "pharmacy" ? "it-bulk-mode-active" : ""}`}
-                            onClick={() => setImportMode("pharmacy")}
-                        >💊 {lang === "ar" ? "صيدلية" : "Pharmacy"}</button>
+                            onClick={() => setShowTypePicker((s) => !s)}
+                            style={{ background: "none", border: "none", color: "var(--color-primary, #2563eb)", fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
+                        >
+                            {showTypePicker ? (lang === "ar" ? "إخفاء" : "Hide") : (lang === "ar" ? "مش صح؟ غيّر يدوي" : "Not right? Change")}
+                        </button>
                     </div>
+
+                    {showTypePicker && (
+                        <div className="it-bulk-mode-toggle" style={{ marginBottom: 10 }}>
+                            {Object.entries(PLACE_TYPE_CONFIG).map(([key, cfg]) => (
+                                <button
+                                    key={key}
+                                    type="button"
+                                    className={`it-bulk-mode-btn ${importMode === key ? "it-bulk-mode-active" : ""}`}
+                                    onClick={() => { setImportMode(key); setShowTypePicker(false); }}
+                                >{cfg.icon} {cfg.label[lang === "ar" ? "ar" : "en"]}</button>
+                            ))}
+                        </div>
+                    )}
 
                     <div className="it-bulk-columns">
                         <p className="it-label" style={{ marginBottom: 6 }}>{t("it_bulk_required_cols")}</p>
                         <div className="it-bulk-tags">
-                            {(importMode === "pharmacy"
+                            {(isPharmacy
                                 ? ["name_ar *", "name_en *", "price *", "sub_category", "is_available"]
+                                : isSupermarket
+                                ? ["name *", "price *", "description", "unit", "sub_category_id", "is_available"]
                                 : ["name *", "description", "price", "sub_category_id", "is_available", "size1_name", "size1_price", "size2_name", "size2_price", "size3_name", "size3_price", "size4_name", "size4_price"]
                             ).map((c) => (
                                 <span key={c} className={`it-bulk-tag ${c.includes("*") ? "it-bulk-tag-req" : ""}`}>{c}</span>
                             ))}
                         </div>
-                        {importMode === "pharmacy" ? (
+                        {isPharmacy ? (
                             <p style={{ fontSize: 12, color: "var(--text-sub)", marginTop: 6 }}>
                                 {lang === "ar"
                                     ? "هيتدمجوا تلقائي في اسم واحد بالشكل: اسم عربي - Name English"
                                     : "Will be combined automatically as: Arabic name - English name"}
+                            </p>
+                        ) : isSupermarket ? (
+                            <p style={{ fontSize: 12, color: "var(--text-sub)", marginTop: 6 }}>
+                                {lang === "ar"
+                                    ? `عمود unit بيحدد طريقة البيع: ${UNIT_OPTIONS.map(u => u.ar).join(" / ")}. لو سيبته فاضي هياخد "حبة" تلقائي.`
+                                    : `The unit column sets the sale unit: ${UNIT_OPTIONS.map(u => u.en).join(" / ")}. Leave it empty to default to "Piece".`}
                             </p>
                         ) : (
                             <p style={{ fontSize: 12, color: "var(--text-sub)", marginTop: 6 }}>
@@ -293,7 +392,7 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                     })()}
                     <div className="it-bulk-table-wrap">
                         <table className="it-bulk-table">
-                            <thead><tr><th>#</th><th>{t("it_col_name")} *</th><th>{t("it_col_desc")}</th><th>{t("it_col_price")}</th><th>{t("it_col_subcat")}</th><th>{t("it_col_available")}</th>{importMode === "default" && <th>{lang === "ar" ? "مقاسات" : "Sizes"}</th>}<th></th></tr></thead>
+                            <thead><tr><th>#</th><th>{t("it_col_name")} *</th><th>{t("it_col_desc")}</th><th>{t("it_col_price")}</th><th>{t("it_col_subcat")}</th><th>{t("it_col_available")}</th>{hasSizes && <th>{lang === "ar" ? "مقاسات" : "Sizes"}</th>}{isSupermarket && <th>{lang === "ar" ? "الوحدة" : "Unit"}</th>}<th></th></tr></thead>
                             <tbody>
                                 {rows.map((r, i) => (
                                     <tr key={r._rowIdx} className={r._error ? "it-bulk-row-err" : ""}>
@@ -311,11 +410,18 @@ function BulkImportModal({ onClose, onDone, subCategories, selectedPlaceId, sele
                                             </div>
                                         </td>
                                         <td><input type="checkbox" checked={r.is_available !== "false" && r.is_available !== false} onChange={(e) => updateRow(r._rowIdx, "is_available", e.target.checked)} /></td>
-                                        {importMode === "default" && (
+                                        {hasSizes && (
                                             <td>
                                                 {r._variants?.length
                                                     ? <span className="it-bulk-tag" title={r._variants.map(v => `${v.name}: ${v.price}`).join(" • ")}>🏷️ {r._variants.length}</span>
                                                     : <span style={{ color: "var(--icon-muted)", fontSize: 12 }}>—</span>}
+                                            </td>
+                                        )}
+                                        {isSupermarket && (
+                                            <td>
+                                                <select className="it-bulk-cell-input" value={r.unit || "piece"} onChange={(e) => updateRow(r._rowIdx, "unit", e.target.value)}>
+                                                    {UNIT_OPTIONS.map((u) => <option key={u.value} value={u.value}>{lang === "ar" ? u.ar : u.en}</option>)}
+                                                </select>
                                             </td>
                                         )}
                                         <td><button className="it-bulk-del-row" onClick={() => removeRow(r._rowIdx)}>✕</button></td>
@@ -564,7 +670,7 @@ function SubCatModal({ onClose, onDone, editSc, selectedPlaceId, t }) {
 // ─── Main Items Page ─────────────────────────────────────────────────────────
 export default function Items() {
     const context = useOutletContext() ?? {};
-    const { selectedPlaceId } = context;
+    const { selectedPlaceId, selectedPlace } = context;
     const queryClient = useQueryClient();
     const { t, lang } = useLanguage();
 
@@ -1174,6 +1280,7 @@ export default function Items() {
                     onDone={invalidateItems}
                     subCategories={subCategories}
                     selectedPlaceId={selectedPlaceId}
+                    selectedPlace={selectedPlace}
                     selectedSubCat={selectedSubCat}
                     t={t}
                     lang={lang}
