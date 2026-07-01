@@ -117,11 +117,12 @@ function ResidentialOverview() {
     return (
         <div className="od-page">
             <div className="od-header">
-                <div>
-                    <h1 className="od-title">{t("welcome")}</h1>
-                    <p className="od-subtitle">{t("properties_summary")}</p>
-                </div>
-            </div>
+    <div>
+        <h1 className="od-title">{t("welcome")}</h1>
+        <p className="od-subtitle">{t("properties_summary")}</p>
+    </div>
+    <PageThemeToggle />
+</div>
 
             <div className="od-cards">
                 {[

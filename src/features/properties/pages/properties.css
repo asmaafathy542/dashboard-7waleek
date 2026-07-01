@@ -14,6 +14,12 @@
   gap: 12px;
 }
 
+.prop-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .prop-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -41,7 +47,7 @@
   transition: background 0.15s;
   white-space: nowrap;
 }
-.prop-add-btn:hover { background: var(--bg-card); }
+.prop-add-btn:hover { filter: brightness(0.9); }
 
 /* Search */
 .prop-search-wrap {

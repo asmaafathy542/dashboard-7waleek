@@ -159,10 +159,12 @@ export default function Properties() {
             }
           </p>
         </div>
-        <button className="prop-add-btn" onClick={openAdd}>
-          + {ar ? "إضافة عقار" : "Add Property"}
-        </button>
-        <PageThemeToggle />
+        <div className="prop-header-actions">
+          <button className="prop-add-btn" onClick={openAdd}>
+            + {ar ? "إضافة عقار" : "Add Property"}
+          </button>
+          <PageThemeToggle />
+        </div>
       </div>
 
       {/* Search */}
@@ -271,7 +273,7 @@ export default function Properties() {
                     <img src={viewProp.main_image_url} alt={viewProp.title}
                       style={{ width: "100%", borderRadius: "12px", maxHeight: "200px", objectFit: "cover" }} />
                   ) : (
-                    <div style={{ width: "100%", height: "140px",  background: "var(--bg-surface)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "48px" }}>🏠</div>
+                    <div style={{ width: "100%", height: "140px", background: "var(--bg-surface)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "48px" }}>🏠</div>
                   )}
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -297,8 +299,8 @@ export default function Properties() {
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     {viewProp.contact_number?.length > 0 && <div style={{ fontSize: "13px", color: "var(--text-sub)" }}>📞 {viewProp.contact_number.join(" / ")}</div>}
-                    {viewProp.whatsapp_number && <div style={{ fontSize: "13px",color: "var(--text-sub)" }}>💬 {viewProp.whatsapp_number}</div>}
-                    {viewProp.latitude && viewProp.longitude && <div style={{ fontSize: "13px", color: "var(--text-sub)"}}>📍 {viewProp.latitude}, {viewProp.longitude}</div>}
+                    {viewProp.whatsapp_number && <div style={{ fontSize: "13px", color: "var(--text-sub)" }}>💬 {viewProp.whatsapp_number}</div>}
+                    {viewProp.latitude && viewProp.longitude && <div style={{ fontSize: "13px", color: "var(--text-sub)" }}>📍 {viewProp.latitude}, {viewProp.longitude}</div>}
                   </div>
 
                   <div style={{ display: "flex", gap: "16px", padding: "12px 0", borderTop: "1px solid var(--border)", fontSize: "13px", color: "var(--icon-muted)" }}>
