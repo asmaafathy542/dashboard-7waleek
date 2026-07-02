@@ -8,10 +8,8 @@ import { getMyProperties } from "../../properties/services/propertiesServices";
 import {
     getOwnerDashboard,
     getAnalytics,
-    getActiveVisitors,
     getAnomaliesSummary,
     getOpportunities,
-    getChatbotStats,
     getTopItems,
 } from "../services/ownerDashboardService";
 import { getOrdersByBranch } from "../../orders/services/ordersService";
@@ -222,7 +220,7 @@ export default function OwnerDashboard() {
     );
 
     // ── useQuery ──────────────────────────────────────────────────────
-    const { data: stats } = useQuery({
+  const { data: stats, isFetching: refreshing } = useQuery({
         queryKey: ["owner-dashboard", selectedPlaceId, resolvedFrom, resolvedTo],
         queryFn: () => getOwnerDashboard(selectedPlaceId, resolvedFrom, resolvedTo),
         enabled: !!selectedPlaceId,
@@ -234,13 +232,6 @@ export default function OwnerDashboard() {
         queryFn: () => getAnalytics(selectedPlaceId, resolvedFrom, resolvedTo),
         enabled: !!selectedPlaceId,
         staleTime: 1000 * 60 * 2,
-    });
-
-    const { data: activeVisitorsRaw } = useQuery({
-        queryKey: ["owner-active-visitors", selectedPlaceId, resolvedFrom, resolvedTo],
-        queryFn: () => getActiveVisitors(selectedPlaceId, resolvedFrom, resolvedTo),
-        enabled: !!selectedPlaceId,
-        staleTime: 1000 * 60 * 1,
     });
 
     const { data: ordersRaw } = useQuery({
@@ -264,12 +255,7 @@ export default function OwnerDashboard() {
         staleTime: 1000 * 60 * 5,
     });
 
-    const { data: chatbotStats, isFetching: refreshing } = useQuery({
-        queryKey: ["owner-chatbot", selectedPlaceId, resolvedFrom, resolvedTo],
-        queryFn: () => getChatbotStats(selectedPlaceId, resolvedFrom, resolvedTo),
-        enabled: !!selectedPlaceId,
-        staleTime: 1000 * 60 * 2,
-    });
+  
 
     // ── Top Items — not affected by date filter ────────────────────────
     const { data: topItems } = useQuery({
@@ -281,7 +267,6 @@ export default function OwnerDashboard() {
 
     // ── normalize ─────────────────────────────────────────────────────
     const analytics = Array.isArray(analyticsRaw) ? analyticsRaw : [];
-    const activeVisitors = Array.isArray(activeVisitorsRaw) ? activeVisitorsRaw.length : null;
     const allOrders = Array.isArray(ordersRaw?.results)
         ? ordersRaw.results
         : Array.isArray(ordersRaw)
@@ -293,11 +278,9 @@ export default function OwnerDashboard() {
         [
             "owner-dashboard",
             "owner-analytics",
-            "owner-active-visitors",
             "owner-orders",
             "owner-anomalies",
             "owner-opportunities",
-            "owner-chatbot",
         ].forEach((key) =>
             queryClient.invalidateQueries({
                 queryKey: [key, selectedPlaceId, resolvedFrom, resolvedTo],
@@ -408,33 +391,6 @@ export default function OwnerDashboard() {
                 ))}
             </div>
 
-            {/* Info Row */}
-            <div className="od-info-row">
-                <div className="od-info-card">
-                    <div className="od-info-icon">👥</div>
-                    <div>
-                        <div className="od-info-label">{t("active_visitors")}</div>
-                        <div className="od-info-value">
-                            {activeVisitors != null ? activeVisitors : 0}
-                        </div>
-                    </div>
-                </div>
-
-                {chatbotStats && (
-                    <div className="od-info-card">
-                        <div className="od-info-icon">🤖</div>
-                        <div>
-                            <div className="od-info-label">{t("chatbot_queries")}</div>
-                            <div className="od-info-value">{chatbotStats.queries ?? 0}</div>
-                            {chatbotStats.success_rate != null && (
-                                <div style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: "2px" }}>
-                                    {(chatbotStats.success_rate * 100).toFixed(0)}% {t("stat_available")}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
 
             {/* Top Ordered Items */}
             {Array.isArray(topItems) && topItems.length > 0 && (

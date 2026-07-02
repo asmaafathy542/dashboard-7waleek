@@ -36,16 +36,7 @@ export const getAnalytics = async (placeId, dateFrom, dateTo) => {
   return res.data;
 };
 
-export const getActiveVisitors = async (placeId, dateFrom, dateTo) => {
-  const res = await api.get(
-    `/owner/active-visitors?${buildQuery(placeId, dateFrom, dateTo)}`,
-    {
-      headers: authHeader(),
-    }
-  );
 
-  return res.data;
-};
 
 export const getAnomaliesSummary = async (placeId, dateFrom, dateTo) => {
   const res = await api.get(
@@ -69,16 +60,7 @@ export const getOpportunities = async (placeId, dateFrom, dateTo) => {
   return res.data;
 };
 
-export const getChatbotStats = async (placeId, dateFrom, dateTo) => {
-  const res = await api.get(
-    `/owner/chatbot-stats?${buildQuery(placeId, dateFrom, dateTo)}`,
-    {
-      headers: authHeader(),
-    }
-  );
 
-  return res.data;
-};
 
 // Visitor Location Heatmap
 export const getLocationHeatmap = async (
