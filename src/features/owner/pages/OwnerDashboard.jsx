@@ -204,8 +204,7 @@ export default function OwnerDashboard() {
         { key: "visits", label: t("stat_visits"), icon: "👁️" },
         { key: "orders", label: t("stat_orders"), icon: "📦" },
         { key: "saves", label: t("stat_saves"), icon: "🔖" },
-        { key: "calls", label: t("stat_calls"), icon: "📞" },
-        { key: "directions", label: t("stat_directions"), icon: "🗺️" },
+       
     ];
 
     // ── Date Filter state ─────────────────────────────────────────────
