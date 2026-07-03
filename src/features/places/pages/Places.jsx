@@ -105,7 +105,7 @@ function ConfirmPopup({ message, subMessage, onConfirm, onCancel, confirmLabel =
   return (
     <div onClick={onCancel} style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000, padding: "1rem" }}>
       <div onClick={(e) => e.stopPropagation()} style={{ background: "var(--bg-card)", borderRadius: "14px", width: "100%", maxWidth: "360px", boxShadow: "0 20px 60px rgba(0,0,0,0.18)", padding: "28px 24px", textAlign: "center" }}>
-        <div style={{ fontSize: "2.2rem", marginBottom: "12px" }}>{danger ? "🙈" : "👁️"}</div>
+        <div style={{ fontSize: "2.2rem", marginBottom: "12px" }}>{danger ? "🔒" : "🔓"}</div>
         <p style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-main)", marginBottom: "6px" }}>{message}</p>
         <p style={{ fontSize: "13px", color: "var(--icon-muted)", marginBottom: "22px" }}>{subMessage}</p>
         <div style={{ display: "flex", gap: "10px" }}>
