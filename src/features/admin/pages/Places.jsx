@@ -71,6 +71,8 @@ function ConfirmPopup({ message, subMessage, onConfirm, onCancel, confirmLabel =
 
 /* ─────────────── CREATE PLACE MODAL ─────────────── */
 function CreatePlaceModal({ onClose, onCreated }) {
+    const { lang } = useLanguage();
+    const ar = lang === "ar";
     const [form, setForm] = useState({
         place_name: "", description: "", category_id: "",
         location_link: "", latitude: "", longitude: "",
@@ -82,6 +84,11 @@ function CreatePlaceModal({ onClose, onCreated }) {
     const [categories, setCategories] = useState([]);
     const [catLoading, setCatLoading] = useState(true);
     const [geoLoading, setGeoLoading] = useState(false);
+    const [showAddCategory, setShowAddCategory] = useState(false);
+    const [newCatName, setNewCatName] = useState("");
+    const [newCatIcon, setNewCatIcon] = useState("");
+    const [catCreating, setCatCreating] = useState(false);
+    const [catError, setCatError] = useState("");
 
     useState(() => {
         const fetchCats = async () => {
@@ -115,6 +122,52 @@ function CreatePlaceModal({ onClose, onCreated }) {
             () => { setError("Could not get your location. Please allow location access."); setGeoLoading(false); },
             { enableHighAccuracy: true, timeout: 10000 }
         );
+    };
+
+    const handleCreateCategory = async () => {
+        if (!newCatName.trim()) { setCatError(ar ? "اسم الكاتيجوري مطلوب." : "Category name is required."); return; }
+        setCatCreating(true);
+        setCatError("");
+        try {
+            const raw = await apiFetch("/dashboard/categories/", {
+                method: "POST",
+                body: JSON.stringify({ name: newCatName.trim(), icon: newCatIcon.trim() || "📍" }),
+            });
+            // Some endpoints on this backend wrap the object in { success, data: {...} }
+            // while others return the object directly — handle both shapes.
+            const created = raw?.data ?? raw;
+            const newId = created?.id ?? created?.category_id;
+            if (!newId) {
+                setCatError(ar ? "الكاتيجوري اتعمل بس مش قادر أحدد الـ ID بتاعه — اختاريه يدوي من الليستة." : "Category was created but its ID couldn't be read — please select it manually from the list.");
+                setCatLoading(true);
+                try {
+                    const data = await apiFetch("/v1/categories");
+                    const arr = Array.isArray(data) ? data : (data?.categories ?? data?.data ?? []);
+                    setCategories(arr);
+                } catch { /* silently fail */ } finally {
+                    setCatLoading(false);
+                }
+                setNewCatName("");
+                setNewCatIcon("");
+                setShowAddCategory(false);
+                return;
+            }
+            setCategories((prev) => [...prev, created]);
+            setForm((prev) => ({ ...prev, category_id: String(newId) }));
+            setNewCatName("");
+            setNewCatIcon("");
+            setShowAddCategory(false);
+        } catch (err) {
+            if (err.message === "401" || err.message === "403") {
+                setCatError(ar ? "مش معاكي صلاحية إنشاء كاتيجوري — لازم تكوني مسجلة دخول كـ ADMIN." : "You don't have permission to create a category — you must be logged in as ADMIN.");
+            } else if (err.message === "422") {
+                setCatError(ar ? "بيانات الكاتيجوري غلط — راجعي الاسم والأيقونة." : "Invalid category data — check the name and icon.");
+            } else {
+                setCatError(ar ? "حصل خطأ وإحنا بنعمل الكاتيجوري. جربي تاني." : "Something went wrong while creating the category. Please try again.");
+            }
+        } finally {
+            setCatCreating(false);
+        }
     };
 
     const handleSubmit = async () => {
@@ -160,7 +213,16 @@ function CreatePlaceModal({ onClose, onCreated }) {
                             <input type="text" placeholder="Short description..." value={form.description} onChange={handleChange("description")} style={inputStyle} />
                         </div>
                         <div style={{ gridColumn: "1 / -1" }}>
-                            <label style={labelStyle}>Category *</label>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "5px" }}>
+                                <label style={{ ...labelStyle, marginBottom: 0 }}>Category *</label>
+                                <button
+                                    type="button"
+                                    onClick={() => { setShowAddCategory((v) => !v); setCatError(""); }}
+                                    style={{ fontSize: "11px", fontWeight: 600, padding: "4px 10px", borderRadius: "6px", border: "1px solid #bbf7d0", background: "var(--success-bg)", color: "var(--success)", cursor: "pointer" }}
+                                >
+                                    {showAddCategory ? (ar ? "✕ إلغاء" : "✕ Cancel") : (ar ? "+ كاتيجوري جديدة" : "+ New Category")}
+                                </button>
+                            </div>
                             {catLoading ? (
                                 <div style={{ ...inputStyle, color: "var(--icon-muted)" }}>Loading categories...</div>
                             ) : categories.length > 0 ? (
@@ -174,6 +236,36 @@ function CreatePlaceModal({ onClose, onCreated }) {
                                 </select>
                             ) : (
                                 <input type="number" placeholder="e.g. 1" value={form.category_id} onChange={handleChange("category_id")} style={inputStyle} />
+                            )}
+
+                            {showAddCategory && (
+                                <div style={{ marginTop: "10px", padding: "12px", borderRadius: "10px", border: "1px solid var(--border)", background: "var(--bg-surface)", display: "flex", flexDirection: "column", gap: "8px" }}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "8px" }}>
+                                        <input
+                                            type="text"
+                                            placeholder={ar ? "اسم الكاتيجوري (مثال: مطاعم)" : "Category name (e.g. Restaurants)"}
+                                            value={newCatName}
+                                            onChange={(e) => { setNewCatName(e.target.value); setCatError(""); }}
+                                            style={inputStyle}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder={ar ? "أيقونة (مثال: 🍔)" : "Icon (e.g. 🍔)"}
+                                            value={newCatIcon}
+                                            onChange={(e) => { setNewCatIcon(e.target.value); setCatError(""); }}
+                                            style={inputStyle}
+                                        />
+                                    </div>
+                                    {catError && <p style={{ margin: 0, fontSize: "12px", color: "var(--danger)" }}>⚠️ {catError}</p>}
+                                    <button
+                                        type="button"
+                                        onClick={handleCreateCategory}
+                                        disabled={catCreating}
+                                        style={{ padding: "8px", borderRadius: "8px", border: "none", background: catCreating ? "#94a3b8" : "var(--color-primary)", color: "var(--text-on-dark)", fontSize: "12px", fontWeight: 700, cursor: catCreating ? "not-allowed" : "pointer" }}
+                                    >
+                                        {catCreating ? (ar ? "جاري الإنشاء..." : "Creating...") : (ar ? "✅ إنشاء الكاتيجوري" : "✅ Create Category")}
+                                    </button>
+                                </div>
                             )}
                         </div>
                         <div style={{ gridColumn: "1 / -1" }}>
