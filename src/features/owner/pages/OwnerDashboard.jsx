@@ -9,7 +9,6 @@ import {
     getOwnerDashboard,
     getAnalytics,
     getAnomaliesSummary,
-    getOpportunities,
     getTopItems,
 } from "../services/ownerDashboardService";
 import { getOrdersByBranch } from "../../orders/services/ordersService";
@@ -247,15 +246,6 @@ export default function OwnerDashboard() {
         staleTime: 1000 * 60 * 2,
     });
 
-    const { data: opportunities } = useQuery({
-        queryKey: ["owner-opportunities", selectedPlaceId, resolvedFrom, resolvedTo],
-        queryFn: () => getOpportunities(selectedPlaceId, resolvedFrom, resolvedTo),
-        enabled: !!selectedPlaceId,
-        staleTime: 1000 * 60 * 5,
-    });
-
-  
-
     // ── Top Items — not affected by date filter ────────────────────────
     const { data: topItems } = useQuery({
         queryKey: ["owner-top-items", selectedPlaceId],
@@ -279,7 +269,6 @@ export default function OwnerDashboard() {
             "owner-analytics",
             "owner-orders",
             "owner-anomalies",
-            "owner-opportunities",
         ].forEach((key) =>
             queryClient.invalidateQueries({
                 queryKey: [key, selectedPlaceId, resolvedFrom, resolvedTo],
@@ -597,127 +586,6 @@ export default function OwnerDashboard() {
                     </ResponsiveContainer>
                 )}
             </div>
-
-            {/* Opportunities */}
-            {opportunities && (
-                <div className="od-chart-card">
-                    <h2 className="od-chart-title">{t("growth_opportunities")}</h2>
-
-                    {opportunities.summary && (
-                        <p
-                            style={{
-                                fontSize: "0.875rem",
-                                color: "#475569",
-                                marginBottom: "1.25rem",
-                                lineHeight: 1.6,
-                                background: "#f8fafc",
-                                border: "1px solid #e4e2dd",
-                                borderRadius: "10px",
-                                padding: "0.875rem 1rem",
-                            }}
-                        >
-                            {opportunities.summary}
-                        </p>
-                    )}
-
-                    {Array.isArray(opportunities.opportunities) &&
-                        opportunities.opportunities.length > 0 ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                            {opportunities.opportunities.map((opp, i) => {
-                                const priorityConfig = {
-                                    high: { color: "#ef4444", bg: "#fef2f2", border: "#fecaca", icon: "🔴" },
-                                    medium: { color: "#f59e0b", bg: "#fffbeb", border: "#fde68a", icon: "🟡" },
-                                    low: { color: "#10b981", bg: "#f0fdf4", border: "#a7f3d0", icon: "🟢" },
-                                };
-                                const priority = opp.priority?.toLowerCase() ?? "low";
-                                const cfg = priorityConfig[priority] ?? priorityConfig.low;
-
-                                const priorityLabel = {
-                                    high: t("priority_high"),
-                                    medium: t("priority_medium"),
-                                    low: t("priority_low"),
-                                }[priority] ?? priority;
-
-                                return (
-                                    <div
-                                        key={i}
-                                        style={{
-                                            background: cfg.bg,
-                                            border: `1px solid ${cfg.border}`,
-                                            borderRadius: "10px",
-                                            padding: "1rem 1.25rem",
-                                            display: "flex",
-                                            gap: "0.875rem",
-                                            alignItems: "flex-start",
-                                        }}
-                                    >
-                                        <span style={{ fontSize: "1.25rem", lineHeight: 1.4, flexShrink: 0 }}>
-                                            {cfg.icon}
-                                        </span>
-
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            {opp.title && (
-                                                <div
-                                                    style={{
-                                                        fontWeight: 600,
-                                                        fontSize: "0.875rem",
-                                                        color: "#0f172a",
-                                                        marginBottom: "0.3rem",
-                                                    }}
-                                                >
-                                                    {opp.title}
-                                                </div>
-                                            )}
-                                            {opp.description && (
-                                                <div
-                                                    style={{
-                                                        fontSize: "0.8rem",
-                                                        color: "#475569",
-                                                        lineHeight: 1.55,
-                                                    }}
-                                                >
-                                                    {opp.description}
-                                                </div>
-                                            )}
-                                            {opp.action && (
-                                                <div
-                                                    style={{
-                                                        marginTop: "0.5rem",
-                                                        fontSize: "0.78rem",
-                                                        color: cfg.color,
-                                                        fontWeight: 600,
-                                                    }}
-                                                >
-                                                    → {opp.action}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <span
-                                            style={{
-                                                fontSize: "0.7rem",
-                                                fontWeight: 600,
-                                                color: cfg.color,
-                                                background: "#fff",
-                                                border: `1px solid ${cfg.border}`,
-                                                borderRadius: "20px",
-                                                padding: "2px 10px",
-                                                flexShrink: 0,
-                                                textTransform: "uppercase",
-                                                letterSpacing: "0.04em",
-                                            }}
-                                        >
-                                            {priorityLabel}
-                                        </span>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <div className="od-chart-empty">{t("no_opportunities")}</div>
-                    )}
-                </div>
-            )}
         </div>
     );
 }

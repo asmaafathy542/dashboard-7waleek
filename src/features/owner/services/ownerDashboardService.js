@@ -49,17 +49,6 @@ export const getAnomaliesSummary = async (placeId, dateFrom, dateTo) => {
   return res.data;
 };
 
-export const getOpportunities = async (placeId, dateFrom, dateTo) => {
-  const res = await api.get(
-    `/owner/opportunities?${buildQuery(placeId, dateFrom, dateTo)}`,
-    {
-      headers: authHeader(),
-    }
-  );
-
-  return res.data;
-};
-
 
 
 // Visitor Location Heatmap
