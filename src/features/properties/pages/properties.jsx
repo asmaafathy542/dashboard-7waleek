@@ -13,7 +13,7 @@ import { PageThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import "./properties.css";
 
 const EMPTY_FORM = {
-  title: "", description: "", price: "", lat: "", lng: "",
+  title: "", description: "", price: "", location_link: "", lat: "", lng: "",
   contact_number: "", whatsapp_number: "", owner_name: "", image: null,
 };
 
@@ -31,6 +31,7 @@ export default function Properties() {
   const [search, setSearch] = useState("");
   const [viewProp, setViewProp] = useState(null);
   const [viewLoading, setViewLoading] = useState(false);
+  const [geoLoading, setGeoLoading] = useState(false);
 
   const { data: properties = [], isLoading: loading } = useQuery({
     queryKey: ["properties"],
@@ -67,6 +68,7 @@ export default function Properties() {
       title: prop.title || "",
       description: prop.description || "",
       price: prop.price || "",
+      location_link: prop.latitude && prop.longitude ? `https://www.google.com/maps?q=${prop.latitude},${prop.longitude}` : "",
       lat: prop.latitude || "",
       lng: prop.longitude || "",
       contact_number: prop.contact_number?.join(", ") || "",
@@ -76,6 +78,56 @@ export default function Properties() {
     });
     setError("");
     setShowModal(true);
+  };
+
+  const handleUseMyLocation = () => {
+    if (!navigator.geolocation) {
+      setError(ar ? "المتصفح ده مش بيدعم تحديد الموقع." : "Geolocation is not supported by your browser.");
+      return;
+    }
+    setGeoLoading(true);
+    setError("");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setForm((prev) => ({
+          ...prev,
+          lat: lat.toString(),
+          lng: lng.toString(),
+          location_link: `https://www.google.com/maps?q=${lat},${lng}`,
+        }));
+        setGeoLoading(false);
+      },
+      () => {
+        setError(ar ? "مش قادر أجيب موقعك. اتأكد إنك سامح بالوصول للموقع." : "Could not get your location. Please allow location access.");
+        setGeoLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  const handleLocationLinkChange = (e) => {
+    const url = e.target.value;
+    setForm((prev) => {
+      const updated = { ...prev, location_link: url };
+      const patterns = [
+        /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+        /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+        /[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
+        /\/(-?\d+\.\d+),(-?\d+\.\d+)/,
+      ];
+      for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) {
+          updated.lat = match[1];
+          updated.lng = match[2];
+          break;
+        }
+      }
+      return updated;
+    });
+    setError("");
   };
 
   const handleSave = async () => {
@@ -364,16 +416,79 @@ export default function Properties() {
                 <label>{ar ? "السعر (جنيه) *" : "Price (EGP) *"}</label>
                 <input className="prop-input" type="number" placeholder={ar ? "مثال: 5000" : "e.g. 5000"} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
               </div>
+              <div className="prop-form-row">
+                <div className="prop-location-label-row">
+                  <label>{ar ? "لينك الموقع" : "Location Link"}</label>
+                  <button
+                    type="button"
+                    className="prop-geo-btn"
+                    onClick={handleUseMyLocation}
+                    disabled={geoLoading}
+                  >
+                    {geoLoading ? (ar ? "⏳ جاري تحديد الموقع..." : "⏳ Getting location...") : (ar ? "📍 استخدم موقعي" : "📍 Use My Location")}
+                  </button>
+                </div>
+                <input
+                  className="prop-input"
+                  type="text"
+                  placeholder="Google Maps link"
+                  value={form.location_link}
+                  onChange={handleLocationLinkChange}
+                />
+                {form.location_link && !form.lat && (
+                  <span className="prop-hint">
+                    💡 {ar ? "تأكد إن اللينك فيه كوردينيتس — مثال: maps.google.com/maps?q=30.04,31.23" : "Make sure the link contains coordinates — e.g. maps.google.com/maps?q=30.04,31.23"}
+                  </span>
+                )}
+              </div>
               <div className="prop-form-grid">
                 <div className="prop-form-row">
-                  <label>{ar ? "خط العرض *" : "Latitude *"}</label>
-                  <input className="prop-input" type="number" placeholder="e.g. 29.9792" value={form.lat} onChange={(e) => setForm({ ...form, lat: e.target.value })} />
+                  <label>{ar ? "خط العرض *" : "Latitude *"} <span className="prop-hint-inline">(22 → 32 {ar ? "لمصر" : "for Egypt"})</span></label>
+                  <input className="prop-input" type="number" step="any" placeholder="e.g. 29.9792" value={form.lat} onChange={(e) => { setForm({ ...form, lat: e.target.value }); setError(""); }} />
                 </div>
                 <div className="prop-form-row">
-                  <label>{ar ? "خط الطول *" : "Longitude *"}</label>
-                  <input className="prop-input" type="number" placeholder="e.g. 31.1342" value={form.lng} onChange={(e) => setForm({ ...form, lng: e.target.value })} />
+                  <label>{ar ? "خط الطول *" : "Longitude *"} <span className="prop-hint-inline">(24 → 37 {ar ? "لمصر" : "for Egypt"})</span></label>
+                  <input className="prop-input" type="number" step="any" placeholder="e.g. 31.1342" value={form.lng} onChange={(e) => { setForm({ ...form, lng: e.target.value }); setError(""); }} />
                 </div>
               </div>
+
+              {/* ── Map Preview ── */}
+              {(() => {
+                const lat = parseFloat(form.lat);
+                const lng = parseFloat(form.lng);
+                if (!form.lat || !form.lng || isNaN(lat) || isNaN(lng)) return null;
+                const validEgypt = lat >= 22 && lat <= 32 && lng >= 24 && lng <= 37;
+                const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+                return (
+                  <div className="prop-form-row">
+                    {!validEgypt ? (
+                      <div className="prop-map-warning">
+                        ⚠️ <span><strong>{ar ? "تحذير:" : "Warning:"}</strong> {ar ? "الكوردينيتس دي خارج نطاق مصر — تأكد إنك مش عكستهم! Latitude لازم يكون بين 22 و 32، Longitude بين 24 و 37." : "These coordinates are outside Egypt's range — make sure they're not swapped! Latitude must be 22–32, Longitude 24–37."}</span>
+                      </div>
+                    ) : (
+                      <div className="prop-map-success">
+                        ✅ {ar ? "الكوردينيتس في النطاق الصح — اتأكد من الموقع على الخريطة تحت" : "Coordinates are in the correct range — confirm the location on the map below"}
+                      </div>
+                    )}
+                    <label>🗺️ {ar ? "معاينة الخريطة — اتأكد إن النقطة على المكان الصح" : "Map Preview — confirm the pin is on the right place"}</label>
+                    <div className="prop-map-frame">
+                      <iframe
+                        title="map-preview"
+                        src={embedUrl}
+                        width="100%"
+                        height="220"
+                        style={{ display: "block", border: "none" }}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </div>
+                    <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="prop-map-link">
+                      🔗 {ar ? "افتح في Google Maps للتأكيد" : "Open in Google Maps to confirm"}
+                    </a>
+                  </div>
+                );
+              })()}
               <div className="prop-form-row">
                 <label>{ar ? "رقم التواصل" : "Contact Number"}</label>
                 <input className="prop-input" placeholder={ar ? "مثال: 01012345678، 01098765432" : "e.g. 01012345678, 01098765432"} value={form.contact_number} onChange={(e) => setForm({ ...form, contact_number: e.target.value })} />
