@@ -1,4 +1,4 @@
-📍 7WALEEK (AroundU) — Web Dashboard
+📍 7WALEEK — Web Dashboard
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Frontend React.js Vite TanStack Query Recharts
 
