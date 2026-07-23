@@ -5,6 +5,8 @@ Frontend React.js Vite TanStack Query Recharts
 The web dashboard for 7WALEEK (AroundU) — a location-based platform connecting users with nearby places (restaurants, cafes, pharmacies, supermarkets, and student housing). This dashboard is the graduation project component built and owned end-to-end as Dashboard Developer, while a teammate built the Flutter mobile app and another built the FastAPI backend.
 
 🔗 Live Demo: https://dashboard-7waleek.vercel.app/ 
+- Email: Testt@gmail.com
+- Password: testt123
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ✨ Features Overview
 
