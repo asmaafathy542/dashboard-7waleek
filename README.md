@@ -1,16 +1,58 @@
-# React + Vite
+📍 7WALEEK (AroundU) — Web Dashboard
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Frontend React.js Vite TanStack Query Recharts
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The web dashboard for 7WALEEK (AroundU) — a location-based platform connecting users with nearby places (restaurants, cafes, pharmacies, supermarkets, and student housing). This dashboard is the graduation project component built and owned end-to-end as Dashboard Developer, while a teammate built the Flutter mobile app and another built the FastAPI backend.
 
-Currently, two official plugins are available:
+🔗 Live Demo: https://dashboard-7waleek.vercel.app/ 🔗 Repository: https://github.com/asmaafathy542/dashboard-7waleek
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+✨ Features Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+🔐 Authentication & Roles
 
-## React Compiler
+JWT-based authentication with protected routing
+Separate Admin and Owner dashboards with role-based views
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+🏪 Places Management
 
-## Expanding the ESLint configuration
+Place creation flow with Google Maps location link input and coordinate extraction
+Geolocation support with Egypt-range validation
+Working hours UI with three states per day (normal / 24h / closed)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+📦 Items & Bulk Import
+
+Product/item management with size variants (S/M/L/F)
+Business-type-aware import modes (pharmacy, supermarket, default)
+Bulk import from Excel with automatic Arabic header mapping
+Category management with inline creation and search
+
+🧾 Orders
+
+Real-time order tracking with live polling
+Audio alerts for new orders (Web Audio API)
+Optimistic status updates
+Excel export via ExcelJS
+
+⭐ Reviews & Notifications
+
+Review management for places
+Notification system with delivery metrics and daily send limits
+
+📊 Analytics
+
+KPI cards with themeable, icon-based design
+Platform trends chart (Recharts)
+
+🌐 Internationalization
+
+Full Arabic/English support with RTL layout switching
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+🛠️ Tech Stack
+React.js + Vite
+TanStack Query — data fetching & caching
+Recharts — analytics & charts
+REST API integration with a FastAPI backend
+JWT Authentication
+Deployed on Vercel
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+✨ Built by Asmaa Fathy — Dashboard Developer
