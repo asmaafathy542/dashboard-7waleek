@@ -6,7 +6,7 @@ The web dashboard for 7WALEEK (AroundU) — a location-based platform connecting
 
 🔗 Live Demo: https://dashboard-7waleek.vercel.app/
 Email: Testt@gmail.com
-Password: testt123
+Password: testt123 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ✨ Features Overview
 
